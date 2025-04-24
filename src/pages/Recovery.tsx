@@ -5,6 +5,7 @@ import { format, startOfDay } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import RecoveryThermometer from '@/components/RecoveryThermometer';
 import TriggerForm from '@/components/TriggerForm';
+import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 
 const Recovery = () => {
@@ -98,6 +99,8 @@ const Recovery = () => {
         <h1 className="text-3xl font-bold text-white mb-6">
           🧠 Termômetro da Recuperação
         </h1>
+        
+        <DailyMotivation />
         
         <Card className="p-6">
           <RecoveryThermometer 
