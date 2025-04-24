@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isSignUp = searchParams.get("mode") === "signup";
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,21 +20,29 @@ const Auth = () => {
     rememberMe: false,
   });
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      if (error) throw error;
-
-      toast.success("Login realizado com sucesso!");
-      navigate("/");
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+        });
+        if (error) throw error;
+        toast.success("Cadastro realizado com sucesso! Verifique seu email.");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+        if (error) throw error;
+        toast.success("Login realizado com sucesso!");
+        navigate("/");
+      }
     } catch (error) {
-      toast.error("Erro ao fazer login: " + (error as Error).message);
+      const action = isSignUp ? "fazer cadastro" : "fazer login";
+      toast.error(`Erro ao ${action}: ` + (error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -61,11 +71,15 @@ const Auth = () => {
         </div>
 
         <div className="text-center mb-12">
-          <h1 className="text-yellow-300 text-3xl font-bold mb-2">OLÁ!</h1>
-          <h2 className="text-yellow-300 text-2xl font-bold">QUE BOM TE VER NOVAMENTE!</h2>
+          <h1 className="text-yellow-300 text-3xl font-bold mb-2">
+            {isSignUp ? "BEM-VINDO!" : "OLÁ!"}
+          </h1>
+          <h2 className="text-yellow-300 text-2xl font-bold">
+            {isSignUp ? "CRIE SUA CONTA" : "QUE BOM TE VER NOVAMENTE!"}
+          </h2>
         </div>
 
-        <form onSubmit={handleSignIn} className="space-y-6">
+        <form onSubmit={handleAuth} className="space-y-6">
           <div>
             <Input
               type="email"
@@ -105,9 +119,11 @@ const Auth = () => {
               />
               <label htmlFor="remember">ME LEMBRE</label>
             </div>
-            <button type="button" className="hover:text-white">
-              ESQUECEU A SENHA?
-            </button>
+            {!isSignUp && (
+              <button type="button" className="hover:text-white">
+                ESQUECEU A SENHA?
+              </button>
+            )}
           </div>
 
           <Button
@@ -115,15 +131,24 @@ const Auth = () => {
             disabled={isLoading}
             className="w-full bg-yellow-300 hover:bg-yellow-400 text-teal-900 font-bold py-6 rounded-full text-lg"
           >
-            {isLoading ? "Entrando..." : "ENTRAR"}
+            {isLoading
+              ? isSignUp
+                ? "Cadastrando..."
+                : "Entrando..."
+              : isSignUp
+              ? "CADASTRAR"
+              : "ENTRAR"}
           </Button>
         </form>
 
         <div className="mt-8 text-center">
           <p className="text-white/70">
-            NÃO TEM UMA CONTA?{" "}
-            <a href="/auth?mode=signup" className="text-yellow-300 hover:underline font-bold">
-              CADASTRE-SE
+            {isSignUp ? "JÁ TEM UMA CONTA? " : "NÃO TEM UMA CONTA? "}
+            <a
+              href={isSignUp ? "/auth?mode=login" : "/auth?mode=signup"}
+              className="text-yellow-300 hover:underline font-bold"
+            >
+              {isSignUp ? "ENTRAR" : "CADASTRE-SE"}
             </a>
           </p>
         </div>
