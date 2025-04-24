@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      daily_tasks: {
+        Row: {
+          description: string
+          id: string
+          name: string
+          points: number
+        }
+        Insert: {
+          description: string
+          id?: string
+          name: string
+          points?: number
+        }
+        Update: {
+          description?: string
+          id?: string
+          name?: string
+          points?: number
+        }
+        Relationships: []
+      }
+      devotional_visits: {
+        Row: {
+          id: string
+          user_id: string
+          visited_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          visited_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          visited_at?: string
+        }
+        Relationships: []
+      }
       medals: {
         Row: {
           created_at: string | null
@@ -117,6 +156,45 @@ export type Database = {
         }
         Relationships: []
       }
+      recovery_triggers: {
+        Row: {
+          created_at: string
+          id: string
+          trigger_description: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          trigger_description: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          trigger_description?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sobriety_declarations: {
+        Row: {
+          declared_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          declared_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          declared_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_medals: {
         Row: {
           earned_at: string | null
@@ -149,6 +227,35 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_task_completions: {
+        Row: {
+          completed_at: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_task_completions_task"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "daily_tasks"
             referencedColumns: ["id"]
           },
         ]
