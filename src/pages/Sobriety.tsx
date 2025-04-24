@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { CalendarDays, Edit2, Save } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,11 +39,21 @@ const Sobriety = () => {
     },
   });
 
+  // Calcula os dias de sobriedade no frontend
+  const calculateDaysSober = () => {
+    if (!profile?.sobriety_start_date) return 0;
+    
+    const startDate = new Date(profile.sobriety_start_date);
+    const today = new Date();
+    return differenceInDays(today, startDate);
+  };
+
   const updateProfile = useMutation({
     mutationFn: async (updates: { sobriety_start_date?: string; motivation_note?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
+      // Remover o cálculo de dias de sobriedade do payload, isso será feito pelo frontend
       const { error } = await supabase
         .from('profiles')
         .update(updates)
@@ -86,6 +96,9 @@ const Sobriety = () => {
   ];
 
   const randomPhrase = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
+  
+  // Calculamos os dias de sobriedade no frontend
+  const daysSober = calculateDaysSober();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
@@ -96,7 +109,7 @@ const Sobriety = () => {
             <CalendarDays className="w-8 h-8 text-yellow-300" />
           </div>
           <h1 className="text-5xl font-bold mb-2">
-            {profile?.dias_sobriedade || 0}
+            {daysSober}
           </h1>
           <p className="text-xl mb-4">Dias em Sobriedade</p>
           <p className="text-white/80 italic">{randomPhrase}</p>
