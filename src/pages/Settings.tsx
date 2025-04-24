@@ -10,6 +10,8 @@ import { ArrowLeft, Moon, Key, Award, Info, FileText, Shield, Share, Edit2, Save
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -19,6 +21,12 @@ const Settings = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState("");
   const isMobile = useIsMobile();
+  
+  // Password change states
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   
   useEffect(() => {
     const fetchUser = async () => {
@@ -64,6 +72,70 @@ const Settings = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleUpdatePassword = async () => {
+    // Validação de senha
+    setPasswordError("");
+    
+    if (newPassword.length < 6) {
+      setPasswordError("A senha deve ter pelo menos 6 caracteres");
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      setPasswordError("As senhas não correspondem");
+      return;
+    }
+    
+    setIsUpdatingPassword(true);
+    
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+      
+      // Limpa os campos após atualização bem-sucedida
+      setNewPassword("");
+      setConfirmPassword("");
+      
+      toast({
+        title: "Senha atualizada",
+        description: "Sua senha foi atualizada com sucesso!"
+      });
+    } catch (error) {
+      console.error("Error updating password:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar sua senha. " + error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const handleBackToDashboard = () => {
+    navigate('/dashboard');
+  };
+
+  const handleSaveChanges = async () => {
+    // Salva o nome se estiver sendo editado
+    if (isEditingName) {
+      await handleUpdateName();
+    }
+    
+    // Salva a senha se os campos estiverem preenchidos
+    if (newPassword && confirmPassword) {
+      await handleUpdatePassword();
+    }
+    
+    toast({
+      title: "Alterações salvas",
+      description: "Todas as alterações foram salvas com sucesso!"
+    });
   };
 
   return (
@@ -146,22 +218,50 @@ const Settings = () => {
                   onCheckedChange={toggleTheme}
                 />
               </div>
+              
+              {/* Password Change */}
+              <div className="space-y-3 pt-2">
+                <h4 className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Alterar Senha
+                </h4>
+                
+                <div className="space-y-2">
+                  <div>
+                    <label className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Nova Senha
+                    </label>
+                    <Input 
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Digite sua nova senha"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className={`text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Confirmar Senha
+                    </label>
+                    <Input 
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirme sua nova senha"
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  {passwordError && (
+                    <p className="text-xs text-red-500">{passwordError}</p>
+                  )}
+                </div>
+              </div>
 
               {/* Action Buttons */}
               <div className="grid grid-cols-1 gap-3">
-                {/* Change Password */}
-                <Button
-                  variant="outline"
-                  className={`w-full justify-between ${isDarkMode ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
-                  onClick={() => navigate('/change-password')}
-                >
-                  <div className="flex items-center gap-2">
-                    <Key className={`h-5 w-5 ${isDarkMode ? 'text-white/70' : ''}`} />
-                    <span>Mudar Senha</span>
-                  </div>
-                  <ArrowLeft className="h-5 w-5 rotate-180" />
-                </Button>
-
+                {/* Change Password button removed, integrated into the form above */}
+                
                 {/* Premium Upgrade */}
                 <Button
                   variant="outline"
@@ -237,6 +337,24 @@ const Settings = () => {
                 <ArrowLeft className="h-5 w-5 rotate-180" />
               </Button>
             </div>
+          </div>
+          
+          {/* Botões de ação no final da página */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <Button 
+              className="w-full sm:w-auto"
+              onClick={handleSaveChanges}
+            >
+              <Save className="mr-2 h-4 w-4" /> Salvar Alterações
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              className="w-full sm:w-auto"
+              onClick={handleBackToDashboard}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" /> Voltar ao Painel
+            </Button>
           </div>
         </div>
       </div>
