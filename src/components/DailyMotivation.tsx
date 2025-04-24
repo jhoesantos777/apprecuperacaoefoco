@@ -44,7 +44,13 @@ const DailyMotivation = () => {
   useEffect(() => {
     // Use a data atual para selecionar uma mensagem de forma determinística
     const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    const startOfYear = new Date(today.getFullYear(), 0, 0);
+    
+    // Convert dates to timestamps and calculate day of year
+    const dayOfYear = Math.floor(
+      (today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    
     const messageIndex = dayOfYear % motivationalMessages.length;
     setTodaysMessage(motivationalMessages[messageIndex]);
   }, []);
