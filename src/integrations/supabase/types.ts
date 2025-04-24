@@ -33,6 +33,33 @@ export type Database = {
         }
         Relationships: []
       }
+      mood_entries: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          mood: string
+          points: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          mood: string
+          points: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          mood?: string
+          points?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -44,6 +71,7 @@ export type Database = {
           email: string | null
           estado: string | null
           id: string
+          mood_points: number | null
           motivation_note: string | null
           nome: string | null
           sobriety_start_date: string | null
@@ -61,6 +89,7 @@ export type Database = {
           email?: string | null
           estado?: string | null
           id: string
+          mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
           sobriety_start_date?: string | null
@@ -78,6 +107,7 @@ export type Database = {
           email?: string | null
           estado?: string | null
           id?: string
+          mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
           sobriety_start_date?: string | null

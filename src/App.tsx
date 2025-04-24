@@ -1,9 +1,13 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { 
+  Toaster, 
+  Sonner, 
+  TooltipProvider, 
+  QueryClient, 
+  QueryClientProvider, 
+  BrowserRouter, 
+  Routes, 
+  Route 
+} from "@/components/ui";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -15,6 +19,7 @@ import Premium from "./pages/Premium";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Sobriety from "./pages/Sobriety";
+import Mood from "./pages/Mood";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +40,7 @@ const App = () => (
             <Route path="/premium" element={<Premium />} />
             <Route path="/about" element={<About />} />
             <Route path="/sobriety" element={<Sobriety />} />
+            <Route path="/mood" element={<Mood />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
