@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { ArrowLeft, Award, Calendar, Clock, Edit2, User, Save } from "lucide-react";
 import { DrugSelection } from "@/components/DrugSelection";
 import { useState } from "react";
@@ -17,7 +17,9 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isEditingDrugs, setIsEditingDrugs] = useState(false);
+  const [isEditingTempoUso, setIsEditingTempoUso] = useState(false);
   const [selectedDrugs, setSelectedDrugs] = useState<string[]>([]);
+  const [tempoUso, setTempoUso] = useState("");
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -34,12 +36,15 @@ const Profile = () => {
       if (profile?.drogas_uso) {
         setSelectedDrugs(profile.drogas_uso);
       }
+      if (profile?.tempo_uso) {
+        setTempoUso(profile.tempo_uso);
+      }
       return profile;
     },
   });
 
   const updateProfile = useMutation({
-    mutationFn: async (updates: { drogas_uso?: string[] }) => {
+    mutationFn: async (updates: { drogas_uso?: string[], tempo_uso?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
@@ -57,6 +62,7 @@ const Profile = () => {
         description: "Suas informações foram atualizadas.",
       });
       setIsEditingDrugs(false);
+      setIsEditingTempoUso(false);
     },
     onError: (error) => {
       toast({
@@ -78,6 +84,10 @@ const Profile = () => {
 
   const handleSaveDrugs = () => {
     updateProfile.mutate({ drogas_uso: selectedDrugs });
+  };
+
+  const handleSaveTempoUso = () => {
+    updateProfile.mutate({ tempo_uso: tempoUso });
   };
 
   const { data: medals } = useQuery({
@@ -124,7 +134,6 @@ const Profile = () => {
           Voltar
         </button>
 
-        {/* Profile Header */}
         <div className="flex items-center gap-6 mb-8">
           <Avatar className="h-24 w-24 border-4 border-white">
             <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
@@ -140,7 +149,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <Card className="bg-white/10 border-none text-white">
             <CardContent className="p-4">
@@ -156,18 +164,37 @@ const Profile = () => {
           
           <Card className="bg-white/10 border-none text-white">
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-5 w-5 text-yellow-300" />
-                <p className="font-medium">Tempo de Uso</p>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-yellow-300" />
+                  <p className="font-medium">Tempo de Uso</p>
+                </div>
+                {!isEditingTempoUso ? (
+                  <Button variant="ghost" size="sm" onClick={() => setIsEditingTempoUso(true)}>
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button variant="ghost" size="sm" onClick={handleSaveTempoUso}>
+                    <Save className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
-              <p className="text-lg">
-                {profile?.tempo_uso || 'Não informado'}
-              </p>
+              {isEditingTempoUso ? (
+                <Input
+                  value={tempoUso}
+                  onChange={(e) => setTempoUso(e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                  placeholder="Ex: 5 anos"
+                />
+              ) : (
+                <p className="text-lg">
+                  {profile?.tempo_uso || 'Não informado'}
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Drogas de Uso */}
         <Card className="bg-white/10 border-none text-white mb-8">
           <CardHeader className="p-4 pb-2">
             <div className="flex items-center justify-between">
@@ -204,7 +231,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Medals */}
         <Card className="bg-white/10 border-none text-white">
           <CardHeader className="p-4 pb-2">
             <h2 className="text-lg font-semibold flex items-center gap-2">
