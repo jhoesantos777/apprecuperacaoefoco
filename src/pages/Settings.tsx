@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
@@ -10,8 +10,24 @@ import { supabase } from "@/integrations/supabase/client";
 const Settings = () => {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          console.error("Error fetching user:", error);
+        } else {
+          setUser(data.user);
+        }
+      } catch (err) {
+        console.error("Exception when fetching user:", err);
+      }
+    };
+    
+    fetchUser();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-900 to-emerald-900">
