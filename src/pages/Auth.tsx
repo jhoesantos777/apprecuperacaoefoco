@@ -35,7 +35,7 @@ const Auth = () => {
         });
         if (error) throw error;
         toast.success("Login realizado com sucesso!");
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       const action = isSignUp ? "fazer cadastro" : "fazer login";

@@ -126,12 +126,12 @@ const Dashboard = () => {
         <Avatar className="h-16 w-16 border-2 border-white">
           <AvatarImage src="/placeholder.svg" />
           <AvatarFallback>
-            {profile?.first_name?.[0] || 'U'}
+            {profile?.nome?.[0] || 'U'}
           </AvatarFallback>
         </Avatar>
         <div>
           <h1 className="text-2xl font-bold text-white">Bem vindo</h1>
-          <p className="text-white/90">{profile?.first_name || 'Usuário'}</p>
+          <p className="text-white/90">{profile?.nome || 'Usuário'}</p>
         </div>
       </div>
 
@@ -146,7 +146,7 @@ const Dashboard = () => {
       </div>
 
       {/* Categories */}
-      <div className="px-6">
+      <div className="px-6 pb-20"> {/* Added padding bottom to account for the navigation bar */}
         <h2 className="text-xl font-semibold text-white mb-4">Categorias</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.map((category) => (
@@ -157,6 +157,7 @@ const Dashboard = () => {
             >
               <category.icon className="h-8 w-8 text-blue-600 mb-2" />
               <h3 className="text-sm font-medium">{category.title}</h3>
+              <p className="text-xs text-gray-500">{category.description}</p>
             </Card>
           ))}
         </div>
