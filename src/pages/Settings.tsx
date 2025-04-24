@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +8,7 @@ import { ArrowLeft, Moon, Key, Award, Info, FileText, Shield, Share, Edit2, Save
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { ProfilePicture } from "@/components/ProfilePicture";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -22,7 +19,6 @@ const Settings = () => {
   const [newName, setNewName] = useState("");
   const isMobile = useIsMobile();
   
-  // Password change states
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -75,7 +71,6 @@ const Settings = () => {
   };
 
   const handleUpdatePassword = async () => {
-    // Validação de senha
     setPasswordError("");
     
     if (newPassword.length < 6) {
@@ -97,7 +92,6 @@ const Settings = () => {
 
       if (error) throw error;
       
-      // Limpa os campos após atualização bem-sucedida
       setNewPassword("");
       setConfirmPassword("");
       
@@ -122,12 +116,10 @@ const Settings = () => {
   };
 
   const handleSaveChanges = async () => {
-    // Salva o nome se estiver sendo editado
     if (isEditingName) {
       await handleUpdateName();
     }
     
-    // Salva a senha se os campos estiverem preenchidos
     if (newPassword && confirmPassword) {
       await handleUpdatePassword();
     }
@@ -136,6 +128,13 @@ const Settings = () => {
       title: "Alterações salvas",
       description: "Todas as alterações foram salvas com sucesso!"
     });
+  };
+
+  const handleUpdateAvatar = (newAvatarUrl: string) => {
+    setUser(prev => ({
+      ...prev,
+      user_metadata: { ...prev?.user_metadata, avatar_url: newAvatarUrl }
+    }));
   };
 
   return (
@@ -155,12 +154,14 @@ const Settings = () => {
         </div>
 
         <div className="flex flex-col items-center mb-6 sm:mb-8">
-          <Avatar className="h-20 w-20 sm:h-24 sm:w-24 mb-4">
-            <AvatarImage src={user?.user_metadata?.avatar_url} />
-            <AvatarFallback>
-              {user?.email?.[0]?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
+          <ProfilePicture
+            avatarUrl={user?.user_metadata?.avatar_url}
+            userId={user?.id || ''}
+            userName={user?.user_metadata?.full_name}
+            size="lg"
+            editable={true}
+            onImageUpdated={handleUpdateAvatar}
+          />
           
           <div className="flex flex-wrap items-center justify-center gap-2 mb-1">
             {isEditingName ? (
@@ -193,14 +194,12 @@ const Settings = () => {
         </div>
 
         <div className="space-y-4 sm:space-y-6">
-          {/* General Settings Card */}
           <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
             <h3 className={`text-base sm:text-lg font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Configurações gerais
             </h3>
             
             <div className="space-y-4">
-              {/* Theme Toggle */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Moon className="h-5 w-5 text-primary" />
@@ -219,7 +218,6 @@ const Settings = () => {
                 />
               </div>
               
-              {/* Password Change */}
               <div className="space-y-3 pt-2">
                 <h4 className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                   Alterar Senha
@@ -258,11 +256,7 @@ const Settings = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="grid grid-cols-1 gap-3">
-                {/* Change Password button removed, integrated into the form above */}
-                
-                {/* Premium Upgrade */}
                 <Button
                   variant="outline"
                   className={`w-full justify-between ${isDarkMode ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
@@ -278,14 +272,12 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* Information Card */}
           <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
             <h3 className={`text-base sm:text-lg font-medium mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               Informações
             </h3>
             
             <div className="grid grid-cols-1 gap-3">
-              {/* About App */}
               <Button
                 variant="outline"
                 className={`w-full justify-between ${isDarkMode ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
@@ -298,7 +290,6 @@ const Settings = () => {
                 <ArrowLeft className="h-5 w-5 rotate-180" />
               </Button>
 
-              {/* Terms & Conditions */}
               <Button
                 variant="outline"
                 className={`w-full justify-between ${isDarkMode ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
@@ -311,7 +302,6 @@ const Settings = () => {
                 <ArrowLeft className="h-5 w-5 rotate-180" />
               </Button>
 
-              {/* Privacy Policy */}
               <Button
                 variant="outline"
                 className={`w-full justify-between ${isDarkMode ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
@@ -324,7 +314,6 @@ const Settings = () => {
                 <ArrowLeft className="h-5 w-5 rotate-180" />
               </Button>
 
-              {/* Share App */}
               <Button
                 variant="outline"
                 className={`w-full justify-between ${isDarkMode ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
@@ -339,7 +328,6 @@ const Settings = () => {
             </div>
           </div>
           
-          {/* Botões de ação no final da página */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button 
               className="w-full sm:w-auto"

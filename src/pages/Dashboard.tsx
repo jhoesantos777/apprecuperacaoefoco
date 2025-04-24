@@ -1,11 +1,11 @@
 
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfilePicture } from "@/components/ProfilePicture";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -123,12 +123,12 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
       {/* Header */}
       <div className="p-6 flex items-center gap-4">
-        <Avatar className="h-16 w-16 border-2 border-white">
-          <AvatarImage src="/placeholder.svg" />
-          <AvatarFallback>
-            {profile?.nome?.[0] || 'U'}
-          </AvatarFallback>
-        </Avatar>
+        <ProfilePicture
+          avatarUrl={profile?.avatar_url}
+          userId={profile?.id || ''}
+          userName={profile?.nome}
+          size="lg"
+        />
         <div>
           <h1 className="text-2xl font-bold text-white">Bem vindo</h1>
           <p className="text-white/90">{profile?.nome || 'Usuário'}</p>
