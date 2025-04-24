@@ -30,8 +30,11 @@ const Tasks = () => {
     queryKey: ['daily-tasks'],
     queryFn: async () => {
       const { data: tasks, error } = await supabase
-        .from('daily_tasks')
-        .select('*') as { data: Task[] | null; error: Error | null };
+        .from('daily_tasks' as any)
+        .select('*') as unknown as { 
+          data: Task[] | null; 
+          error: Error | null 
+        };
       
       if (error) {
         console.error("Error fetching tasks:", error);
@@ -48,10 +51,13 @@ const Tasks = () => {
       today.setHours(0, 0, 0, 0);
 
       const { data: completions, error } = await supabase
-        .from('user_task_completions')
+        .from('user_task_completions' as any)
         .select('*')
         .gte('completed_at', today.toISOString())
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as { data: TaskCompletion[] | null; error: Error | null };
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as unknown as {
+          data: TaskCompletion[] | null; 
+          error: Error | null 
+        };
       
       if (error) {
         console.error("Error fetching completions:", error);
@@ -65,11 +71,11 @@ const Tasks = () => {
     mutationFn: async (taskId: string) => {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await supabase
-        .from('user_task_completions')
+        .from('user_task_completions' as any)
         .insert({ 
           task_id: taskId, 
           user_id: userId
-        }) as { error: Error | null };
+        }) as unknown as { error: Error | null };
       
       if (error) throw error;
       return { success: true };
