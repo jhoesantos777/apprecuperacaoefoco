@@ -25,12 +25,9 @@ const Auth = () => {
     setIsLoading(true);
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email: formData.email,
-          password: formData.password,
-        });
-        if (error) throw error;
-        toast.success("Cadastro realizado com sucesso! Verifique seu email.");
+        // Redirect to signup page with detailed form
+        navigate("/signup");
+        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
@@ -80,51 +77,53 @@ const Auth = () => {
         </div>
 
         <form onSubmit={handleAuth} className="space-y-6">
-          <div>
-            <Input
-              type="email"
-              placeholder="ESCREVE SEU EMAIL AQUI"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50"
-            />
-          </div>
+          {!isSignUp && (
+            <>
+              <div>
+                <Input
+                  type="email"
+                  placeholder="ESCREVE SEU EMAIL AQUI"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50"
+                />
+              </div>
 
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="SENHA"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50 pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-0 top-2 text-white/50"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="SENHA"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-2 text-white/50"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
 
-          <div className="flex items-center justify-between text-sm text-white/70">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="remember"
-                checked={formData.rememberMe}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, rememberMe: checked as boolean })
-                }
-                className="border-white/50"
-              />
-              <label htmlFor="remember">ME LEMBRE</label>
-            </div>
-            {!isSignUp && (
-              <button type="button" className="hover:text-white">
-                ESQUECEU A SENHA?
-              </button>
-            )}
-          </div>
+              <div className="flex items-center justify-between text-sm text-white/70">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="remember"
+                    checked={formData.rememberMe}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, rememberMe: checked as boolean })
+                    }
+                    className="border-white/50"
+                  />
+                  <label htmlFor="remember">ME LEMBRE</label>
+                </div>
+                <button type="button" className="hover:text-white">
+                  ESQUECEU A SENHA?
+                </button>
+              </div>
+            </>
+          )}
 
           <Button
             type="submit"
