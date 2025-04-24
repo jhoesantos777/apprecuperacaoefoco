@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Award, Calendar, Clock, User } from "lucide-react";
+import { ArrowLeft, Award, Calendar, Clock, User, MapPin } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -98,6 +98,12 @@ const Profile = () => {
             <p className="text-white/70">
               {calculateAge(profile?.data_nascimento)} anos
             </p>
+            {profile?.cidade && profile?.estado && (
+              <p className="text-white/70 flex items-center gap-1 mt-1">
+                <MapPin size={14} />
+                {profile.cidade}, {profile.estado}
+              </p>
+            )}
           </div>
         </div>
 
