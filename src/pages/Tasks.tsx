@@ -26,8 +26,8 @@ const Tasks = () => {
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['daily-tasks'],
     queryFn: async () => {
-      // Using fetch with the REST API instead of rpc to avoid TypeScript errors
-      const { data, error } = await supabase.from('daily_tasks').select('*');
+      // Using a type assertion to bypass TypeScript's type checking for tables not in the schema
+      const { data, error } = await (supabase.from('daily_tasks').select('*') as any);
       
       if (error) {
         console.error("Error fetching tasks:", error);
@@ -43,11 +43,11 @@ const Tasks = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Using a direct query instead of rpc to avoid TypeScript errors
-      const { data, error } = await supabase.from('user_task_completions')
+      // Using a type assertion to bypass TypeScript's type checking
+      const { data, error } = await (supabase.from('user_task_completions')
         .select('*')
         .gte('completed_at', today.toISOString())
-        .eq('user_id', supabase.auth.getUser().then(res => res.data.user?.id));
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as any);
       
       if (error) {
         console.error("Error fetching completions:", error);
@@ -59,13 +59,14 @@ const Tasks = () => {
 
   const completeTask = useMutation({
     mutationFn: async (taskId: string) => {
-      // Using a direct insert instead of rpc to avoid TypeScript errors
-      const { error } = await supabase
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      // Using a type assertion to bypass TypeScript's type checking
+      const { error } = await (supabase
         .from('user_task_completions')
         .insert({ 
           task_id: taskId, 
-          user_id: (await supabase.auth.getUser()).data.user?.id
-        });
+          user_id: userId
+        }) as any);
       
       if (error) throw error;
       return { success: true };
