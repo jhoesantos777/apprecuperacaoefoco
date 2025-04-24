@@ -13,6 +13,7 @@ import { DrugSelection } from "@/components/DrugSelection";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { SignUpFormData, UserType } from "@/types/signup";
+import { Link } from "react-router-dom";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -94,11 +95,27 @@ const SignUp = () => {
         },
       });
       
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("User already registered")) {
+          toast.error("Este email já está cadastrado. Tente fazer login ou use outro email.");
+          
+          // Focus on the email field if we're on step 4
+          if (step === 4) {
+            const emailInput = document.getElementById("email");
+            if (emailInput) {
+              emailInput.focus();
+            }
+          }
+        } else {
+          throw error;
+        }
+        return;
+      }
       
       toast.success("Cadastro realizado com sucesso! Verifique seu email para confirmar sua conta.");
       navigate("/auth?mode=login");
     } catch (error) {
+      console.error("Signup error:", error);
       toast.error("Erro ao criar conta: " + (error as Error).message);
     } finally {
       setIsSubmitting(false);
@@ -413,6 +430,17 @@ const SignUp = () => {
             )}
           </div>
         </form>
+
+        {step === 4 && (
+          <div className="mt-6 text-center text-white/70">
+            <p>
+              Já tem uma conta?{" "}
+              <Link to="/auth?mode=login" className="text-yellow-300 hover:underline">
+                Faça login aqui
+              </Link>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
