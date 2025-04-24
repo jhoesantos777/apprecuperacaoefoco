@@ -23,47 +23,57 @@ interface TaskCompletion {
 const Tasks = () => {
   const queryClient = useQueryClient();
 
-  const { data: tasks } = useQuery({
+  const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['daily-tasks'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('daily_tasks')
-        .select('*');
+      // Use a raw SQL query to get tasks since the types aren't updated
+      const { data, error } = await supabase.rpc('get_daily_tasks');
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching tasks:", error);
+        throw error;
+      }
       return data as Task[];
     },
   });
 
-  const { data: completions } = useQuery({
+  const { data: completions, isLoading: completionsLoading } = useQuery({
     queryKey: ['task-completions'],
     queryFn: async () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const { data, error } = await supabase
-        .from('user_task_completions')
-        .select('task_id, completed_at')
-        .gte('completed_at', today.toISOString());
+      // Use a raw SQL query to get task completions
+      const { data, error } = await supabase.rpc(
+        'get_user_task_completions', 
+        { min_date: today.toISOString() }
+      );
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching completions:", error);
+        throw error;
+      }
       return data as TaskCompletion[];
     },
   });
 
   const completeTask = useMutation({
     mutationFn: async (taskId: string) => {
-      const { error } = await supabase
-        .from('user_task_completions')
-        .insert({ task_id: taskId });
+      // Use a stored procedure to complete a task
+      const { error } = await supabase.rpc(
+        'complete_task',
+        { task_id_param: taskId }
+      );
       
       if (error) throw error;
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-completions'] });
       toast("Tarefa concluída! Continue assim!");
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Error completing task:", error);
       toast("Você já completou esta tarefa hoje!", {
         description: "Volte amanhã para completá-la novamente."
       });
@@ -73,6 +83,16 @@ const Tasks = () => {
   const isTaskCompleted = (taskId: string) => {
     return completions?.some(completion => completion.task_id === taskId);
   };
+
+  if (tasksLoading || completionsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
+        <div className="max-w-md mx-auto">
+          <div className="text-white text-center">Carregando tarefas...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!tasks) return null;
 
