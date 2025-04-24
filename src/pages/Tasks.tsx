@@ -27,13 +27,16 @@ const Tasks = () => {
     queryKey: ['daily-tasks'],
     queryFn: async () => {
       // Use a raw SQL query to get tasks since the types aren't updated
-      const { data, error } = await supabase.rpc('get_daily_tasks');
+      const { data, error } = await supabase.rpc('get_daily_tasks') as unknown as {
+        data: Task[];
+        error: any;
+      };
       
       if (error) {
         console.error("Error fetching tasks:", error);
         throw error;
       }
-      return data as Task[];
+      return data;
     },
   });
 
@@ -47,13 +50,16 @@ const Tasks = () => {
       const { data, error } = await supabase.rpc(
         'get_user_task_completions', 
         { min_date: today.toISOString() }
-      );
+      ) as unknown as {
+        data: TaskCompletion[];
+        error: any;
+      };
       
       if (error) {
         console.error("Error fetching completions:", error);
         throw error;
       }
-      return data as TaskCompletion[];
+      return data;
     },
   });
 
@@ -63,7 +69,10 @@ const Tasks = () => {
       const { error } = await supabase.rpc(
         'complete_task',
         { task_id_param: taskId }
-      );
+      ) as unknown as {
+        data: any;
+        error: any;
+      };
       
       if (error) throw error;
       return { success: true };
