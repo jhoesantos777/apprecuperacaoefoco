@@ -42,18 +42,18 @@ const Dashboard = () => {
       path: '/mood'
     },
     {
+      id: 'tasks',
+      title: 'Tarefas Diárias',
+      description: 'Complete suas atividades do dia',
+      icon: ListTodo,
+      path: '/tasks'
+    },
+    {
       id: 'thermometer',
       title: 'Termômetro da recuperação',
       description: 'Acompanhe seu progresso',
       icon: Thermometer,
       path: '/recovery'
-    },
-    {
-      id: 'tasks',
-      title: 'TAREFAS DIÁRIAS',
-      description: 'Suas atividades do dia',
-      icon: ListTodo,
-      path: '/tasks'
     },
     {
       id: 'reflection',
