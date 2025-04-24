@@ -29,7 +29,7 @@ const Tasks = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('daily_tasks')
-        .select('*');
+        .select('*') as unknown as { data: Task[] | null; error: Error | null };
       
       if (error) {
         console.error("Error fetching tasks:", error);
@@ -49,7 +49,7 @@ const Tasks = () => {
         .from('user_task_completions')
         .select('*')
         .gte('completed_at', today.toISOString())
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as unknown as { data: TaskCompletion[] | null; error: Error | null };
       
       if (error) {
         console.error("Error fetching completions:", error);
@@ -67,7 +67,7 @@ const Tasks = () => {
         .insert({ 
           task_id: taskId, 
           user_id: userId
-        });
+        }) as unknown as { error: Error | null };
       
       if (error) throw error;
       return { success: true };
