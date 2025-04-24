@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
+import type { Database } from '@/integrations/supabase/types';
 
 interface Task {
   id: string;
@@ -26,8 +27,9 @@ const Tasks = () => {
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['daily-tasks'],
     queryFn: async () => {
-      // Using a type assertion to bypass TypeScript's type checking for tables not in the schema
-      const { data, error } = await (supabase.from('daily_tasks').select('*') as any);
+      const { data, error } = await supabase
+        .from('daily_tasks')
+        .select('*');
       
       if (error) {
         console.error("Error fetching tasks:", error);
@@ -43,11 +45,11 @@ const Tasks = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Using a type assertion to bypass TypeScript's type checking
-      const { data, error } = await (supabase.from('user_task_completions')
+      const { data, error } = await supabase
+        .from('user_task_completions')
         .select('*')
         .gte('completed_at', today.toISOString())
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as any);
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
       
       if (error) {
         console.error("Error fetching completions:", error);
@@ -60,13 +62,12 @@ const Tasks = () => {
   const completeTask = useMutation({
     mutationFn: async (taskId: string) => {
       const userId = (await supabase.auth.getUser()).data.user?.id;
-      // Using a type assertion to bypass TypeScript's type checking
-      const { error } = await (supabase
+      const { error } = await supabase
         .from('user_task_completions')
         .insert({ 
           task_id: taskId, 
           user_id: userId
-        }) as any);
+        });
       
       if (error) throw error;
       return { success: true };
