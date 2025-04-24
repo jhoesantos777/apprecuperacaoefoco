@@ -36,11 +36,13 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          cidade: string | null
           created_at: string | null
           data_nascimento: string | null
           dias_sobriedade: number | null
           drogas_uso: string[] | null
           email: string | null
+          estado: string | null
           id: string
           motivation_note: string | null
           nome: string | null
@@ -51,11 +53,13 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          cidade?: string | null
           created_at?: string | null
           data_nascimento?: string | null
           dias_sobriedade?: number | null
           drogas_uso?: string[] | null
           email?: string | null
+          estado?: string | null
           id: string
           motivation_note?: string | null
           nome?: string | null
@@ -66,11 +70,13 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          cidade?: string | null
           created_at?: string | null
           data_nascimento?: string | null
           dias_sobriedade?: number | null
           drogas_uso?: string[] | null
           email?: string | null
+          estado?: string | null
           id?: string
           motivation_note?: string | null
           nome?: string | null

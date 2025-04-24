@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,10 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Award, Calendar, Clock, User } from "lucide-react";
+import { ArrowLeft, Award, Calendar, Clock, Edit2, User, Save } from "lucide-react";
+import { DrugSelection } from "@/components/DrugSelection";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [isEditingDrugs, setIsEditingDrugs] = useState(false);
+  const [selectedDrugs, setSelectedDrugs] = useState<string[]>([]);
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -24,9 +31,54 @@ const Profile = () => {
         .eq('id', user.id)
         .single();
         
+      if (profile?.drogas_uso) {
+        setSelectedDrugs(profile.drogas_uso);
+      }
       return profile;
     },
   });
+
+  const updateProfile = useMutation({
+    mutationFn: async (updates: { drogas_uso?: string[] }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast({
+        title: "Sucesso!",
+        description: "Suas informações foram atualizadas.",
+      });
+      setIsEditingDrugs(false);
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar suas informações.",
+        variant: "destructive",
+      });
+      console.error('Error updating profile:', error);
+    },
+  });
+
+  const handleDrugToggle = (drug: string) => {
+    setSelectedDrugs(prev => 
+      prev.includes(drug) 
+        ? prev.filter(d => d !== drug)
+        : [...prev, drug]
+    );
+  };
+
+  const handleSaveDrugs = () => {
+    updateProfile.mutate({ drogas_uso: selectedDrugs });
+  };
 
   const { data: medals } = useQuery({
     queryKey: ['user-medals'],
@@ -118,19 +170,37 @@ const Profile = () => {
         {/* Drogas de Uso */}
         <Card className="bg-white/10 border-none text-white mb-8">
           <CardHeader className="p-4 pb-2">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <User className="h-5 w-5 text-yellow-300" />
-              Drogas de Uso
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <User className="h-5 w-5 text-yellow-300" />
+                Drogas de Uso
+              </h2>
+              {!isEditingDrugs ? (
+                <Button variant="ghost" size="sm" onClick={() => setIsEditingDrugs(true)}>
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button variant="ghost" size="sm" onClick={handleSaveDrugs}>
+                  <Save className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="flex flex-wrap gap-2">
-              {profile?.drogas_uso?.map((droga) => (
-                <Badge key={droga} variant="secondary" className="bg-white/20">
-                  {droga}
-                </Badge>
-              ))}
-            </div>
+            {isEditingDrugs ? (
+              <DrugSelection 
+                selectedDrugs={selectedDrugs}
+                onDrugToggle={handleDrugToggle}
+              />
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {profile?.drogas_uso?.map((droga) => (
+                  <Badge key={droga} variant="secondary" className="bg-white/20">
+                    {droga}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
