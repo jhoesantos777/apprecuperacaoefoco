@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,7 +8,7 @@ import {
   Frown, 
   Meh, 
   Angry, 
-  Confused 
+  SmilePlus 
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
@@ -22,7 +21,7 @@ const moodOptions = [
     description: 'Aproveite esse momento! Mantenha essa energia positiva.'
   },
   { 
-    icon: Confused, 
+    icon: SmilePlus, 
     label: 'Ansioso', 
     points: -5,
     color: 'bg-yellow-100 text-yellow-600',
