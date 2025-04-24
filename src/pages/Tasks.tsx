@@ -26,17 +26,14 @@ const Tasks = () => {
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['daily-tasks'],
     queryFn: async () => {
-      // Use a raw SQL query to get tasks since the types aren't updated
-      const { data, error } = await supabase.rpc('get_daily_tasks') as unknown as {
-        data: Task[];
-        error: any;
-      };
+      // Using fetch with the REST API instead of rpc to avoid TypeScript errors
+      const { data, error } = await supabase.from('daily_tasks').select('*');
       
       if (error) {
         console.error("Error fetching tasks:", error);
         throw error;
       }
-      return data;
+      return data as Task[];
     },
   });
 
@@ -46,33 +43,29 @@ const Tasks = () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      // Use a raw SQL query to get task completions
-      const { data, error } = await supabase.rpc(
-        'get_user_task_completions', 
-        { min_date: today.toISOString() }
-      ) as unknown as {
-        data: TaskCompletion[];
-        error: any;
-      };
+      // Using a direct query instead of rpc to avoid TypeScript errors
+      const { data, error } = await supabase.from('user_task_completions')
+        .select('*')
+        .gte('completed_at', today.toISOString())
+        .eq('user_id', supabase.auth.getUser().then(res => res.data.user?.id));
       
       if (error) {
         console.error("Error fetching completions:", error);
         throw error;
       }
-      return data;
+      return data as TaskCompletion[];
     },
   });
 
   const completeTask = useMutation({
     mutationFn: async (taskId: string) => {
-      // Use a stored procedure to complete a task
-      const { error } = await supabase.rpc(
-        'complete_task',
-        { task_id_param: taskId }
-      ) as unknown as {
-        data: any;
-        error: any;
-      };
+      // Using a direct insert instead of rpc to avoid TypeScript errors
+      const { error } = await supabase
+        .from('user_task_completions')
+        .insert({ 
+          task_id: taskId, 
+          user_id: (await supabase.auth.getUser()).data.user?.id
+        });
       
       if (error) throw error;
       return { success: true };
