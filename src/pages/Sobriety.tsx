@@ -20,7 +20,7 @@ const Sobriety = () => {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [motivationNote, setMotivationNote] = useState("");
 
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -39,7 +39,7 @@ const Sobriety = () => {
     },
   });
 
-  // Calcula os dias de sobriedade no frontend
+  // Calcula os dias de sobriedade no frontend como backup
   const calculateDaysSober = () => {
     if (!profile?.sobriety_start_date) return 0;
     
@@ -53,7 +53,6 @@ const Sobriety = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // Remover o cálculo de dias de sobriedade do payload, isso será feito pelo frontend
       const { error } = await supabase
         .from('profiles')
         .update(updates)
@@ -97,8 +96,16 @@ const Sobriety = () => {
 
   const randomPhrase = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
   
-  // Calculamos os dias de sobriedade no frontend
-  const daysSober = calculateDaysSober();
+  // Usar o valor do banco de dados se disponível, senão calcular no frontend
+  const daysSober = profile?.dias_sobriedade ?? calculateDaysSober();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6 flex items-center justify-center">
+        <div className="text-white text-xl">Carregando...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
