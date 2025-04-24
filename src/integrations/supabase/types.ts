@@ -42,7 +42,9 @@ export type Database = {
           drogas_uso: string[] | null
           email: string | null
           id: string
+          motivation_note: string | null
           nome: string | null
+          sobriety_start_date: string | null
           telefone: string | null
           tempo_uso: string | null
           updated_at: string | null
@@ -55,7 +57,9 @@ export type Database = {
           drogas_uso?: string[] | null
           email?: string | null
           id: string
+          motivation_note?: string | null
           nome?: string | null
+          sobriety_start_date?: string | null
           telefone?: string | null
           tempo_uso?: string | null
           updated_at?: string | null
@@ -68,7 +72,9 @@ export type Database = {
           drogas_uso?: string[] | null
           email?: string | null
           id?: string
+          motivation_note?: string | null
           nome?: string | null
+          sobriety_start_date?: string | null
           telefone?: string | null
           tempo_uso?: string | null
           updated_at?: string | null
