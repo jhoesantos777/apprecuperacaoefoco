@@ -13,9 +13,20 @@ const TriggerForm = () => {
     if (!description.trim()) return;
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Usuário não autenticado");
+        return;
+      }
+
       const { error } = await supabase
         .from('recovery_triggers')
-        .insert([{ trigger_description: description }]);
+        .insert({
+          trigger_description: description, 
+          user_id: user.id
+        });
 
       if (error) throw error;
 
