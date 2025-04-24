@@ -38,7 +38,7 @@ const motivationalMessages = [
   "A recuperação não é apenas sobre parar, é sobre começar uma nova vida."
 ];
 
-const DailyMotivation = () => {
+export const DailyMotivation = () => {
   const [todaysMessage, setTodaysMessage] = useState('');
   
   useEffect(() => {

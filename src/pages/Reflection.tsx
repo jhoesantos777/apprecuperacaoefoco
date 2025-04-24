@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ReflectionForm } from '@/components/ReflectionForm';
-import { DailyMotivation } from '@/components/DailyMotivation';
+import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 
 const Reflection = () => {
