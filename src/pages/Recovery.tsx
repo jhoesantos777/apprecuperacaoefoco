@@ -52,10 +52,10 @@ const Recovery = () => {
           .eq('user_id', userId)
       ]);
 
-      // Calculate points from tasks
+      // Calculate points from tasks (each task = +1)
       const taskPoints = (taskCompletions.data?.length || 0);
 
-      // Calculate points from mood
+      // Calculate points from mood (positive = +2, neutral = +1, negative = 0)
       let moodPoints = 0;
       if (moodEntries.data?.[0]) {
         const mood = moodEntries.data[0];
@@ -63,16 +63,19 @@ const Recovery = () => {
         else if (mood.points === 0) moodPoints = 1;
       }
 
-      // Points from devotional visit
+      // Points from devotional visit (+1)
       const devotionalPoints = devotionalVisits.data?.length ? 1 : 0;
 
-      // Points from sobriety declaration
+      // Points from sobriety declaration (+1)
       const sobrietyPoints = sobrietyDeclarations.data?.length ? 1 : 0;
 
-      // Negative points from triggers
+      // Negative points from triggers (-1 per trigger)
       const triggerPoints = (recoveryTriggers.data?.length || 0) * -1;
 
+      // Calculate total score
       const totalScore = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + triggerPoints;
+
+      // Check for multiple triggers
       const hasMultipleTriggers = (recoveryTriggers.data?.length || 0) > 1;
 
       return {
@@ -92,28 +95,16 @@ const Recovery = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
       <div className="max-w-md mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-white mb-6">Termômetro da Recuperação</h1>
+        <h1 className="text-3xl font-bold text-white mb-6">
+          🧠 Termômetro da Recuperação
+        </h1>
         
         <Card className="p-6">
           <RecoveryThermometer 
             score={dailyScore?.score || 0}
             hasMultipleTriggers={dailyScore?.hasMultipleTriggers || false}
+            details={dailyScore?.details}
           />
-
-          {dailyScore?.details && (
-            <div className="mt-6 pt-6 border-t">
-              <h3 className="text-lg font-semibold mb-4">Pontuação do Dia</h3>
-              <div className="space-y-2 text-sm">
-                <p>Tarefas completadas: +{dailyScore.details.taskPoints}</p>
-                <p>Humor do dia: +{dailyScore.details.moodPoints}</p>
-                <p>Devocional: +{dailyScore.details.devotionalPoints}</p>
-                <p>Declaração de sobriedade: +{dailyScore.details.sobrietyPoints}</p>
-                {dailyScore.details.triggerPoints < 0 && (
-                  <p className="text-red-500">Gatilhos registrados: {dailyScore.details.triggerPoints}</p>
-                )}
-              </div>
-            </div>
-          )}
         </Card>
 
         <Card className="p-6">
