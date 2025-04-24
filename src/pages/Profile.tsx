@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Award, Calendar, Clock, User, MapPin } from "lucide-react";
+import { ArrowLeft, Award, Calendar, Clock, User } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -61,19 +61,6 @@ const Profile = () => {
     return age;
   };
 
-  // Map time periods to readable text
-  const getTempoUsoText = (tempoUso: string | null) => {
-    const tempoUsoMap: Record<string, string> = {
-      'menos_6_meses': 'Menos de 6 meses',
-      '6_meses_1_ano': '6 meses a 1 ano',
-      '1_3_anos': '1 a 3 anos',
-      '3_5_anos': '3 a 5 anos',
-      '5_10_anos': '5 a 10 anos',
-      'mais_10_anos': 'Mais de 10 anos'
-    };
-    return tempoUso ? tempoUsoMap[tempoUso] || tempoUso : 'Não informado';
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
       <div className="p-6">
@@ -98,12 +85,6 @@ const Profile = () => {
             <p className="text-white/70">
               {calculateAge(profile?.data_nascimento)} anos
             </p>
-            {profile?.cidade && profile?.estado && (
-              <p className="text-white/70 flex items-center gap-1 mt-1">
-                <MapPin size={14} />
-                {profile.cidade}, {profile.estado}
-              </p>
-            )}
           </div>
         </div>
 
@@ -128,7 +109,7 @@ const Profile = () => {
                 <p className="font-medium">Tempo de Uso</p>
               </div>
               <p className="text-lg">
-                {getTempoUsoText(profile?.tempo_uso)}
+                {profile?.tempo_uso || 'Não informado'}
               </p>
             </CardContent>
           </Card>
@@ -144,15 +125,11 @@ const Profile = () => {
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="flex flex-wrap gap-2">
-              {profile?.drogas_uso?.length ? (
-                profile.drogas_uso.map((droga) => (
-                  <Badge key={droga} variant="secondary" className="bg-white/20">
-                    {droga}
-                  </Badge>
-                ))
-              ) : (
-                <p className="text-white/70">Não informado</p>
-              )}
+              {profile?.drogas_uso?.map((droga) => (
+                <Badge key={droga} variant="secondary" className="bg-white/20">
+                  {droga}
+                </Badge>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -167,20 +144,19 @@ const Profile = () => {
           </CardHeader>
           <CardContent className="p-4 pt-0">
             <div className="grid grid-cols-2 gap-4">
-              {medals?.length ? (
-                medals.map((medal) => (
-                  <div 
-                    key={medal.id} 
-                    className="flex items-center gap-3 bg-white/5 rounded-lg p-3"
-                  >
-                    <div className="text-2xl">{medal.medal.icon}</div>
-                    <div>
-                      <p className="font-medium">{medal.medal.title}</p>
-                      <p className="text-sm text-white/70">{medal.medal.description}</p>
-                    </div>
+              {medals?.map((medal) => (
+                <div 
+                  key={medal.id} 
+                  className="flex items-center gap-3 bg-white/5 rounded-lg p-3"
+                >
+                  <div className="text-2xl">{medal.medal.icon}</div>
+                  <div>
+                    <p className="font-medium">{medal.medal.title}</p>
+                    <p className="text-sm text-white/70">{medal.medal.description}</p>
                   </div>
-                ))
-              ) : (
+                </div>
+              ))}
+              {!medals?.length && (
                 <p className="text-white/70 col-span-2 text-center py-4">
                   Ainda não conquistou medalhas
                 </p>

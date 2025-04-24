@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,9 +98,13 @@ const SignUp = () => {
       if (error) {
         if (error.message.includes("User already registered")) {
           toast.error("Este email já está cadastrado. Tente fazer login ou use outro email.");
+          
+          // Focus on the email field if we're on step 4
           if (step === 4) {
             const emailInput = document.getElementById("email");
-            if (emailInput) emailInput.focus();
+            if (emailInput) {
+              emailInput.focus();
+            }
           }
         } else {
           throw error;

@@ -1,6 +1,6 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { CalendarDays, Edit2, Save } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +20,7 @@ const Sobriety = () => {
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [motivationNote, setMotivationNote] = useState("");
 
-  const { data: profile, isLoading } = useQuery({
+  const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,15 +38,6 @@ const Sobriety = () => {
       return profile;
     },
   });
-
-  // Calcula os dias de sobriedade no frontend como backup
-  const calculateDaysSober = () => {
-    if (!profile?.sobriety_start_date) return 0;
-    
-    const startDate = new Date(profile.sobriety_start_date);
-    const today = new Date();
-    return differenceInDays(today, startDate);
-  };
 
   const updateProfile = useMutation({
     mutationFn: async (updates: { sobriety_start_date?: string; motivation_note?: string }) => {
@@ -95,17 +86,6 @@ const Sobriety = () => {
   ];
 
   const randomPhrase = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
-  
-  // Usar o valor do banco de dados se disponível, senão calcular no frontend
-  const daysSober = profile?.dias_sobriedade ?? calculateDaysSober();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6 flex items-center justify-center">
-        <div className="text-white text-xl">Carregando...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
@@ -116,7 +96,7 @@ const Sobriety = () => {
             <CalendarDays className="w-8 h-8 text-yellow-300" />
           </div>
           <h1 className="text-5xl font-bold mb-2">
-            {daysSober}
+            {profile?.dias_sobriedade || 0}
           </h1>
           <p className="text-xl mb-4">Dias em Sobriedade</p>
           <p className="text-white/80 italic">{randomPhrase}</p>
