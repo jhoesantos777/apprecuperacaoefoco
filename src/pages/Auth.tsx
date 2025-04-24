@@ -1,289 +1,132 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DrugSelection } from "@/components/DrugSelection";
-import { Calendar, User, MapPin } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import type { SignUpFormData, UserType } from "@/types/signup";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedDrugs, setSelectedDrugs] = useState<string[]>([]);
-  const [formData, setFormData] = useState<SignUpFormData>({
-    nome: "",
-    dataNascimento: "",
-    genero: "",
-    cidade: "",
-    estado: "",
-    tipoUsuario: "dependent",
-    contatoEmergencia: "",
-    tempoUso: "",
-    drogas: [],
-    aceitaTermos: false,
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
-        options: {
-          data: {
-            nome: formData.nome,
-            dataNascimento: formData.dataNascimento,
-            genero: formData.genero,
-            cidade: formData.cidade,
-            estado: formData.estado,
-            tipoUsuario: formData.tipoUsuario,
-            contatoEmergencia: formData.contatoEmergencia,
-            tempoUso: formData.tempoUso,
-            drogas: selectedDrugs,
-          },
-        },
       });
 
       if (error) throw error;
 
-      toast.success("Cadastro realizado com sucesso! Verifique seu email.");
+      toast.success("Login realizado com sucesso!");
       navigate("/");
     } catch (error) {
-      toast.error("Erro ao criar conta: " + (error as Error).message);
+      toast.error("Erro ao fazer login: " + (error as Error).message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDrugToggle = (drug: string) => {
-    setSelectedDrugs((prev) =>
-      prev.includes(drug) ? prev.filter((d) => d !== drug) : [...prev, drug]
-    );
-  };
-
-  const userTypes: { value: UserType; label: string }[] = [
-    { value: "dependent", label: "Dependente químico em recuperação" },
-    { value: "family", label: "Familiar de dependente químico" },
-    { value: "professional", label: "Profissional da área" },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 py-12 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-xl p-6 md:p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-teal-900 mb-4">
-            👋 Olá! Antes de seguir, precisamos conhecer um pouco sobre você.
-          </h2>
-          <p className="text-teal-700">
-            Não se preocupe, seus dados são sigilosos e usados apenas para te ajudar melhor na sua recuperação.
-          </p>
-          <p className="text-teal-700 font-medium mt-2">
-            💚 Estamos com você, um dia de cada vez.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 flex flex-col px-6 py-8">
+      <button
+        onClick={() => navigate("/")}
+        className="text-white/70 hover:text-white flex items-center gap-2 mb-12"
+      >
+        <ArrowLeft size={24} />
+        Voltar
+      </button>
 
-        <form onSubmit={handleSignUp} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu.email@exemplo.com"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Sua senha"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="nome">Nome completo</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <Input
-                    id="nome"
-                    placeholder="Seu nome completo"
-                    className="pl-10"
-                    value={formData.nome}
-                    onChange={(e) =>
-                      setFormData({ ...formData, nome: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="dataNascimento">Data de nascimento</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <Input
-                    id="dataNascimento"
-                    type="date"
-                    className="pl-10"
-                    value={formData.dataNascimento}
-                    onChange={(e) =>
-                      setFormData({ ...formData, dataNascimento: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="genero">Gênero</Label>
-                <Select
-                  value={formData.genero}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, genero: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione seu gênero" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="masculino">Masculino</SelectItem>
-                    <SelectItem value="feminino">Feminino</SelectItem>
-                    <SelectItem value="outro">Outro</SelectItem>
-                    <SelectItem value="nao_informar">Prefiro não dizer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="cidade">Cidade</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                  <Input
-                    id="cidade"
-                    placeholder="Sua cidade"
-                    className="pl-10"
-                    value={formData.cidade}
-                    onChange={(e) =>
-                      setFormData({ ...formData, cidade: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="estado">Estado</Label>
-                <Input
-                  id="estado"
-                  placeholder="Seu estado"
-                  value={formData.estado}
-                  onChange={(e) =>
-                    setFormData({ ...formData, estado: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="tipoUsuario">Você é:</Label>
-                <Select
-                  value={formData.tipoUsuario}
-                  onValueChange={(value: UserType) =>
-                    setFormData({ ...formData, tipoUsuario: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione seu perfil" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {userTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="contatoEmergencia">
-                  Contato de emergência (opcional)
-                </Label>
-                <Input
-                  id="contatoEmergencia"
-                  placeholder="Nome e telefone"
-                  value={formData.contatoEmergencia}
-                  onChange={(e) =>
-                    setFormData({ ...formData, contatoEmergencia: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="tempoUso">Tempo de uso de substâncias</Label>
-                <Input
-                  id="tempoUso"
-                  placeholder="Ex: 2 anos"
-                  value={formData.tempoUso}
-                  onChange={(e) =>
-                    setFormData({ ...formData, tempoUso: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label className="block mb-4">
-                Drogas que já usou ou ainda enfrenta dificuldades:
-              </Label>
-              <DrugSelection
-                selectedDrugs={selectedDrugs}
-                onDrugToggle={handleDrugToggle}
-              />
+      <div className="flex-1 flex flex-col max-w-md mx-auto w-full">
+        <div className="w-20 h-20 mb-8 mx-auto">
+          <div className="w-full h-full rounded-full border-4 border-yellow-300 flex items-center justify-center relative">
+            <div className="text-yellow-300 absolute">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-10 h-10">
+                <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4" />
+                <path d="M8 12L11 15L16 9" />
+              </svg>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center space-x-2 mt-6">
-            <Checkbox
-              id="terms"
-              checked={formData.aceitaTermos}
-              onCheckedChange={(checked) =>
-                setFormData({ ...formData, aceitaTermos: checked as boolean })
-              }
+        <div className="text-center mb-12">
+          <h1 className="text-yellow-300 text-3xl font-bold mb-2">OLÁ!</h1>
+          <h2 className="text-yellow-300 text-2xl font-bold">QUE BOM TE VER NOVAMENTE!</h2>
+        </div>
+
+        <form onSubmit={handleSignIn} className="space-y-6">
+          <div>
+            <Input
+              type="email"
+              placeholder="ESCREVE SEU EMAIL AQUI"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50"
             />
-            <label
-              htmlFor="terms"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          </div>
+
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="SENHA"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50 pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-2 text-white/50"
             >
-              Estou buscando ajuda e aceito começar essa jornada
-            </label>
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-white/70">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="remember"
+                checked={formData.rememberMe}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, rememberMe: checked as boolean })
+                }
+                className="border-white/50"
+              />
+              <label htmlFor="remember">ME LEMBRE</label>
+            </div>
+            <button type="button" className="hover:text-white">
+              ESQUECEU A SENHA?
+            </button>
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-teal-600 hover:bg-teal-700"
-            disabled={isLoading || !formData.aceitaTermos}
+            disabled={isLoading}
+            className="w-full bg-yellow-300 hover:bg-yellow-400 text-teal-900 font-bold py-6 rounded-full text-lg"
           >
-            {isLoading ? "Cadastrando..." : "Começar minha recuperação"}
+            {isLoading ? "Entrando..." : "ENTRAR"}
           </Button>
         </form>
+
+        <div className="mt-8 text-center">
+          <p className="text-white/70">
+            NÃO TEM UMA CONTA?{" "}
+            <a href="/auth?mode=signup" className="text-yellow-300 hover:underline font-bold">
+              CADASTRE-SE
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
