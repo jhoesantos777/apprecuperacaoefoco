@@ -9,32 +9,107 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      medals: {
         Row: {
           created_at: string | null
+          description: string
+          icon: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          icon: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          icon?: string
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          data_nascimento: string | null
+          dias_sobriedade: number | null
+          drogas_uso: string[] | null
           email: string | null
           id: string
           nome: string | null
           telefone: string | null
+          tempo_uso: string | null
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
+          data_nascimento?: string | null
+          dias_sobriedade?: number | null
+          drogas_uso?: string[] | null
           email?: string | null
           id: string
           nome?: string | null
           telefone?: string | null
+          tempo_uso?: string | null
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
+          data_nascimento?: string | null
+          dias_sobriedade?: number | null
+          drogas_uso?: string[] | null
           email?: string | null
           id?: string
           nome?: string | null
           telefone?: string | null
+          tempo_uso?: string | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      user_medals: {
+        Row: {
+          earned_at: string | null
+          id: string
+          medal_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          earned_at?: string | null
+          id?: string
+          medal_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          earned_at?: string | null
+          id?: string
+          medal_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_medals_medal_id_fkey"
+            columns: ["medal_id"]
+            isOneToOne: false
+            referencedRelation: "medals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_medals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
