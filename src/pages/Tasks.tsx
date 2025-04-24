@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Check, CalendarDays, Smile } from 'lucide-react';
+import { Check, CalendarDays, Smile, Brain, HandHeart, Dumbbell, MessageCircle, Wrench, Star } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,19 +22,56 @@ interface TaskCompletion {
   completed_at: string;
 }
 
+const TaskCategories = [
+  { 
+    id: 'mental', 
+    title: '🧠 Cuidado Mental', 
+    icon: Brain,
+    color: 'text-blue-500'
+  },
+  { 
+    id: 'spirituality', 
+    title: '🙏 Espiritualidade', 
+    icon: HandHeart,
+    color: 'text-purple-500'
+  },
+  { 
+    id: 'health', 
+    title: '🧘 Corpo e Saúde', 
+    icon: Dumbbell,
+    color: 'text-green-500'
+  },
+  { 
+    id: 'relationships', 
+    title: '💬 Relacionamentos e Conexão', 
+    icon: MessageCircle,
+    color: 'text-pink-500'
+  },
+  { 
+    id: 'recovery', 
+    title: '🛠️ Recuperação Ativa', 
+    icon: Wrench,
+    color: 'text-orange-500'
+  },
+  { 
+    id: 'extras', 
+    title: '🧩 Extras Opcionais', 
+    icon: Star,
+    color: 'text-yellow-500'
+  }
+];
+
 const Tasks = () => {
   const queryClient = useQueryClient();
   const [showCelebration, setShowCelebration] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['daily-tasks'],
     queryFn: async () => {
       const { data: tasks, error } = await supabase
-        .from('daily_tasks' as any)
-        .select('*') as unknown as { 
-          data: Task[] | null; 
-          error: Error | null 
-        };
+        .from('daily_tasks')
+        .select('*') as { data: Task[] | null; error: Error | null };
       
       if (error) {
         console.error("Error fetching tasks:", error);
@@ -51,13 +88,10 @@ const Tasks = () => {
       today.setHours(0, 0, 0, 0);
 
       const { data: completions, error } = await supabase
-        .from('user_task_completions' as any)
+        .from('user_task_completions')
         .select('*')
         .gte('completed_at', today.toISOString())
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as unknown as {
-          data: TaskCompletion[] | null; 
-          error: Error | null 
-        };
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id) as { data: TaskCompletion[] | null; error: Error | null };
       
       if (error) {
         console.error("Error fetching completions:", error);
@@ -71,11 +105,11 @@ const Tasks = () => {
     mutationFn: async (taskId: string) => {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await supabase
-        .from('user_task_completions' as any)
+        .from('user_task_completions')
         .insert({ 
           task_id: taskId, 
           user_id: userId
-        }) as unknown as { error: Error | null };
+        }) as { error: Error | null };
       
       if (error) throw error;
       return { success: true };
@@ -106,6 +140,14 @@ const Tasks = () => {
         description: "Você completou todas as tarefas de hoje! Continue assim, você está no caminho certo!",
       });
     }
+  };
+
+  const toggleCategoryExpansion = (categoryId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId) 
+        : [...prev, categoryId]
+    );
   };
 
   if (tasksLoading || completionsLoading) {
@@ -144,34 +186,69 @@ const Tasks = () => {
         </div>
 
         <div className="grid gap-4">
-          {tasks.map((task) => {
-            const completed = isTaskCompleted(task.id);
+          {TaskCategories.map((category) => {
+            const categoryTasks = tasks.filter(task => {
+              const categoryTitles = {
+                'mental': ['Escrevi no diário', 'Meditação guiada', 'Vídeo motivacional', 'Gratidão', 'Leitura inspiradora'],
+                'spirituality': ['Oração/Devocional', 'Leitura espiritual', 'Gratidão pela sobriedade', 'Compartilhar fé'],
+                'health': ['Autocuidado', 'Alimentação', 'Hidratação', 'Exercício', 'Sono adequado'],
+                'relationships': ['Grupo de apoio', 'Reconhecimento', 'Paciência', 'Conexão familiar'],
+                'recovery': ['Reunião', 'Análise de gatilho', 'Ficha limpa', 'Compromisso diário', 'Planejamento'],
+                'extras': ['Ajuda', 'Orgulho', 'Alegria', 'Motivação']
+              };
+              return categoryTitles[category.id].includes(task.name);
+            });
+
+            const categoryCompleted = categoryTasks.every(task => isTaskCompleted(task.id));
+
             return (
               <Card 
-                key={task.id} 
-                className={`p-4 relative overflow-hidden transition-all duration-300 ${
-                  completed ? 'bg-opacity-90 border-green-200' : ''
-                }`}
+                key={category.id} 
+                className={`p-4 space-y-2 ${categoryCompleted ? 'bg-green-50/10' : ''}`}
               >
-                <div className="flex items-start gap-4">
-                  <Checkbox
-                    checked={completed}
-                    onCheckedChange={() => !completed && completeTask.mutate(task.id)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{task.name}</h3>
-                    <p className="text-sm text-gray-500">{task.description}</p>
-                    <div className="mt-2 text-xs text-purple-600 font-medium">
-                      +{task.points} pontos
-                    </div>
+                <div 
+                  className="flex justify-between items-center cursor-pointer"
+                  onClick={() => toggleCategoryExpansion(category.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <category.icon className={`w-6 h-6 ${category.color}`} />
+                    <h2 className="font-semibold text-white">{category.title}</h2>
+                    {categoryCompleted && (
+                      <Smile className="w-5 h-5 text-green-500" />
+                    )}
                   </div>
-                  {completed && (
-                    <Smile className="w-5 h-5 text-green-500" />
-                  )}
+                  <div>
+                    {expandedCategories.includes(category.id) ? '▼' : '▶'}
+                  </div>
                 </div>
-                {completed && (
-                  <div className="absolute inset-0 bg-green-50/10 pointer-events-none" />
+
+                {expandedCategories.includes(category.id) && (
+                  <div className="space-y-2">
+                    {categoryTasks.map((task) => {
+                      const completed = isTaskCompleted(task.id);
+                      return (
+                        <div 
+                          key={task.id} 
+                          className="flex items-start gap-3 p-2 bg-white/5 rounded"
+                        >
+                          <Checkbox
+                            checked={completed}
+                            onCheckedChange={() => !completed && completeTask.mutate(task.id)}
+                            className="mt-1"
+                          />
+                          <div>
+                            <h3 className={`text-sm ${completed ? 'line-through text-gray-500' : 'text-white'}`}>
+                              {task.name}
+                            </h3>
+                            <p className="text-xs text-gray-400">{task.description}</p>
+                          </div>
+                          {completed && (
+                            <Check className="w-4 h-4 ml-auto text-green-500" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
               </Card>
             );
