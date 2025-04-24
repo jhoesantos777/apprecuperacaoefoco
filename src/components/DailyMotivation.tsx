@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { format } from 'date-fns';
@@ -38,37 +37,74 @@ const motivationalMessages = [
   "A recuperação não é apenas sobre parar, é sobre começar uma nova vida."
 ];
 
+const inspirationalQuotes = [
+  {
+    text: "Tudo posso naquele que me fortalece.",
+    source: "Filipenses 4:13"
+  },
+  {
+    text: "O Senhor é meu pastor e nada me faltará.",
+    source: "Salmos 23:1"
+  },
+  {
+    text: "Cada amanhecer é uma nova oportunidade para recomeçar.",
+    source: "Anônimo"
+  },
+  {
+    text: "A paz vem de dentro. Não a procure à sua volta.",
+    source: "Buda"
+  },
+  {
+    text: "A força não provém da capacidade física, mas de uma vontade indomável.",
+    source: "Mahatma Gandhi"
+  }
+];
+
 export const DailyMotivation = () => {
   const [todaysMessage, setTodaysMessage] = useState('');
+  const [todaysQuote, setTodaysQuote] = useState({ text: '', source: '' });
   
   useEffect(() => {
-    // Use a data atual para selecionar uma mensagem de forma determinística
     const today = new Date();
     const startOfYear = new Date(today.getFullYear(), 0, 0);
-    
-    // Convert dates to timestamps and calculate day of year
-    const dayOfYear = Math.floor(
-      (today.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const diff = today.getTime() - startOfYear.getTime();
+    const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
     
     const messageIndex = dayOfYear % motivationalMessages.length;
+    const quoteIndex = dayOfYear % inspirationalQuotes.length;
+    
     setTodaysMessage(motivationalMessages[messageIndex]);
+    setTodaysQuote(inspirationalQuotes[quoteIndex]);
   }, []);
 
   return (
-    <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-none shadow-md">
-      <CardContent className="p-6">
-        <div className="flex items-start">
-          <Quote className="text-blue-500 w-8 h-8 mr-3 mt-1 flex-shrink-0" />
-          <div>
-            <p className="text-lg font-medium text-gray-800 italic">{todaysMessage}</p>
-            <p className="text-sm text-gray-600 mt-2">
-              {format(new Date(), "dd 'de' MMMM, yyyy")}
-            </p>
+    <div className="space-y-4">
+      <Card className="bg-gradient-to-r from-amber-50 to-rose-50 border-none shadow-md">
+        <CardContent className="p-6">
+          <div className="flex items-start">
+            <Quote className="text-rose-500 w-8 h-8 mr-3 mt-1 flex-shrink-0" />
+            <div>
+              <p className="text-lg font-serif italic text-gray-800 mb-2">{todaysQuote.text}</p>
+              <p className="text-sm text-gray-600 font-medium">{todaysQuote.source}</p>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-none shadow-md">
+        <CardContent className="p-6">
+          <div className="flex items-start">
+            <Quote className="text-blue-500 w-8 h-8 mr-3 mt-1 flex-shrink-0" />
+            <div>
+              <p className="text-lg font-medium text-gray-800 italic">{todaysMessage}</p>
+              <p className="text-sm text-gray-600 mt-2">
+                {format(new Date(), "dd 'de' MMMM, yyyy")}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

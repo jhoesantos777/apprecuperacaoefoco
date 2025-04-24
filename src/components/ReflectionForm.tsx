@@ -37,30 +37,33 @@ export const ReflectionForm = () => {
   };
 
   return (
-    <Card className="bg-white/95">
+    <Card className="bg-white/95 shadow-lg border-none">
       <CardContent className="p-6">
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <HelpCircle className="h-5 w-5 text-blue-500" />
-            <h3 className="font-medium text-gray-700">Perguntas para reflexão:</h3>
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <HelpCircle className="h-5 w-5 text-rose-400" />
+            <h3 className="font-serif text-lg text-gray-700">Perguntas para reflexão:</h3>
           </div>
-          <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 ml-2">
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {GUIDING_QUESTIONS.map((question, index) => (
-              <li key={index}>{question}</li>
+              <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
+                <span className="text-rose-400">•</span>
+                {question}
+              </li>
             ))}
           </ul>
         </div>
         
         <Textarea
           placeholder="Escreva aqui sua reflexão do dia..."
-          className="min-h-[200px] mb-4"
+          className="min-h-[200px] mb-4 text-gray-700 bg-gray-50/50 border-gray-200 focus:border-rose-200 focus:ring-rose-200"
           value={reflection}
           onChange={(e) => setReflection(e.target.value)}
         />
         
         <Button 
           onClick={handleSave}
-          className="w-full"
+          className="w-full bg-gradient-to-r from-rose-400 to-rose-500 hover:from-rose-500 hover:to-rose-600 transition-all duration-300"
         >
           <Save className="h-4 w-4 mr-2" />
           Salvar Reflexão
