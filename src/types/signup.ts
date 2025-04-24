@@ -18,4 +18,6 @@ export interface SignUpFormData {
   tempoUso: string;
   drogas: string[];
   aceitaTermos: boolean;
+  email: string;
+  password: string;
 }

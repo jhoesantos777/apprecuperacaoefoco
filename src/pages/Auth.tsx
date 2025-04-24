@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DrugSelection } from "@/components/DrugSelection";
 import { Calendar, User, MapPin } from "lucide-react";
 import { toast } from "sonner";
@@ -26,6 +27,8 @@ const Auth = () => {
     tempoUso: "",
     drogas: [],
     aceitaTermos: false,
+    email: "",
+    password: "",
   });
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -91,6 +94,34 @@ const Auth = () => {
         <form onSubmit={handleSignUp} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu.email@exemplo.com"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Sua senha"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
               <div>
                 <Label htmlFor="nome">Nome completo</Label>
                 <div className="relative">
