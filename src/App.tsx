@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -23,6 +22,7 @@ import Reflection from "./pages/Reflection";
 import Achievements from "./pages/Achievements";
 import Courses from "./pages/Courses";
 import Schedule from "./pages/Schedule";
+import Devotional from "./pages/Devotional";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +51,7 @@ const App = () => (
             <Route path="/courses" element={<Courses />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/consultations" element={<Navigate to="/schedule" replace />} />
+            <Route path="/devotional" element={<Devotional />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
