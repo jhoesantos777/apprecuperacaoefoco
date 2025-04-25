@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
 import { Checkbox } from '@/components/ui/checkbox';
+import { BackButton } from '@/components/BackButton';
 import type { Database } from '@/integrations/supabase/types';
 
 interface Task {
@@ -153,6 +154,7 @@ const Tasks = () => {
   if (tasksLoading || completionsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 p-6">
+        <BackButton />
         <div className="max-w-md mx-auto">
           <div className="text-white text-center">Carregando tarefas...</div>
         </div>
@@ -169,6 +171,8 @@ const Tasks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 p-6">
+      <BackButton />
+      
       <div className="max-w-md mx-auto space-y-6">
         <div className="text-white space-y-2">
           <div className="flex items-center justify-between">

@@ -1,16 +1,13 @@
+
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Award } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Award } from "lucide-react";
 import { BackButton } from '@/components/BackButton';
 
 const Achievements = () => {
-  const navigate = useNavigate();
-
   const { data: medals } = useQuery({
     queryKey: ['user-medals'],
     queryFn: async () => {
@@ -34,14 +31,6 @@ const Achievements = () => {
     <div className="min-h-screen bg-gradient-to-b from-purple-600 to-indigo-900 p-6">
       <BackButton />
       
-      <button
-        onClick={() => navigate('/dashboard')}
-        className="text-white/70 hover:text-white flex items-center gap-2 mb-6"
-      >
-        <ArrowLeft size={24} />
-        Voltar
-      </button>
-
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Award className="h-12 w-12 text-yellow-300" />
