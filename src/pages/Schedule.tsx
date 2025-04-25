@@ -14,7 +14,6 @@ import { AppointmentsList } from '@/components/scheduling/AppointmentsList';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AvailableSlot } from '@/types/scheduling';
-import type { Database } from "@/integrations/supabase/types";
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
