@@ -32,7 +32,13 @@ const Settings = () => {
           console.error("Error fetching user:", error);
         } else {
           setUser(data.user);
-          setNewName(data.user?.user_metadata?.full_name || "");
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('nome')
+            .eq('id', data.user.id)
+            .single();
+          
+          setNewName(profile?.nome || "");
         }
       } catch (err) {
         console.error("Exception when fetching user:", err);
@@ -44,16 +50,12 @@ const Settings = () => {
 
   const handleUpdateName = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: { full_name: newName }
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update({ nome: newName })
+        .eq('id', user.id);
 
       if (error) throw error;
-
-      setUser(prev => ({
-        ...prev,
-        user_metadata: { ...prev?.user_metadata, full_name: newName }
-      }));
       
       setIsEditingName(false);
       toast({
@@ -157,7 +159,7 @@ const Settings = () => {
           <ProfilePicture
             avatarUrl={user?.user_metadata?.avatar_url}
             userId={user?.id || ''}
-            userName={user?.user_metadata?.full_name}
+            userName={newName}
             size="lg"
             editable={true}
             onImageUpdated={handleUpdateAvatar}
@@ -178,7 +180,7 @@ const Settings = () => {
             ) : (
               <>
                 <h2 className={`text-lg sm:text-xl font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {user?.user_metadata?.full_name || 'Nome do usuário'}
+                  {newName || 'Nome do usuário'}
                 </h2>
                 <Button
                   variant="ghost"

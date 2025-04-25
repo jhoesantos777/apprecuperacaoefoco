@@ -142,7 +142,7 @@ const Profile = () => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-3xl font-bold text-white">{profile?.nome}</h1>
+            <h1 className="text-3xl font-bold text-white">{profile?.nome || 'Usuário'}</h1>
             <p className="text-white/70">
               {calculateAge(profile?.data_nascimento)} anos
             </p>
