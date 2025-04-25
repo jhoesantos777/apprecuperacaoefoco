@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -22,6 +21,7 @@ import Recovery from "./pages/Recovery";
 import Reflection from "./pages/Reflection";
 import Achievements from "./pages/Achievements";
 import Courses from "./pages/Courses";
+import Schedule from "./pages/Schedule";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/reflection" element={<Reflection />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/schedule" element={<Schedule />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
