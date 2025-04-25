@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +5,7 @@ import { Book, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { BackButton } from '@/components/BackButton';
 
 const Courses = () => {
   const navigate = useNavigate();
@@ -24,14 +24,8 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 p-6">
-      <button
-        onClick={() => navigate('/dashboard')}
-        className="text-white/70 hover:text-white flex items-center gap-2 mb-6"
-      >
-        <ArrowLeft size={24} />
-        Voltar
-      </button>
-
+      <BackButton />
+      
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Book className="h-12 w-12 text-yellow-300" />

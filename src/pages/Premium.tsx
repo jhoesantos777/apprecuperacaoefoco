@@ -1,4 +1,5 @@
-
+import React from 'react';
+import { BackButton } from '@/components/BackButton';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,14 +14,8 @@ const Premium = () => {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       <div className="p-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="text-primary hover:text-primary/80 mb-8 flex items-center gap-2"
-        >
-          <ArrowLeft size={24} />
-          Voltar
-        </button>
-
+        <BackButton />
+        
         <h1 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
           Escolha seu plano
         </h1>

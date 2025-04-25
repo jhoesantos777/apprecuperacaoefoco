@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Award } from "lucide-react";
+import { BackButton } from '@/components/BackButton';
 
 const Achievements = () => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const Achievements = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-600 to-indigo-900 p-6">
+      <BackButton />
+      
       <button
         onClick={() => navigate('/dashboard')}
         className="text-white/70 hover:text-white flex items-center gap-2 mb-6"

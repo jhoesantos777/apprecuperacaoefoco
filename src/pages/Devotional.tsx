@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -7,6 +6,7 @@ import { Book, Book as BibleIcon, Music, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { BackButton } from '@/components/BackButton';
 
 const Devotional = () => {
   const { toast } = useToast();
@@ -30,6 +30,8 @@ const Devotional = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-6">
+      <BackButton />
+      
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
