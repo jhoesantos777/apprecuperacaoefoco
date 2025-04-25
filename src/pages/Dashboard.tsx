@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star, Award } from "lucide-react";
+import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star, Award, BookOpen } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
@@ -71,9 +71,9 @@ const Dashboard = () => {
     },
     {
       id: 'courses',
-      title: 'cursos',
+      title: 'Cursos',
       description: 'Aprenda mais',
-      icon: Star,
+      icon: BookOpen,
       path: '/courses'
     },
     {

@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      courses: {
+        Row: {
+          created_at: string | null
+          description: string
+          duration: string
+          id: string
+          lessons_count: number
+          thumbnail_url: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          duration: string
+          id?: string
+          lessons_count?: number
+          thumbnail_url?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          duration?: string
+          id?: string
+          lessons_count?: number
+          thumbnail_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       daily_tasks: {
         Row: {
           description: string
@@ -47,6 +77,44 @@ export type Database = {
           visited_at?: string
         }
         Relationships: []
+      }
+      lessons: {
+        Row: {
+          content: string
+          course_id: string
+          created_at: string | null
+          duration: string
+          id: string
+          order_number: number
+          title: string
+        }
+        Insert: {
+          content: string
+          course_id: string
+          created_at?: string | null
+          duration: string
+          id?: string
+          order_number: number
+          title: string
+        }
+        Update: {
+          content?: string
+          course_id?: string
+          created_at?: string | null
+          duration?: string
+          id?: string
+          order_number?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       medals: {
         Row: {
@@ -194,6 +262,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_course_progress: {
+        Row: {
+          completed_at: string | null
+          completed_lessons: number[] | null
+          course_id: string
+          id: string
+          last_accessed: string | null
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_lessons?: number[] | null
+          course_id: string
+          id?: string
+          last_accessed?: string | null
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_lessons?: number[] | null
+          course_id?: string
+          id?: string
+          last_accessed?: string | null
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_course_progress_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_medals: {
         Row: {

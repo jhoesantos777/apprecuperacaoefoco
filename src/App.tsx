@@ -1,3 +1,5 @@
+
+import React from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +21,7 @@ import Tasks from "./pages/Tasks";
 import Recovery from "./pages/Recovery";
 import Reflection from "./pages/Reflection";
 import Achievements from "./pages/Achievements";
+import Courses from "./pages/Courses";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +47,7 @@ const App = () => (
             <Route path="/recovery" element={<Recovery />} />
             <Route path="/reflection" element={<Reflection />} />
             <Route path="/achievements" element={<Achievements />} />
+            <Route path="/courses" element={<Courses />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
