@@ -2,7 +2,7 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Smile, Meh, Frown, Angry } from 'lucide-react';
+import { Smile, Meh, Frown, Angry, AlertCircle } from 'lucide-react';
 
 interface MoodSelectorProps {
   mood: string;
@@ -68,6 +68,19 @@ const MoodSelector = ({ mood, onMoodChange }: MoodSelectorProps) => {
             <Angry className="w-8 h-8 text-orange-500" />
           </Label>
           <span className="text-sm text-gray-600">Irritado</span>
+        </div>
+
+        <div className="flex flex-col items-center gap-1">
+          <RadioGroupItem value="anxious" id="anxious" className="sr-only" />
+          <Label
+            htmlFor="anxious"
+            className={`p-2 rounded-full cursor-pointer transition-colors ${
+              mood === 'anxious' ? 'bg-purple-100' : 'hover:bg-gray-100'
+            }`}
+          >
+            <AlertCircle className="w-8 h-8 text-purple-500" />
+          </Label>
+          <span className="text-sm text-gray-600">Ansioso</span>
         </div>
       </RadioGroup>
     </div>

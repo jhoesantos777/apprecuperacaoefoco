@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,17 +20,43 @@ const TalkToMe = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mood, setMood] = useState('neutral');
   const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          role: 'assistant',
-          content: 'Olá! Sou um conselheiro especializado em apoiar pessoas que enfrentam dependência química. Como posso ajudar você hoje? Sinta-se à vontade para compartilhar suas dúvidas ou preocupações.'
+    // Check for existing conversation in session storage
+    const savedMessages = sessionStorage.getItem('chat-messages');
+    if (savedMessages) {
+      try {
+        const parsedMessages = JSON.parse(savedMessages);
+        if (Array.isArray(parsedMessages) && parsedMessages.length > 0) {
+          setMessages(parsedMessages);
+          return;
         }
-      ]);
+      } catch (e) {
+        console.error('Error parsing saved messages:', e);
+      }
     }
+    
+    // If no saved messages or error, show welcome message
+    setMessages([
+      {
+        role: 'assistant',
+        content: 'Olá! Sou um conselheiro especializado em apoiar pessoas que enfrentam dependência química. Como posso ajudar você hoje? Sinta-se à vontade para compartilhar suas dúvidas ou preocupações.'
+      }
+    ]);
   }, []);
+
+  // Save messages to session storage when they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      sessionStorage.setItem('chat-messages', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +64,8 @@ const TalkToMe = () => {
     if (!message.trim()) return;
     
     // Add user message with mood
-    setMessages(prev => [...prev, { role: 'user', content: message, mood }]);
+    const updatedMessages = [...messages, { role: 'user', content: message, mood }];
+    setMessages(updatedMessages);
     setIsLoading(true);
     
     try {
@@ -47,7 +75,7 @@ const TalkToMe = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [...messages, { role: 'user', content: message, mood }],
+          messages: updatedMessages,
         }),
       });
 
@@ -56,7 +84,7 @@ const TalkToMe = () => {
       }
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
+      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: data.message }]);
     } catch (error) {
       console.error('Erro:', error);
       toast({
@@ -75,6 +103,20 @@ const TalkToMe = () => {
     }
   };
 
+  const handleResetConversation = () => {
+    sessionStorage.removeItem('chat-messages');
+    setMessages([
+      {
+        role: 'assistant',
+        content: 'Olá! Sou um conselheiro especializado em apoiar pessoas que enfrentam dependência química. Como posso ajudar você hoje? Sinta-se à vontade para compartilhar suas dúvidas ou preocupações.'
+      }
+    ]);
+    toast({
+      title: "Conversa reiniciada",
+      description: "Iniciamos uma nova conversa.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-4 sm:p-6">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -90,8 +132,18 @@ const TalkToMe = () => {
           <p className="text-gray-600">Você não está sozinho. Sempre que precisar, fale comigo.</p>
         </div>
 
-        <ScrollArea className="h-[50vh]">
+        <div className="flex justify-end">
+          <button 
+            onClick={handleResetConversation}
+            className="text-sm text-gray-500 hover:text-gray-700 underline"
+          >
+            Iniciar nova conversa
+          </button>
+        </div>
+
+        <ScrollArea className="h-[50vh] border border-gray-100 rounded-lg p-4 bg-white/80">
           <ChatMessages messages={messages} isLoading={isLoading} />
+          <div ref={messagesEndRef} />
         </ScrollArea>
 
         <Card className="p-6 bg-white/90 backdrop-blur-sm border border-blue-100 shadow-sm">
