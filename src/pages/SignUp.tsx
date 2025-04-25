@@ -198,6 +198,28 @@ const SignUp = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
+              <Label>Tipo de Usuário</Label>
+              <RadioGroup
+                value={formData.tipoUsuario}
+                onValueChange={(value) => updateFormData("tipoUsuario", value as UserType)}
+                className="flex flex-col space-y-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="dependent" id="dependent" />
+                  <Label htmlFor="dependent">Em Recuperação</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="family" id="family" />
+                  <Label htmlFor="family">Familiar/Co-dependente</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="professional" id="professional" />
+                  <Label htmlFor="professional">Profissional</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="cidade">Cidade</Label>
               <div className="relative">
                 <Input
@@ -233,27 +255,29 @@ const SignUp = () => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label>Grau de Parentesco</Label>
-              <Select
-                value={formData.grauParentesco}
-                onValueChange={(value) => updateFormData("grauParentesco", value as RelationType)}
-              >
-                <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                  <SelectValue placeholder="Selecione seu grau de parentesco" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="spouse">Cônjuge</SelectItem>
-                  <SelectItem value="father">Pai</SelectItem>
-                  <SelectItem value="mother">Mãe</SelectItem>
-                  <SelectItem value="sibling">Irmão/Irmã</SelectItem>
-                  <SelectItem value="uncle">Tio(a)</SelectItem>
-                  <SelectItem value="cousin">Primo(a)</SelectItem>
-                  <SelectItem value="friend">Amigo(a)</SelectItem>
-                  <SelectItem value="other">Outro</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {formData.tipoUsuario === "family" && (
+              <div className="space-y-2">
+                <Label>Grau de Parentesco</Label>
+                <Select
+                  value={formData.grauParentesco}
+                  onValueChange={(value) => updateFormData("grauParentesco", value as RelationType)}
+                >
+                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectValue placeholder="Selecione seu grau de parentesco" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="spouse">Cônjuge</SelectItem>
+                    <SelectItem value="father">Pai</SelectItem>
+                    <SelectItem value="mother">Mãe</SelectItem>
+                    <SelectItem value="sibling">Irmão/Irmã</SelectItem>
+                    <SelectItem value="uncle">Tio(a)</SelectItem>
+                    <SelectItem value="cousin">Primo(a)</SelectItem>
+                    <SelectItem value="friend">Amigo(a)</SelectItem>
+                    <SelectItem value="other">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         );
         
@@ -261,11 +285,15 @@ const SignUp = () => {
         return (
           <div className="space-y-6 text-center">
             <h3 className="text-xl text-white font-semibold">
-              Obrigado por fazer parte dessa jornada
+              {formData.tipoUsuario === "dependent" && "Sua jornada de recuperação começa aqui"}
+              {formData.tipoUsuario === "family" && "Obrigado por fazer parte dessa jornada"}
+              {formData.tipoUsuario === "professional" && "Bem-vindo ao nosso time de profissionais"}
             </h3>
             <p className="text-white/70">
-              Seu apoio é fundamental para a recuperação do seu ente querido.
-              Vamos para o último passo: criar suas credenciais de acesso.
+              {formData.tipoUsuario === "dependent" && "Estamos aqui para apoiar você em cada passo do caminho."}
+              {formData.tipoUsuario === "family" && "Seu apoio é fundamental para a recuperação do seu ente querido."}
+              {formData.tipoUsuario === "professional" && "Sua expertise fará a diferença na vida de muitas pessoas."}
+              {" "}Vamos para o último passo: criar suas credenciais de acesso.
             </p>
           </div>
         );
@@ -311,7 +339,9 @@ const SignUp = () => {
                 className="border-white/50"
               />
               <Label htmlFor="terms" className="text-sm">
-                Aceito apoiar e fazer parte desta jornada de recuperação
+                {formData.tipoUsuario === "dependent" && "Aceito iniciar minha jornada de recuperação"}
+                {formData.tipoUsuario === "family" && "Aceito apoiar e fazer parte desta jornada de recuperação"}
+                {formData.tipoUsuario === "professional" && "Aceito os termos e condições para profissionais"}
               </Label>
             </div>
           </div>
@@ -337,7 +367,9 @@ const SignUp = () => {
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full">
         <div className="text-center mb-8">
           <h1 className="text-yellow-300 text-3xl font-bold mb-4">
-            CADASTRO DE FAMILIAR
+            {formData.tipoUsuario === "dependent" && "CADASTRO DE USUÁRIO EM RECUPERAÇÃO"}
+            {formData.tipoUsuario === "family" && "CADASTRO DE FAMILIAR"}
+            {formData.tipoUsuario === "professional" && "CADASTRO DE PROFISSIONAL"}
           </h1>
           
           <div className="flex justify-center items-center mb-6">
