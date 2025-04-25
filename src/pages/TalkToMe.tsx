@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PaperPlane, Loader2, Heart, Headphones } from "lucide-react";
+import { Send, Loader2, Heart, Headphones } from "lucide-react";
 import ChatMessages from '@/components/chat/ChatMessages';
 import MessageInput from '@/components/chat/MessageInput';
 import MoodSelector from '@/components/chat/MoodSelector';

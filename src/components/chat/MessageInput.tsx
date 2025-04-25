@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { PaperPlane, Loader2 } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
 
 interface MessageInputProps {
   message: string;
@@ -60,7 +60,7 @@ const MessageInput = ({
           </>
         ) : (
           <>
-            <PaperPlane className="w-4 h-4" />
+            <Send className="w-4 h-4" />
             Enviar Mensagem
           </>
         )}
