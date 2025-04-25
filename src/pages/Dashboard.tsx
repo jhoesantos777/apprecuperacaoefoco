@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
 import { useToast } from "@/hooks/use-toast";
 import FamilyDashboard from "@/components/FamilyDashboard";
+import { UserType } from "@/types/signup";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -26,8 +27,13 @@ const Dashboard = () => {
         .select('*')
         .eq('id', user.id)
         .single();
-        
-      return profile;
+
+      const { data: { user: fullUser } } = await supabase.auth.getUser();
+      
+      return {
+        ...profile,
+        tipoUsuario: fullUser?.user_metadata?.tipoUsuario || 'dependent'
+      };
     },
   });
 
