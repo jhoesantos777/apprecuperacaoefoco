@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Bible, Book, Music, Heart } from "lucide-react";
+import { Book, Book as BibleIcon, Music, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -40,7 +40,7 @@ const Devotional = () => {
         {/* Verse Card */}
         <Card className="p-6 bg-white/80 backdrop-blur-sm border border-purple-100 shadow-sm">
           <div className="flex items-start gap-4">
-            <Bible className="text-purple-600 w-6 h-6 flex-shrink-0" />
+            <BibleIcon className="text-purple-600 w-6 h-6 flex-shrink-0" />
             <div className="space-y-2">
               <p className="text-lg font-serif text-gray-800 italic">"{devotional.verse}"</p>
               <p className="text-gray-600 text-sm">{devotional.reference}</p>
