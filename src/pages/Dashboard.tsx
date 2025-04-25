@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star, Award, BookOpen } from "lucide-react";
+import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star, Award, BookOpen, LogOut } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
@@ -66,6 +66,30 @@ const Dashboard = () => {
 
   const handleNotUsingToday = () => {
     sobrietyDeclaration.mutate();
+  };
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Logout Successful",
+        description: "Você foi desconectado do aplicativo.",
+      });
+      
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Erro no Logout",
+        description: "Não foi possível sair do aplicativo. Por favor, tente novamente.",
+        variant: "destructive"
+      });
+      console.error('Logout error:', error);
+    }
   };
 
   const categories = [
@@ -158,17 +182,26 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
       {/* Header */}
-      <div className="p-6 flex items-center gap-4">
-        <ProfilePicture
-          avatarUrl={profile?.avatar_url}
-          userId={profile?.id || ''}
-          userName={profile?.nome}
-          size="lg"
-        />
-        <div>
-          <h1 className="text-2xl font-bold text-white">Bem vindo</h1>
-          <p className="text-white/90">{profile?.nome || 'Usuário'}</p>
+      <div className="p-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <ProfilePicture
+            avatarUrl={profile?.avatar_url}
+            userId={profile?.id || ''}
+            userName={profile?.nome}
+            size="lg"
+          />
+          <div>
+            <h1 className="text-2xl font-bold text-white">Bem vindo</h1>
+            <p className="text-white/90">{profile?.nome || 'Usuário'}</p>
+          </div>
         </div>
+        <Button 
+          variant="ghost" 
+          className="text-white hover:bg-white/20"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-5 w-5" /> Sair
+        </Button>
       </div>
 
       {/* Not Using Today Button */}
