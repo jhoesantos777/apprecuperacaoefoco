@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
 import { useToast } from "@/hooks/use-toast";
+import FamilyDashboard from "@/components/FamilyDashboard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -204,40 +205,47 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {/* Not Using Today Button */}
-      <div className="px-6 mb-8">
-        <Button 
-          className={`w-full py-6 text-lg font-bold transition-all duration-300 ${
-            hasConfirmedSobriety 
-              ? 'bg-green-600 hover:bg-green-700' 
-              : 'bg-red-600 hover:bg-red-700'
-          } text-white`}
-          onClick={handleNotUsingToday}
-          disabled={hasConfirmedSobriety}
-        >
-          {hasConfirmedSobriety 
-            ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
-            : "HOJE EU NAO VOU USAR!"}
-        </Button>
-      </div>
-
-      {/* Categories */}
-      <div className="px-6 pb-20">
-        <h2 className="text-xl font-semibold text-white mb-4">Categorias</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {categories.map((category) => (
-            <Card 
-              key={category.id}
-              className="p-4 flex flex-col items-center text-center cursor-pointer hover:bg-gray-50 transition-colors"
-              onClick={() => navigate(category.path)}
+      {/* Conditional Content Based on User Type */}
+      {profile?.tipoUsuario === "family" ? (
+        <FamilyDashboard />
+      ) : (
+        <>
+          {/* Not Using Today Button */}
+          <div className="px-6 mb-8">
+            <Button 
+              className={`w-full py-6 text-lg font-bold transition-all duration-300 ${
+                hasConfirmedSobriety 
+                  ? 'bg-green-600 hover:bg-green-700' 
+                  : 'bg-red-600 hover:bg-red-700'
+              } text-white`}
+              onClick={handleNotUsingToday}
+              disabled={hasConfirmedSobriety}
             >
-              <category.icon className="h-8 w-8 text-blue-600 mb-2" />
-              <h3 className="text-sm font-medium">{category.title}</h3>
-              <p className="text-xs text-gray-500">{category.description}</p>
-            </Card>
-          ))}
-        </div>
-      </div>
+              {hasConfirmedSobriety 
+                ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
+                : "HOJE EU NAO VOU USAR!"}
+            </Button>
+          </div>
+
+          {/* Categories */}
+          <div className="px-6 pb-20">
+            <h2 className="text-xl font-semibold text-white mb-4">Categorias</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {categories.map((category) => (
+                <Card 
+                  key={category.id}
+                  className="p-4 flex flex-col items-center text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => navigate(category.path)}
+                >
+                  <category.icon className="h-8 w-8 text-blue-600 mb-2" />
+                  <h3 className="text-sm font-medium">{category.title}</h3>
+                  <p className="text-xs text-gray-500">{category.description}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3">
