@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -13,8 +14,7 @@ import { AppointmentsList } from '@/components/scheduling/AppointmentsList';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AvailableSlot } from '@/types/scheduling';
-
-type AvailableSlot = Database['public']['Tables']['available_slots']['Row'];
+import type { Database } from "@/integrations/supabase/types";
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
