@@ -256,27 +256,41 @@ const SignUp = () => {
             </div>
 
             {formData.tipoUsuario === "family" && (
-              <div className="space-y-2">
-                <Label>Grau de Parentesco</Label>
-                <Select
-                  value={formData.grauParentesco}
-                  onValueChange={(value) => updateFormData("grauParentesco", value as RelationType)}
-                >
-                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                    <SelectValue placeholder="Selecione seu grau de parentesco" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="spouse">Cônjuge</SelectItem>
-                    <SelectItem value="father">Pai</SelectItem>
-                    <SelectItem value="mother">Mãe</SelectItem>
-                    <SelectItem value="sibling">Irmão/Irmã</SelectItem>
-                    <SelectItem value="uncle">Tio(a)</SelectItem>
-                    <SelectItem value="cousin">Primo(a)</SelectItem>
-                    <SelectItem value="friend">Amigo(a)</SelectItem>
-                    <SelectItem value="other">Outro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label>Grau de Parentesco</Label>
+                  <Select
+                    value={formData.grauParentesco}
+                    onValueChange={(value) => updateFormData("grauParentesco", value as RelationType)}
+                  >
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                      <SelectValue placeholder="Selecione seu grau de parentesco" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="spouse">Cônjuge</SelectItem>
+                      <SelectItem value="father">Pai</SelectItem>
+                      <SelectItem value="mother">Mãe</SelectItem>
+                      <SelectItem value="sibling">Irmão/Irmã</SelectItem>
+                      <SelectItem value="uncle">Tio(a)</SelectItem>
+                      <SelectItem value="cousin">Primo(a)</SelectItem>
+                      <SelectItem value="friend">Amigo(a)</SelectItem>
+                      <SelectItem value="other">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="contatoEmergencia">Contato de Emergência</Label>
+                  <Input
+                    id="contatoEmergencia"
+                    type="tel"
+                    value={formData.contatoEmergencia}
+                    onChange={(e) => updateFormData("contatoEmergencia", e.target.value)}
+                    placeholder="(00) 00000-0000"
+                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                  />
+                </div>
+              </>
             )}
           </div>
         );
