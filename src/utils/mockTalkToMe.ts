@@ -1,4 +1,3 @@
-import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -30,8 +29,7 @@ const getSystemPrompt = (mood: string) => {
   return basePrompt + moodContext;
 };
 
-// This is a mock implementation of the AI chat functionality
-// In a real implementation, this would call the OpenAI API
+// This implementation now calls the OpenAI API
 export const mockTalkToMeApi = async (
   messages: Message[], 
   mood: string
