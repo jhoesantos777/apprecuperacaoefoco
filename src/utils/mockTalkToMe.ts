@@ -2,247 +2,118 @@
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  mood?: string;
 }
 
 interface MockApiResponse {
   message: string;
 }
 
-// Custom system prompt for the addiction counselor persona
-const getSystemPrompt = (mood: string) => {
-  const basePrompt = `You are an experienced psychologist and addiction counselor with deep expertise in chemical dependency treatment. Your responses should be:
-- Empathetic and non-judgmental
-- Based on evidence-based practices in addiction treatment
-- Focused on harm reduction and recovery support
-- Tailored to the emotional state of the client
-- In Portuguese language always
-- Brief but meaningful (max 4-5 sentences)
+const getSystemPrompt = () => {
+  return `Você é um psicólogo e conselheiro especializado em dependência química com vasta experiência. Suas respostas devem ser:
+- Empáticas e sem julgamentos
+- Baseadas em práticas comprovadas no tratamento de dependência
+- Focadas na redução de danos e suporte à recuperação
+- Em português
+- Breves mas significativas (máx 4-5 frases)
 `;
+}
 
-  const moodContext = mood === 'happy' 
-    ? "\nThe client is currently feeling good. Reinforce their positive state while maintaining focus on recovery goals."
-    : mood === 'sad'
-    ? "\nThe client is feeling down or sad. Provide extra emotional support while maintaining professional boundaries."
-    : "\nThe client's mood is neutral. Focus on practical support and coping strategies.";
-
-  return basePrompt + moodContext;
-};
-
-// Enhanced mock implementation for development
 export const mockTalkToMeApi = async (
-  messages: Message[], 
-  mood: string
+  messages: Message[]
 ): Promise<MockApiResponse> => {
-  // Get the last user message
   const userMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
   
   try {
-    // First, check for specific topics in the user message
     const topicResponses: {[key: string]: string[]} = {
       ansiedade: [
-        'A ansiedade é uma resposta comum durante a recuperação. Vamos trabalhar em técnicas de respiração? Inspire por 4 segundos, segure por 2, e expire por 6. Como isso afeta seu desejo por substâncias?',
-        'Entendo sua preocupação com ansiedade. Muitas vezes ela está conectada aos gatilhos de uso. Você consegue identificar situações específicas que aumentam tanto sua ansiedade quanto seu desejo?',
-        'A ansiedade que você sente é normal nesse processo. Vamos trabalhar juntos em estratégias para lidar com ela sem recorrer às substâncias. Como tem sido essa experiência para você?'
+        'A ansiedade durante o processo de recuperação é comum e compreensível. Podemos trabalhar juntos em técnicas específicas para gerenciá-la sem recorrer a substâncias. Você já identificou situações específicas que aumentam sua ansiedade? Como tem lidado com esses momentos?',
+        'Entendo sua preocupação com a ansiedade, é um desafio significativo na recuperação. Vamos explorar algumas estratégias de enfrentamento que funcionam especificamente para você. Que tipo de situações têm desencadeado essa ansiedade? Podemos começar desenvolvendo um plano personalizado.',
+        'É importante reconhecer que a ansiedade que você está sentindo é uma resposta natural do corpo e da mente durante a recuperação. Poderíamos começar com exercícios simples de respiração ou outras técnicas de relaxamento. Você já experimentou alguma técnica específica que ajudou?'
       ],
-      'recaída': [
-        'Recaídas são parte do processo de recuperação, não significam fracasso. O importante é aprender com elas. Como você tem lidado com seus gatilhos recentemente?',
-        'Falar sobre recaída mostra coragem e autoconsciência. Vamos analisar juntos os fatores que podem estar contribuindo para esses pensamentos? A identificação de gatilhos é fundamental.',
-        'Preocupações com recaída são válidas e mostram seu comprometimento. Você tem mantido contato com sua rede de apoio? Lembre-se que isolamento muitas vezes precede a recaída.'
+      recaída: [
+        'Pensar sobre recaída mostra sua consciência e comprometimento com a recuperação. É importante lembrar que ter pensamentos sobre uso não significa fracasso - são oportunidades para fortalecer suas estratégias de prevenção. Poderia me contar mais sobre o que tem despertado esses pensamentos?',
+        'Vamos analisar juntos os fatores que podem estar contribuindo para esses pensamentos de recaída. A identificação precoce de gatilhos é uma ferramenta poderosa na prevenção. Como está sua rede de apoio neste momento? Tem conseguido compartilhar essas preocupações com alguém?',
+        'Falar abertamente sobre recaída é um sinal de força, não de fraqueza. Isso nos permite trabalhar proativamente na prevenção. Vamos explorar quais estratégias de enfrentamento têm funcionado para você e onde podemos fortalecer seu plano de prevenção de recaída.'
       ],
-      'abstinência': [
-        'Os sintomas de abstinência podem ser desafiadores, mas são temporários. Quais têm sido os mais difíceis para você enfrentar atualmente?',
-        'A abstinência é uma prova do processo de cura do seu corpo. Você tem conseguido separar o desconforto físico dos pensamentos sobre uso?',
-        'Durante a abstinência, é importante cuidar de necessidades básicas como sono e alimentação. Como tem sido sua rotina de autocuidado nesse período?'
+      abstinência: [
+        'Os sintomas de abstinência são desafiadores, mas cada dia que passa é uma vitória e seu corpo está se recuperando. Quais sintomas têm sido mais difíceis para você? Podemos discutir estratégias específicas para lidar com cada um deles.',
+        'É importante lembrar que os sintomas de abstinência são temporários e cada pessoa os experimenta de forma diferente. Como tem sido seu sono e sua alimentação durante este período? Estas necessidades básicas são fundamentais para fortalecer seu processo de recuperação.',
+        'Você está demonstrando muita coragem ao enfrentar a abstinência. Vamos focar em estratégias práticas para cada sintoma específico. Que tipo de suporte você sente que seria mais útil neste momento?'
       ],
-      'família': [
-        'As relações familiares podem ser complexas durante a recuperação. Como tem sido a comunicação com sua família sobre suas necessidades no processo de recuperação?',
-        'Sua família é parte importante da sua rede de apoio, mas também precisa entender os desafios da dependência química. Eles têm participado de grupos de apoio para familiares?',
-        'Reconstruir a confiança familiar leva tempo. Quais pequenos passos você tem dado para fortalecer esses laços de forma saudável?'
+      sono: [
+        'Problemas com o sono são muito comuns durante a recuperação, pois seu corpo está se reajustando. Vamos trabalhar em uma rotina noturna que possa ajudar? Que horários você costuma ir dormir e acordar?',
+        'Um sono reparador é fundamental para sua recuperação. Podemos começar estabelecendo uma rotina relaxante antes de dormir. Você tem praticado alguma técnica de relaxamento? Existem atividades específicas que você nota que interferem no seu sono?',
+        'Entendo sua preocupação com o sono, é uma parte crucial da recuperação. Vamos explorar juntos o que pode estar afetando seu descanso. Tem notado padrões específicos ou situações que pioram ou melhoram seu sono?'
       ],
-      'gatilhos': [
-        'Identificar gatilhos é fundamental para a recuperação sustentável. Quais situações, pessoas ou emoções você percebe que aumentam seu desejo por substâncias?',
-        'Trabalhar com gatilhos envolve reconhecer, evitar quando possível, e desenvolver estratégias de enfrentamento. Como você tem respondido quando se depara com um gatilho?',
-        'Os gatilhos mudam ao longo do tempo e é importante revisitar regularmente suas estratégias. Algum novo gatilho surgiu recentemente em sua vida?'
-      ],
-      'sono': [
-        'Problemas de sono são comuns durante a recuperação pois seu corpo está reaprendendo a funcionar sem substâncias. Como tem sido sua higiene do sono?',
-        'Um sono reparador é fundamental para a recuperação. Você tem praticado técnicas de relaxamento antes de dormir, como meditação ou respiração profunda?',
-        'Alterações no sono podem ser frustrantes, mas geralmente melhoram com o tempo. Você mantém horários regulares para dormir e acordar?'
-      ],
-      'solidão': [
-        'A sensação de solidão é comum na recuperação, especialmente quando houve afastamento de círculos sociais ligados ao uso. Você tem encontrado novos espaços de pertencimento?',
-        'Conectar-se com outros em recuperação pode diminuir o sentimento de isolamento. Como tem sido sua experiência em grupos de apoio?',
-        'A solidão muitas vezes esconde medos e inseguranças sobre criar novas relações. Que pequenos passos você poderia dar para ampliar sua rede de apoio?'
-      ],
-      'medicação': [
-        'O tratamento medicamentoso pode ser um importante aliado na recuperação da dependência química. Você tem seguido as orientações médicas corretamente?',
-        'É essencial ser transparente com sua equipe médica sobre qualquer efeito colateral ou dificuldades com a medicação. Como tem sido essa comunicação?',
-        'Muitas pessoas em recuperação têm receios sobre medicamentos. Quais são suas principais dúvidas ou preocupações sobre seu tratamento atual?'
+      família: [
+        'As relações familiares podem ser especialmente delicadas durante a recuperação. Como tem sido a comunicação com sua família? Podemos trabalhar em estratégias para fortalecer esses vínculos de forma saudável.',
+        'É comum que as dinâmicas familiares precisem de ajustes durante o processo de recuperação. Sua família tem participado de grupos de apoio para familiares? Isso pode ser muito benéfico para todos os envolvidos.',
+        'Reconstruir a confiança familiar é um processo gradual que requer paciência. Que pequenos passos você poderia dar para melhorar a comunicação com sua família? Como podemos trabalhar para estabelecer expectativas realistas de ambos os lados?'
       ]
     };
 
-    // More comprehensive mood-based responses
-    const moodResponses = {
-      happy: [
-        'É motivador ver você bem hoje! Esse estado positivo é uma força importante na recuperação. Como você tem conseguido manter esse bem-estar? Quais estratégias estão funcionando para você?',
-        'Sua energia positiva é um recurso valioso! Como você planeja usar esse momento favorável para fortalecer suas práticas de recuperação?',
-        'Momentos de bem-estar são importantes de se reconhecer e celebrar na jornada de recuperação. O que você tem feito diferente que contribuiu para esse estado?'
+    // Check for specific questions
+    const questionPatterns = {
+      'como lidar': [
+        'Entendo sua busca por estratégias de enfrentamento. Vamos trabalhar juntos em técnicas específicas para sua situação. Poderia me contar mais sobre os momentos em que você sente maior dificuldade? Isso nos ajudará a desenvolver um plano personalizado.',
+        'Cada pessoa encontra diferentes formas de lidar com os desafios da recuperação. Vamos explorar quais estratégias podem funcionar melhor para você. Que métodos você já tentou? O que funcionou e o que não funcionou?'
       ],
-      neutral: [
-        'Momentos de estabilidade são valiosos no processo de recuperação. Como você tem mantido seu equilíbrio diante dos desafios diários?',
-        'A constância emocional que você demonstra é um bom sinal. Que aspectos da sua rotina você acredita que estão contribuindo para essa estabilidade?',
-        'Dias de neutralidade emocional proporcionam boas oportunidades para reflexão. Como você tem aproveitado essa clareza para avaliar seu progresso?'
+      'quanto tempo': [
+        'A recuperação é uma jornada individual e cada pessoa tem seu próprio ritmo. Em vez de focar no tempo, vamos nos concentrar em como fortalecer suas estratégias de recuperação no presente. Como você tem medido seu progresso até agora?',
+        'É natural querer saber sobre prazos, mas cada jornada é única. O mais importante é fortalecer suas ferramentas de recuperação diariamente. Que aspectos da sua recuperação você sente que precisam de mais atenção agora?'
       ],
-      sad: [
-        'Percebo que hoje está sendo um momento mais desafiador. Lembre-se que sentimentos difíceis são parte do processo e não diminuem seu progresso. O que especificamente está contribuindo para esse sentimento?',
-        'Sentir-se para baixo durante a recuperação é normal e não significa retrocesso. Como você tem lidado com esses momentos sem recorrer a comportamentos de risco?',
-        'Seus sentimentos são válidos e importantes. Em dias difíceis como hoje, quais estratégias de autocuidado você pode ativar? O que tem funcionado no passado?'
+      'por que': [
+        'Sua pergunta sobre os motivos é muito importante e mostra seu desejo de compreender melhor o processo. Vamos explorar juntos os fatores que podem estar contribuindo para essa situação. Como você tem percebido esse aspecto afetando sua recuperação?',
+        'Entender o "por quê" é uma parte importante do processo de recuperação. Isso nos ajuda a desenvolver estratégias mais efetivas. Poderia me contar mais sobre quando você começou a notar isso?'
       ]
     };
 
-    // Check for questions about specific addiction-related topics
-    const specificQuestions: {[key: string]: string[]} = {
-      'como lidar com': [
-        'Lidar com os desafios da recuperação envolve desenvolver novas habilidades de enfrentamento. Você já experimentou técnicas de mindfulness ou atenção plena? Elas podem ajudar a navegar momentos difíceis sem recorrer ao uso de substâncias.',
-        'Desenvolver estratégias para lidar com situações desafiadoras é fundamental. Você tem um plano de prevenção de recaída que inclui passos concretos para momentos de maior vulnerabilidade?',
-        'Aprender a lidar com dificuldades sem substâncias é uma habilidade que se desenvolve com prática. Quais recursos de sua rede de apoio você poderia acionar nesses momentos?'
-      ],
-      'quando vou': [
-        'O processo de recuperação é individual e não segue uma linha do tempo fixa. O mais importante é reconhecer e valorizar seu progresso diário, por menor que pareça. Como você tem celebrado suas pequenas vitórias?',
-        'Perguntas sobre o futuro da recuperação são comuns e compreensíveis. Mais do que pensar em quando algo vai acontecer, é importante focar nas ferramentas que você está construindo hoje. Quais habilidades você sente que tem fortalecido?',
-        'A recuperação acontece no tempo presente, um dia de cada vez. Em vez de focar em quando certos sintomas vão passar, podemos trabalhar em como fortalecer sua resiliência hoje. O que você poderia fazer nas próximas 24 horas para cuidar de si?'
-      ],
-      'por que sinto': [
-        'Os sentimentos durante a recuperação são complexos e muitas vezes resultam de alterações neurobiológicas, traumas passados e novos desafios. O mais importante é acolher essas emoções sem julgamento. Como você tem lidado com esses sentimentos?',
-        'O que você está sentindo é uma resposta natural do corpo e da mente durante o processo de recuperação. Nomear essas emoções é o primeiro passo para processá-las de forma saudável. Você consegue descrever mais detalhadamente essa sensação?',
-        'Seus sentimentos durante a recuperação têm raízes em mudanças físicas, emocionais e sociais. Compreender esses sentimentos como parte do processo, não como obstáculos, pode ajudar a integrá-los na sua jornada. Tem usado algum recurso como diário ou arte para expressar essas emoções?'
-      ],
-      'como saber se': [
-        'O autoconhecimento se desenvolve gradualmente na recuperação. Observar seus padrões de pensamento, emoções e comportamentos ao longo do tempo pode trazer importantes insights. Você tem mantido algum registro diário de suas experiências?',
-        'Saber identificar sinais sobre si mesmo é uma habilidade importante. Muitas vezes, pessoas próximas de confiança também podem oferecer perspectivas valiosas. Você tem alguém com quem pode verificar suas percepções?',
-        'Aprender a reconhecer sinais do seu corpo e mente é parte fundamental da recuperação. A prática regular de momentos de reflexão, como meditação ou escrita, pode aumentar essa consciência. Que práticas de autoconsciência você tem incorporado à sua rotina?'
-      ]
-    };
+    // Default responses for when no specific pattern is matched
+    const defaultResponses = [
+      'Agradeço você compartilhar isso comigo. Como tem sido lidar com essa situação no seu dia a dia? Podemos explorar juntos algumas estratégias que podem ajudar.',
+      'Sua experiência é válida e importante. Vamos trabalhar juntos para encontrar as melhores formas de fortalecer sua recuperação. O que você sente que seria mais útil neste momento?',
+      'Obrigado por confiar em mim para compartilhar isso. Como você tem se sentido ao lidar com essa situação? Podemos desenvolver estratégias específicas para ajudar.'
+    ];
 
-    // Check if the message contains any of our specific topics or questions
+    // Find matching topic response
     let response = '';
-    let topicFound = false;
-
-    // First try to match specific topics
     for (const [topic, responses] of Object.entries(topicResponses)) {
       if (userMessage.toLowerCase().includes(topic)) {
-        const randomIndex = Math.floor(Math.random() * responses.length);
-        response = responses[randomIndex];
-        topicFound = true;
+        response = responses[Math.floor(Math.random() * responses.length)];
         break;
       }
     }
 
-    // If no topic matched, check for specific question patterns
-    if (!topicFound) {
-      for (const [questionPattern, responses] of Object.entries(specificQuestions)) {
-        if (userMessage.toLowerCase().includes(questionPattern)) {
-          const randomIndex = Math.floor(Math.random() * responses.length);
-          response = responses[randomIndex];
-          topicFound = true;
+    // If no topic matched, check for question patterns
+    if (!response) {
+      for (const [pattern, responses] of Object.entries(questionPatterns)) {
+        if (userMessage.toLowerCase().includes(pattern)) {
+          response = responses[Math.floor(Math.random() * responses.length)];
           break;
         }
       }
     }
 
-    // If still no specific topic or question pattern was found
-    if (!topicFound) {
-      // Analyze if it's a question by common question markers in Portuguese
-      const isQuestion = userMessage.includes('?') || 
-                        userMessage.toLowerCase().includes('como') ||
-                        userMessage.toLowerCase().includes('o que') ||
-                        userMessage.toLowerCase().includes('quando') ||
-                        userMessage.toLowerCase().includes('onde') ||
-                        userMessage.toLowerCase().includes('por que') ||
-                        userMessage.toLowerCase().includes('quem') ||
-                        userMessage.toLowerCase().includes('qual');
-
-      // Get mood-appropriate responses
-      const moodType = mood === 'happy' ? 'happy' : mood === 'sad' ? 'sad' : 'neutral';
-      const moodResponseList = moodResponses[moodType];
-      
-      if (isQuestion) {
-        // If it's a question not covered by specific patterns, create a contextual response
-        // Extract meaningful words to reference in the response
-        const words = userMessage.split(' ').filter(word => word.length > 3);
-        
-        if (words.length > 0) {
-          // Pick a relevant word from the question to acknowledge
-          const keyWords = words.filter(w => !['como', 'quando', 'onde', 'porque', 'quem', 'qual'].includes(w.toLowerCase()));
-          const keyWord = keyWords.length > 0 ? 
-            keyWords[Math.floor(Math.random() * keyWords.length)] : 
-            words[Math.floor(Math.random() * words.length)];
-
-          const questionResponses = [
-            `Sua pergunta sobre "${keyWord}" é muito relevante no processo de recuperação. ${moodResponseList[0]} Poderia me contar mais sobre o que despertou essa questão agora?`,
-            `Quando você pergunta sobre "${keyWord}", isso me mostra sua busca por compreensão, o que é valioso na recuperação. ${moodResponseList[1]} Como esse aspecto tem impactado sua jornada?`,
-            `É importante explorarmos essa questão sobre "${keyWord}" que você traz. ${moodResponseList[2]} Que outras dúvidas surgem quando você pensa sobre isso?`
-          ];
-          
-          response = questionResponses[Math.floor(Math.random() * questionResponses.length)];
-        } else {
-          // If no meaningful words found, use a generic question response
-          const genericQuestionResponses = [
-            `Essa é uma pergunta importante. ${moodResponseList[0]} Poderia elaborar um pouco mais para que eu possa entender melhor o contexto?`,
-            `Obrigado por compartilhar essa dúvida. ${moodResponseList[1]} Pode me contar mais sobre o que motivou essa pergunta hoje?`,
-            `Sua pergunta toca em aspectos significativos da recuperação. ${moodResponseList[2]} Como você tem pensado sobre isso ultimamente?`
-          ];
-          
-          response = genericQuestionResponses[Math.floor(Math.random() * genericQuestionResponses.length)];
-        }
-      } else {
-        // For statements rather than questions, provide a mood-based response
-        const randomIndex = Math.floor(Math.random() * moodResponseList.length);
-        response = moodResponseList[randomIndex];
-        
-        // Add a thoughtful follow-up if the message has content to work with
-        if (userMessage.length > 10) {
-          const words = userMessage.split(' ').filter(word => word.length > 4);
-          if (words.length > 0) {
-            const randomWord = words[Math.floor(Math.random() * words.length)];
-            
-            const followUps = [
-              ` Você mencionou "${randomWord}" - como isso se relaciona com seus objetivos de recuperação atualmente?`,
-              ` Quando você fala sobre "${randomWord}", que emoções isso desperta em você?`,
-              ` Sua menção a "${randomWord}" é interessante. Como esse aspecto tem influenciado sua jornada de recuperação?`
-            ];
-            
-            response += followUps[Math.floor(Math.random() * followUps.length)];
-          }
-        }
-      }
+    // If still no match, use default response
+    if (!response) {
+      response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
     }
 
     return { message: response };
     
   } catch (error) {
     console.error('Error in mock API response:', error);
-    
-    // Fallback responses in case of API failure
-    const fallbackResponses = {
-      happy: 'Desculpe pelo inconveniente técnico. Estamos tendo algumas dificuldades momentâneas. É positivo ver que você está se sentindo bem hoje - continue cultivando esse estado! Tente novamente em alguns instantes.',
-      neutral: 'Estamos enfrentando algumas dificuldades técnicas neste momento. Por favor, tente novamente em alguns minutos. Lembre-se que a constância é uma força importante na recuperação.',
-      sad: 'Sinto muito pela dificuldade técnica. Sei que pode ser frustrante, especialmente em momentos desafiadores. Lembre-se que você não está sozinho nessa jornada. Por favor, tente novamente em breve ou contate seu conselheiro se precisar de apoio imediato.'
+    return { 
+      message: 'Desculpe, estou tendo dificuldade para processar sua mensagem. Poderia reformular de outra maneira?' 
     };
-    
-    const moodType = mood === 'happy' ? 'happy' : mood === 'sad' ? 'sad' : 'neutral';
-    return { message: fallbackResponses[moodType] };
   }
 };
 
-// Mock API function to be used in the TalkToMe component
 export const fetchMockTalkToMeApi = async (
-  messages: Message[], 
-  mood: string
+  messages: Message[]
 ): Promise<Response> => {
   try {
-    const data = await mockTalkToMeApi(messages, mood);
+    const data = await mockTalkToMeApi(messages);
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
