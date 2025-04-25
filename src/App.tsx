@@ -23,6 +23,7 @@ import Achievements from "./pages/Achievements";
 import Courses from "./pages/Courses";
 import Schedule from "./pages/Schedule";
 import Devotional from "./pages/Devotional";
+import TalkToMe from "./pages/TalkToMe";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/consultations" element={<Navigate to="/schedule" replace />} />
             <Route path="/devotional" element={<Devotional />} />
+            <Route path="/talk-to-me" element={<TalkToMe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
