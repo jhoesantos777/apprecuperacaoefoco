@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Medkit, User, Brain } from 'lucide-react';
+import { Stethoscope, User, Brain } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -32,7 +32,7 @@ export function ConsultationType({ value, onChange }: ConsultationTypeProps) {
               <span>Psicólogo</span>
             </ToggleGroupItem>
             <ToggleGroupItem value="psychiatrist" aria-label="Psiquiatra" className="gap-2">
-              <Medkit className="h-4 w-4" />
+              <Stethoscope className="h-4 w-4" />
               <span>Psiquiatra</span>
             </ToggleGroupItem>
             <ToggleGroupItem value="mentor" aria-label="Mentor" className="gap-2">
