@@ -29,7 +29,7 @@ const getSystemPrompt = (mood: string) => {
   return basePrompt + moodContext;
 };
 
-// This implementation now calls the OpenAI API
+// Mock implementation for development
 export const mockTalkToMeApi = async (
   messages: Message[], 
   mood: string
@@ -38,37 +38,30 @@ export const mockTalkToMeApi = async (
   const userMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
   
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content: getSystemPrompt(mood)
-          },
-          {
-            role: 'user',
-            content: userMessage
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 300,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to get AI response');
+    // For development without API key, return mock responses based on mood
+    let response = '';
+    
+    if (mood === 'happy') {
+      response = 'É ótimo ver você se sentindo bem hoje! Essa energia positiva é valiosa na sua jornada de recuperação. Como podemos aproveitar esse bom momento para fortalecer suas estratégias de enfrentamento? Continue cultivando esses momentos positivos.';
+    } else if (mood === 'sad') {
+      response = 'Entendo que hoje está sendo um dia difícil para você. Seus sentimentos são válidos e faz parte do processo ter momentos assim. Respire fundo e lembre-se que essa sensação vai passar. Você tem ferramentas para lidar com isso e não está sozinho nessa jornada.';
+    } else {
+      response = 'Obrigado por compartilhar como está se sentindo. Manter esse diálogo aberto é fundamental para o processo de recuperação. Que estratégias têm funcionado melhor para você ultimamente? Vamos continuar construindo sua resiliência dia após dia.';
     }
-
-    const data = await response.json();
-    return { message: data.choices[0].message.content };
+    
+    // If the user message contains specific keywords, customize the response
+    if (userMessage.toLowerCase().includes('ansioso') || userMessage.toLowerCase().includes('ansiedade')) {
+      response = 'A ansiedade pode ser desafiadora durante o processo de recuperação. Tente exercícios de respiração profunda - inspire por 4 segundos, segure por 2, expire por 6. Essa técnica simples pode ajudar a acalmar seu sistema nervoso. Você está desenvolvendo ferramentas importantes para lidar com essas situações.';
+    }
+    
+    if (userMessage.toLowerCase().includes('recaída') || userMessage.toLowerCase().includes('recai')) {
+      response = 'Recaídas fazem parte do processo de recuperação para muitas pessoas. Não significa fracasso, mas uma oportunidade de aprendizado. O importante é como você responde a esse momento. Vamos identificar os gatilhos e fortalecer seu plano de prevenção de recaídas.';
+    }
+    
+    return { message: response };
+    
   } catch (error) {
-    console.error('Error getting AI response:', error);
+    console.error('Error in mock API response:', error);
     
     // Fallback responses in case of API failure
     let fallbackResponse = 'Desculpe, estou tendo dificuldades técnicas no momento. ' +
