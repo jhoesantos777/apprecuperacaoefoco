@@ -96,14 +96,12 @@ const MoodSelection = () => {
 
       if (moodError) throw moodError;
 
-      // Update profile's current mood
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          current_mood: selectedMood,
-          last_mood_update: new Date().toISOString()
-        })
-        .eq('id', user.id);
+      // Update profile's current mood using raw SQL
+      // This avoids TypeScript errors since we're using RPC instead of the profiles table directly
+      const { error: profileError } = await supabase.rpc('update_user_mood', {
+        mood_value: selectedMood,
+        mood_timestamp: new Date().toISOString()
+      });
 
       if (profileError) throw profileError;
 
