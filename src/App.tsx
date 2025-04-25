@@ -1,3 +1,4 @@
+
 import React from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/consultations" element={<Navigate to="/schedule" replace />} />
             <Route path="/devotional" element={<Devotional />} />
             <Route path="/talk-to-me" element={<TalkToMe />} />
+            <Route path="/chat" element={<Navigate to="/talk-to-me" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
