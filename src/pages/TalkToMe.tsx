@@ -2,18 +2,23 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { PaperPlane, Loader2, Heart, Headphones } from "lucide-react";
 import ChatMessages from '@/components/chat/ChatMessages';
 import MessageInput from '@/components/chat/MessageInput';
+import MoodSelector from '@/components/chat/MoodSelector';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  mood?: string;
 }
 
 const TalkToMe = () => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [mood, setMood] = useState('neutral');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -32,7 +37,8 @@ const TalkToMe = () => {
     
     if (!message.trim()) return;
     
-    setMessages(prev => [...prev, { role: 'user', content: message }]);
+    // Add user message with mood
+    setMessages(prev => [...prev, { role: 'user', content: message, mood }]);
     setIsLoading(true);
     
     try {
@@ -42,7 +48,7 @@ const TalkToMe = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [...messages, { role: 'user', content: message }],
+          messages: [...messages, { role: 'user', content: message, mood }],
         }),
       });
 
@@ -71,27 +77,49 @@ const TalkToMe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-6">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-4 sm:p-6">
       <div className="max-w-2xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-serif text-blue-900">Fale com o Conselheiro</h1>
-          <p className="text-gray-600">Um espaço seguro para suas dúvidas e preocupações</p>
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="bg-purple-100 p-4 rounded-full">
+              <Heart className="w-8 h-8 text-purple-500" />
+              <Headphones className="w-8 h-8 text-purple-500 -mt-6 ml-4" />
+            </div>
+          </div>
+          
+          <h1 className="text-3xl font-serif text-blue-900">Fale Comigo</h1>
+          <p className="text-gray-600">Você não está sozinho. Sempre que precisar, fale comigo.</p>
         </div>
 
-        <ChatMessages messages={messages} isLoading={isLoading} />
+        <ScrollArea className="h-[50vh]">
+          <ChatMessages messages={messages} isLoading={isLoading} />
+        </ScrollArea>
 
         <Card className="p-6 bg-white/90 backdrop-blur-sm border border-blue-100 shadow-sm">
-          <MessageInput 
-            message={message}
-            isLoading={isLoading}
-            onMessageChange={setMessage}
-            onSubmit={handleSubmit}
-          />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <MoodSelector mood={mood} onMoodChange={setMood} />
+            
+            <MessageInput 
+              message={message}
+              isLoading={isLoading}
+              onMessageChange={setMessage}
+              onSubmit={handleSubmit}
+              placeholder="Escreva aqui sua dúvida, angústia ou o que quiser compartilhar..."
+              maxLength={1000}
+            />
+          </form>
         </Card>
 
-        <p className="text-center text-sm text-gray-600">
-          Estamos aqui para ouvir e apoiar você em sua jornada de recuperação.
+        <p className="text-center text-sm text-gray-600 px-4">
+          Todas as conversas aqui são confidenciais. Esta ferramenta não substitui atendimento médico ou psicológico, mas pode te ajudar nos momentos difíceis.
         </p>
+        
+        <div className="text-center mb-4">
+          <p className="text-sm text-gray-600">Precisa de ajuda imediata?</p>
+          <a href="https://wa.me/5511999999999" className="text-blue-600 hover:underline text-sm inline-flex items-center gap-1">
+            <span>Entre em contato pelo WhatsApp</span>
+          </a>
+        </div>
       </div>
     </div>
   );

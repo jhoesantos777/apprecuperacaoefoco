@@ -1,6 +1,8 @@
+
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  mood?: string;
 }
 
 interface MockApiResponse {
@@ -20,22 +22,27 @@ const getSystemPrompt = () => {
 export const mockTalkToMeApi = async (
   messages: Message[]
 ): Promise<MockApiResponse> => {
-  const userMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+  const userMessage = messages.filter(m => m.role === 'user').pop();
+  const userContent = userMessage?.content || '';
+  const userMood = userMessage?.mood || 'neutral';
   
   try {
+    // Adapt responses based on mood
+    const moodPrefix = getMoodResponsePrefix(userMood);
+    
     // Respostas para saudações e mensagens iniciais
     const greetingPatterns = ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite'];
-    if (greetingPatterns.some(pattern => userMessage.toLowerCase().includes(pattern))) {
+    if (greetingPatterns.some(pattern => userContent.toLowerCase().includes(pattern))) {
       return {
-        message: 'Olá! Que bom ter você aqui. Como está se sentindo hoje? Estou aqui para ouvir e conversar sobre o que você precisar.'
+        message: `${moodPrefix} Que bom ter você aqui. Como está se sentindo hoje? Estou aqui para ouvir e conversar sobre o que você precisar.`
       };
     }
 
     // Respostas para pedidos de ajuda genéricos
     const helpPatterns = ['ajuda', 'ajude', 'preciso de ajuda', 'socorro'];
-    if (helpPatterns.some(pattern => userMessage.toLowerCase().includes(pattern))) {
+    if (helpPatterns.some(pattern => userContent.toLowerCase().includes(pattern))) {
       return {
-        message: 'Estou aqui para te ajudar. Pode me contar um pouco mais sobre o que está passando? Às vezes o primeiro passo é simplesmente compartilhar o que está sentindo, sem julgamentos.'
+        message: `${moodPrefix} Estou aqui para te ajudar. Pode me contar um pouco mais sobre o que está passando? Às vezes o primeiro passo é simplesmente compartilhar o que está sentindo, sem julgamentos.`
       };
     }
 
@@ -70,7 +77,7 @@ export const mockTalkToMeApi = async (
 
     // Procura por tópicos específicos na mensagem do usuário
     for (const [topic, responses] of Object.entries(topicResponses)) {
-      if (userMessage.toLowerCase().includes(topic)) {
+      if (userContent.toLowerCase().includes(topic)) {
         return { 
           message: responses[Math.floor(Math.random() * responses.length)] 
         };
@@ -86,7 +93,7 @@ export const mockTalkToMeApi = async (
     ];
 
     return { 
-      message: defaultResponses[Math.floor(Math.random() * defaultResponses.length)] 
+      message: `${moodPrefix} ${defaultResponses[Math.floor(Math.random() * defaultResponses.length)]}` 
     };
     
   } catch (error) {
@@ -96,6 +103,21 @@ export const mockTalkToMeApi = async (
     };
   }
 };
+
+// Helper function to get response prefix based on mood
+function getMoodResponsePrefix(mood: string): string {
+  switch (mood) {
+    case 'happy':
+      return 'É bom ver que você está se sentindo bem hoje.';
+    case 'sad':
+      return 'Percebo que você está triste hoje. É normal ter dias assim durante a recuperação.';
+    case 'angry':
+      return 'Entendo que você está se sentindo irritado. Suas emoções são válidas.';
+    case 'neutral':
+    default:
+      return 'Olá!';
+  }
+}
 
 export const fetchMockTalkToMeApi = async (
   messages: Message[]

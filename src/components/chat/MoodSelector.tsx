@@ -2,7 +2,7 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { SmileIcon, FrownIcon, MehIcon } from 'lucide-react';
+import { Smile, Meh, Frown, Angry } from 'lucide-react';
 
 interface MoodSelectorProps {
   mood: string;
@@ -14,10 +14,9 @@ const MoodSelector = ({ mood, onMoodChange }: MoodSelectorProps) => {
     <div className="space-y-3">
       <Label className="text-gray-700">Como você está se sentindo hoje?</Label>
       <RadioGroup
-        defaultValue="neutral"
-        className="flex justify-center gap-8"
         value={mood}
         onValueChange={onMoodChange}
+        className="flex flex-wrap justify-center gap-4 sm:gap-6"
       >
         <div className="flex flex-col items-center gap-1">
           <RadioGroupItem value="happy" id="happy" className="sr-only" />
@@ -27,9 +26,9 @@ const MoodSelector = ({ mood, onMoodChange }: MoodSelectorProps) => {
               mood === 'happy' ? 'bg-green-100' : 'hover:bg-gray-100'
             }`}
           >
-            <SmileIcon className="w-8 h-8 text-green-500" />
+            <Smile className="w-8 h-8 text-green-500" />
           </Label>
-          <span className="text-sm text-gray-600">Bem</span>
+          <span className="text-sm text-gray-600">Tranquilo</span>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -40,9 +39,9 @@ const MoodSelector = ({ mood, onMoodChange }: MoodSelectorProps) => {
               mood === 'neutral' ? 'bg-blue-100' : 'hover:bg-gray-100'
             }`}
           >
-            <MehIcon className="w-8 h-8 text-blue-500" />
+            <Meh className="w-8 h-8 text-blue-500" />
           </Label>
-          <span className="text-sm text-gray-600">Regular</span>
+          <span className="text-sm text-gray-600">Neutro</span>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -53,9 +52,22 @@ const MoodSelector = ({ mood, onMoodChange }: MoodSelectorProps) => {
               mood === 'sad' ? 'bg-red-100' : 'hover:bg-gray-100'
             }`}
           >
-            <FrownIcon className="w-8 h-8 text-red-500" />
+            <Frown className="w-8 h-8 text-red-500" />
           </Label>
-          <span className="text-sm text-gray-600">Mal</span>
+          <span className="text-sm text-gray-600">Triste</span>
+        </div>
+
+        <div className="flex flex-col items-center gap-1">
+          <RadioGroupItem value="angry" id="angry" className="sr-only" />
+          <Label
+            htmlFor="angry"
+            className={`p-2 rounded-full cursor-pointer transition-colors ${
+              mood === 'angry' ? 'bg-orange-100' : 'hover:bg-gray-100'
+            }`}
+          >
+            <Angry className="w-8 h-8 text-orange-500" />
+          </Label>
+          <span className="text-sm text-gray-600">Irritado</span>
         </div>
       </RadioGroup>
     </div>
