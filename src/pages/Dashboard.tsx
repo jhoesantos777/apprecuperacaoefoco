@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star, Award, BookOpen } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
   
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -25,6 +29,44 @@ const Dashboard = () => {
       return profile;
     },
   });
+
+  const sobrietyDeclaration = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { error } = await supabase
+        .from('sobriety_declarations')
+        .insert([
+          {
+            user_id: user.id,
+            declared_at: new Date().toISOString()
+          }
+        ]);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setHasConfirmedSobriety(true);
+      queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
+      toast({
+        title: "Parabéns!",
+        description: "Sua determinação é inspiradora. Continue firme!",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível registrar sua declaração.",
+        variant: "destructive",
+      });
+      console.error('Error registering sobriety declaration:', error);
+    },
+  });
+
+  const handleNotUsingToday = () => {
+    sobrietyDeclaration.mutate();
+  };
 
   const categories = [
     {
@@ -113,12 +155,6 @@ const Dashboard = () => {
     },
   ];
 
-  const handleNotUsingToday = () => {
-    // TODO: Implement registration of not using today
-    // This should update the sobriety counter
-    console.log("Registering not using today");
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
       {/* Header */}
@@ -138,15 +174,22 @@ const Dashboard = () => {
       {/* Not Using Today Button */}
       <div className="px-6 mb-8">
         <Button 
-          className="w-full bg-red-600 hover:bg-red-700 text-white py-6 text-lg font-bold"
+          className={`w-full py-6 text-lg font-bold transition-all duration-300 ${
+            hasConfirmedSobriety 
+              ? 'bg-green-600 hover:bg-green-700' 
+              : 'bg-red-600 hover:bg-red-700'
+          } text-white`}
           onClick={handleNotUsingToday}
+          disabled={hasConfirmedSobriety}
         >
-          HOJE EU NAO VOU USAR!
+          {hasConfirmedSobriety 
+            ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
+            : "HOJE EU NAO VOU USAR!"}
         </Button>
       </div>
 
       {/* Categories */}
-      <div className="px-6 pb-20"> {/* Added padding bottom to account for the navigation bar */}
+      <div className="px-6 pb-20">
         <h2 className="text-xl font-semibold text-white mb-4">Categorias</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {categories.map((category) => (
