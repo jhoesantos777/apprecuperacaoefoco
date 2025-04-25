@@ -11,16 +11,23 @@ type Professional = Database['public']['Tables']['professionals']['Row'];
 interface ProfessionalSelectorProps {
   value: string | null;
   onChange: (value: string) => void;
+  specialty?: string;
 }
 
-export const ProfessionalSelector = ({ value, onChange }: ProfessionalSelectorProps) => {
+export const ProfessionalSelector = ({ value, onChange, specialty }: ProfessionalSelectorProps) => {
   const { data: professionals, isLoading } = useQuery({
-    queryKey: ['professionals'],
+    queryKey: ['professionals', specialty],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('professionals')
         .select('*')
         .order('name');
+      
+      if (specialty) {
+        query = query.eq('specialty', specialty);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data as Professional[];
@@ -29,6 +36,10 @@ export const ProfessionalSelector = ({ value, onChange }: ProfessionalSelectorPr
 
   if (isLoading) {
     return <div>Carregando profissionais...</div>;
+  }
+
+  if (!professionals?.length) {
+    return <div>Nenhum profissional encontrado para esta especialidade.</div>;
   }
 
   return (

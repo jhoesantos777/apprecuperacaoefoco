@@ -11,14 +11,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProfessionalSelector } from '@/components/scheduling/ProfessionalSelector';
 import { TimeSlotSelector } from '@/components/scheduling/TimeSlotSelector';
 import { AppointmentsList } from '@/components/scheduling/AppointmentsList';
+import { ConsultationType } from '@/components/scheduling/ConsultationType';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AvailableSlot } from '@/types/scheduling';
+
+type ConsultationType = 'counselor' | 'psychologist' | 'psychiatrist' | 'mentor';
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedProfessional, setSelectedProfessional] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [consultationType, setConsultationType] = useState<ConsultationType>();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -71,6 +75,12 @@ const Schedule = () => {
     }
   };
 
+  // Reset professional selection when consultation type changes
+  const handleConsultationTypeChange = (type: ConsultationType) => {
+    setConsultationType(type);
+    setSelectedProfessional(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-6">
       <Button
@@ -89,25 +99,35 @@ const Schedule = () => {
               <CardTitle>Agendar Consulta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <ProfessionalSelector
-                value={selectedProfessional}
-                onChange={setSelectedProfessional}
+              <ConsultationType
+                value={consultationType}
+                onChange={handleConsultationTypeChange}
               />
 
-              <div className="space-y-2">
-                <h3 className="font-medium">Selecione uma data</h3>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  locale={ptBR}
-                  disabled={(date) => 
-                    date < new Date() || 
-                    date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-                  }
-                  className="rounded-md border shadow"
+              {consultationType && (
+                <ProfessionalSelector
+                  value={selectedProfessional}
+                  onChange={setSelectedProfessional}
+                  specialty={consultationType}
                 />
-              </div>
+              )}
+
+              {selectedProfessional && (
+                <div className="space-y-2">
+                  <h3 className="font-medium">Selecione uma data</h3>
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    locale={ptBR}
+                    disabled={(date) => 
+                      date < new Date() || 
+                      date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    }
+                    className="rounded-md border shadow"
+                  />
+                </div>
+              )}
 
               <TimeSlotSelector
                 slots={slots || []}
