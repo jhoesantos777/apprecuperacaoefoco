@@ -26,6 +26,7 @@ import Schedule from "./pages/Schedule";
 import Devotional from "./pages/Devotional";
 import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
+import MoodSelection from "./pages/MoodSelection";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => {
               <Route path="/talk-to-me" element={<TalkToMe />} />
               <Route path="/chat" element={<Navigate to="/talk-to-me" replace />} />
               <Route path="/treatments" element={<Treatments />} />
+              <Route path="/mood-selection" element={<MoodSelection />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

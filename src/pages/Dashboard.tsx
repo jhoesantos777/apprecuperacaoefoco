@@ -101,6 +101,13 @@ const Dashboard = () => {
 
   const categories = [
     {
+      id: 'mood',
+      title: 'Atualizar Humor',
+      description: 'Como você está se sentindo hoje?',
+      icon: Smile,
+      path: '/mood-selection'
+    },
+    {
       id: 'sobriety',
       title: 'Dias em sobriedade',
       description: 'Aqui ficará contabilidades dos dias, somando 1 a cada dia que registrar hoje eu não vou usar',
@@ -188,7 +195,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
-      {/* Header */}
       <div className="p-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <ProfilePicture
@@ -211,12 +217,10 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {/* Conditional Content Based on User Type */}
       {profile?.tipoUsuario === "family" ? (
         <FamilyDashboard />
       ) : (
         <>
-          {/* Not Using Today Button */}
           <div className="px-6 mb-8">
             <Button 
               className={`w-full py-6 text-lg font-bold transition-all duration-300 ${
@@ -233,7 +237,6 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          {/* Categories */}
           <div className="px-6 pb-20">
             <h2 className="text-xl font-semibold text-white mb-4">Categorias</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -253,7 +256,6 @@ const Dashboard = () => {
         </>
       )}
 
-      {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center p-3">
         <Button variant="ghost" className="flex flex-col items-center gap-1" onClick={() => navigate('/dashboard')}>
           <Home className="h-5 w-5" />
