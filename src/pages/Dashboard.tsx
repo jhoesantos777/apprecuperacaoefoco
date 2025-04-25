@@ -81,7 +81,7 @@ const Dashboard = () => {
       title: 'Consultas',
       description: 'Agende consultas',
       icon: MessageSquare,
-      path: '/consultations'
+      path: '/schedule'
     },
     {
       id: 'devotional',
