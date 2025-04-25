@@ -18,6 +18,7 @@ import Mood from "./pages/Mood";
 import Tasks from "./pages/Tasks";
 import Recovery from "./pages/Recovery";
 import Reflection from "./pages/Reflection";
+import Achievements from "./pages/Achievements";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/recovery" element={<Recovery />} />
             <Route path="/reflection" element={<Reflection />} />
+            <Route path="/achievements" element={<Achievements />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

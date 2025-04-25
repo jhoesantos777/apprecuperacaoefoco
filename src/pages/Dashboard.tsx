@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star } from "lucide-react";
+import { Home, Heart, Settings, User, CalendarDays, Smile, Thermometer, ListTodo, MessageSquare, Star, Award } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
@@ -64,9 +64,9 @@ const Dashboard = () => {
     },
     {
       id: 'achievements',
-      title: 'minhas conquistas',
-      description: 'Suas vitórias',
-      icon: Star,
+      title: 'Minhas Conquistas',
+      description: 'Suas vitórias e marcos importantes',
+      icon: Award,
       path: '/achievements'
     },
     {
