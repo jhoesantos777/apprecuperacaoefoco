@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Appointment } from '@/types/scheduling';
 
 export const AppointmentsList = () => {
   const { toast } = useToast();
@@ -14,7 +15,8 @@ export const AppointmentsList = () => {
   const { data: appointments, isLoading, refetch } = useQuery({
     queryKey: ['myAppointments'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Usando 'any' temporariamente para contornar a limitação do tipo
+      const { data, error } = await (supabase as any)
         .from('appointments')
         .select(`
           *,
@@ -27,7 +29,7 @@ export const AppointmentsList = () => {
         .order('start_time', { ascending: true });
       
       if (error) throw error;
-      return data;
+      return data as Appointment[];
     },
   });
 
@@ -81,9 +83,9 @@ export const AppointmentsList = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{appointment.professionals.name}</h4>
+                    <h4 className="font-medium">{appointment.professionals?.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {appointment.professionals.specialty}
+                      {appointment.professionals?.specialty}
                     </p>
                   </div>
                   <div className="text-right">

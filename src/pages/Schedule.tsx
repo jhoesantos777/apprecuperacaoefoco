@@ -13,6 +13,7 @@ import { TimeSlotSelector } from '@/components/scheduling/TimeSlotSelector';
 import { AppointmentsList } from '@/components/scheduling/AppointmentsList';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AvailableSlot } from '@/types/scheduling';
 
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -26,7 +27,8 @@ const Schedule = () => {
     queryFn: async () => {
       if (!selectedDate || !selectedProfessional) return [];
       
-      const { data, error } = await supabase
+      // Usando 'any' temporariamente para contornar a limitação do tipo
+      const { data, error } = await (supabase as any)
         .from('available_slots')
         .select('*')
         .eq('professional_id', selectedProfessional)
@@ -34,7 +36,7 @@ const Schedule = () => {
         .eq('is_available', true);
 
       if (error) throw error;
-      return data;
+      return data as AvailableSlot[];
     },
     enabled: !!selectedDate && !!selectedProfessional,
   });
