@@ -45,7 +45,7 @@ const TalkToMe = () => {
     // If no saved messages or error, show welcome message
     setMessages([
       {
-        role: 'assistant',
+        role: 'assistant' as const,
         content: 'Olá! Sou um conselheiro especializado em apoiar pessoas que enfrentam dependência química. Como posso ajudar você hoje? Sinta-se à vontade para compartilhar suas dúvidas ou preocupações.'
       }
     ]);
@@ -64,8 +64,8 @@ const TalkToMe = () => {
     if (!message.trim()) return;
     
     // Add user message with mood
-    const updatedMessages = [...messages, { role: 'user', content: message, mood }];
-    setMessages(updatedMessages);
+    const userMessage: Message = { role: 'user', content: message, mood };
+    setMessages([...messages, userMessage]);
     setIsLoading(true);
     
     try {
@@ -75,7 +75,7 @@ const TalkToMe = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: updatedMessages,
+          messages: [...messages, userMessage],
         }),
       });
 
@@ -84,7 +84,8 @@ const TalkToMe = () => {
       }
 
       const data = await response.json();
-      setMessages(prevMessages => [...prevMessages, { role: 'assistant', content: data.message }]);
+      const assistantMessage: Message = { role: 'assistant', content: data.message };
+      setMessages(prevMessages => [...prevMessages, assistantMessage]);
     } catch (error) {
       console.error('Erro:', error);
       toast({
@@ -93,10 +94,12 @@ const TalkToMe = () => {
         variant: "destructive"
       });
       
-      setMessages(prev => [...prev, { 
+      const errorMessage: Message = { 
         role: 'assistant', 
         content: "Me desculpe, estou tendo dificuldades para responder no momento. Por favor, tente novamente em alguns instantes." 
-      }]);
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
       setMessage('');
@@ -107,7 +110,7 @@ const TalkToMe = () => {
     sessionStorage.removeItem('chat-messages');
     setMessages([
       {
-        role: 'assistant',
+        role: 'assistant' as const,
         content: 'Olá! Sou um conselheiro especializado em apoiar pessoas que enfrentam dependência química. Como posso ajudar você hoje? Sinta-se à vontade para compartilhar suas dúvidas ou preocupações.'
       }
     ]);
