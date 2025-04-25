@@ -1,12 +1,12 @@
-
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { BackButton } from '@/components/BackButton';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -25,7 +25,6 @@ const Auth = () => {
     setIsLoading(true);
     try {
       if (isSignUp) {
-        // Redirect to signup page with detailed form
         navigate("/signup");
         return;
       } else {
@@ -47,13 +46,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 flex flex-col px-6 py-8">
-      <button
-        onClick={() => navigate("/")}
-        className="text-white/70 hover:text-white flex items-center gap-2 mb-12"
-      >
-        <ArrowLeft size={24} />
-        Voltar
-      </button>
+      <BackButton text="Início" className="text-white/70 hover:text-white" />
 
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full">
         <div className="w-20 h-20 mb-8 mx-auto">

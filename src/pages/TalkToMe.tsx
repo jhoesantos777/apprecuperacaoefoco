@@ -22,13 +22,11 @@ const TalkToMe = () => {
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   useEffect(() => {
-    // Check for existing conversation in session storage
     const savedMessages = sessionStorage.getItem('chat-messages');
     if (savedMessages) {
       try {
@@ -42,7 +40,6 @@ const TalkToMe = () => {
       }
     }
     
-    // If no saved messages or error, show welcome message
     setMessages([
       {
         role: 'assistant' as const,
@@ -51,7 +48,6 @@ const TalkToMe = () => {
     ]);
   }, []);
 
-  // Save messages to session storage when they change
   useEffect(() => {
     if (messages.length > 0) {
       sessionStorage.setItem('chat-messages', JSON.stringify(messages));
@@ -63,7 +59,6 @@ const TalkToMe = () => {
     
     if (!message.trim()) return;
     
-    // Add user message with mood
     const userMessage: Message = { role: 'user', content: message, mood };
     setMessages([...messages, userMessage]);
     setIsLoading(true);
@@ -122,6 +117,7 @@ const TalkToMe = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-6">
+      <BackButton />
       
       <div className="mb-20">
         <div className="max-w-2xl mx-auto space-y-6">
@@ -178,12 +174,6 @@ const TalkToMe = () => {
           </div>
         </div>
       </div>
-
-      <BackButton 
-        position="bottom" 
-        fullWidth 
-        className="absolute bottom-0 left-0 right-0"
-      />
     </div>
   );
 };
