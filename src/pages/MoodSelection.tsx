@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -125,7 +126,7 @@ const MoodSelection = () => {
       
       <div className="max-w-md mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-2">Como você est�� se sentindo?</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Como você está se sentindo?</h1>
           <p className="text-white/80">Selecione a opção que melhor representa seu humor atual</p>
         </div>
 
@@ -134,9 +135,11 @@ const MoodSelection = () => {
             {moodOptions.map((option) => (
               <Button
                 key={option.value}
-                variant="outline"
+                variant={selectedMood === option.value ? "default" : "outline"}
                 className={`h-32 flex flex-col items-center justify-center p-4 ${
-                  selectedMood === option.value ? option.color : ''
+                  selectedMood === option.value 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'border border-input bg-background hover:bg-accent'
                 }`}
                 onClick={() => setSelectedMood(option.value)}
               >
