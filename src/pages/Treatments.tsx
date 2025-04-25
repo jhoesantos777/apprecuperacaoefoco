@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Heart, Calendar, Users, Flag, HeartHandshake, Warning, Check } from 'lucide-react';
+import { Shield, Heart, Calendar, Users, Flag, HeartHandshake, Check, AlertTriangle } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
