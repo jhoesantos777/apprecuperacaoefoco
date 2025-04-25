@@ -11,7 +11,7 @@ export const setupMockApi = () => {
     // Handle mock API endpoints
     if (url === '/api/talk-to-me') {
       const body = init?.body ? JSON.parse(init.body.toString()) : {};
-      return fetchMockTalkToMeApi(body.messages, body.mood);
+      return fetchMockTalkToMeApi(body.messages);
     }
     
     // For all other requests, use the original fetch
