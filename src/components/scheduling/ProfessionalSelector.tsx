@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import type { Database } from "@/integrations/supabase/types";
 
 type Professional = Database['public']['Tables']['professionals']['Row'];
@@ -35,11 +36,19 @@ export const ProfessionalSelector = ({ value, onChange, specialty }: Professiona
   });
 
   if (isLoading) {
-    return <div>Carregando profissionais...</div>;
+    return <div className="py-4 text-center text-muted-foreground">Carregando profissionais...</div>;
   }
 
   if (!professionals?.length) {
-    return <div>Nenhum profissional encontrado para esta especialidade.</div>;
+    return (
+      <Alert className="mb-4">
+        <AlertTitle>Nenhum profissional encontrado</AlertTitle>
+        <AlertDescription>
+          Não encontramos profissionais cadastrados para a especialidade "{specialty}". 
+          Por favor, selecione outra especialidade ou tente novamente mais tarde.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (

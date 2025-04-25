@@ -79,6 +79,18 @@ const Schedule = () => {
   const handleConsultationTypeChange = (type: ConsultationType) => {
     setConsultationType(type);
     setSelectedProfessional(null);
+    setSelectedSlot(null);
+  };
+
+  // Reset slot selection when professional or date changes
+  const handleProfessionalChange = (professionalId: string) => {
+    setSelectedProfessional(professionalId);
+    setSelectedSlot(null);
+  };
+  
+  const handleDateChange = (date: Date | undefined) => {
+    setSelectedDate(date);
+    setSelectedSlot(null);
   };
 
   return (
@@ -107,7 +119,7 @@ const Schedule = () => {
               {consultationType && (
                 <ProfessionalSelector
                   value={selectedProfessional}
-                  onChange={setSelectedProfessional}
+                  onChange={handleProfessionalChange}
                   specialty={consultationType}
                 />
               )}
@@ -118,23 +130,26 @@ const Schedule = () => {
                   <Calendar
                     mode="single"
                     selected={selectedDate}
-                    onSelect={setSelectedDate}
+                    onSelect={handleDateChange}
                     locale={ptBR}
                     disabled={(date) => 
                       date < new Date() || 
                       date > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                     }
-                    className="rounded-md border shadow"
+                    className="rounded-md border shadow pointer-events-auto"
                   />
                 </div>
               )}
 
-              <TimeSlotSelector
-                slots={slots || []}
-                selectedSlot={selectedSlot}
-                onSelectSlot={setSelectedSlot}
-                isLoading={slotsLoading}
-              />
+              {selectedDate && selectedProfessional && (
+                <TimeSlotSelector
+                  slots={slots || []}
+                  selectedSlot={selectedSlot}
+                  onSelectSlot={setSelectedSlot}
+                  isLoading={slotsLoading}
+                  selectedDate={selectedDate}
+                />
+              )}
 
               <Button 
                 className="w-full"

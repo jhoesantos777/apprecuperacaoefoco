@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AvailableSlot } from '@/types/scheduling';
 
 interface TimeSlotSelectorProps {
@@ -10,6 +11,7 @@ interface TimeSlotSelectorProps {
   selectedSlot: string | null;
   onSelectSlot: (slotId: string) => void;
   isLoading: boolean;
+  selectedDate?: Date;
 }
 
 export const TimeSlotSelector = ({
@@ -17,16 +19,30 @@ export const TimeSlotSelector = ({
   selectedSlot,
   onSelectSlot,
   isLoading,
+  selectedDate,
 }: TimeSlotSelectorProps) => {
   if (isLoading) {
-    return <div>Carregando horários disponíveis...</div>;
+    return <div className="py-4 text-center text-muted-foreground">Carregando horários disponíveis...</div>;
   }
 
   if (slots.length === 0) {
     return (
-      <div className="text-center p-4 text-muted-foreground">
-        Nenhum horário disponível para esta data.
-      </div>
+      <Alert>
+        <AlertTitle>Nenhum horário disponível</AlertTitle>
+        <AlertDescription>
+          {selectedDate ? (
+            <>
+              Não encontramos horários disponíveis para {format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}.
+              Por favor, selecione outra data ou profissional.
+            </>
+          ) : (
+            <>
+              Nenhum horário disponível para a data selecionada.
+              Por favor, selecione outra data ou profissional.
+            </>
+          )}
+        </AlertDescription>
+      </Alert>
     );
   }
 
