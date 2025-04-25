@@ -7,6 +7,16 @@ export type DrugCategory = {
 
 export type UserType = "dependent" | "family" | "professional";
 
+export type RelationType = 
+  | "spouse"
+  | "father"
+  | "mother"
+  | "sibling"
+  | "uncle"
+  | "cousin"
+  | "friend"
+  | "other";
+
 export interface SignUpFormData {
   nome: string;
   dataNascimento: string;
@@ -14,6 +24,7 @@ export interface SignUpFormData {
   cidade: string;
   estado: string;
   tipoUsuario: UserType;
+  grauParentesco?: RelationType;
   contatoEmergencia?: string;
   tempoUso: string;
   drogas: string[];

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,13 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { DrugSelection } from "@/components/DrugSelection";
+import { ArrowLeft, ArrowRight, Calendar, Mail, Lock, MapPin, User } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { SignUpFormData, UserType } from "@/types/signup";
+import { SignUpFormData, UserType, RelationType } from "@/types/signup";
 import { Link } from "react-router-dom";
 
 const SignUp = () => {
@@ -27,8 +24,9 @@ const SignUp = () => {
     genero: "",
     cidade: "",
     estado: "",
+    tipoUsuario: "family",
+    grauParentesco: undefined,
     contatoEmergencia: "",
-    tipoUsuario: "dependent",
     tempoUso: "",
     drogas: [],
     aceitaTermos: false,
@@ -87,10 +85,8 @@ const SignUp = () => {
             genero: formData.genero,
             cidade: formData.cidade,
             estado: formData.estado,
-            contatoEmergencia: formData.contatoEmergencia,
+            grauParentesco: formData.grauParentesco,
             tipoUsuario: formData.tipoUsuario,
-            tempoUso: formData.tempoUso,
-            drogas: formData.drogas,
           },
         },
       });
@@ -98,8 +94,6 @@ const SignUp = () => {
       if (error) {
         if (error.message.includes("User already registered")) {
           toast.error("Este email já está cadastrado. Tente fazer login ou use outro email.");
-          
-          // Focus on the email field if we're on step 4
           if (step === 4) {
             const emailInput = document.getElementById("email");
             if (emailInput) {
@@ -126,9 +120,12 @@ const SignUp = () => {
     if (step === 1) {
       return !!formData.nome && !!formData.dataNascimento && !!formData.genero;
     } else if (step === 2) {
+      if (formData.tipoUsuario === "family") {
+        return !!formData.cidade && !!formData.estado && !!formData.grauParentesco;
+      }
       return !!formData.cidade && !!formData.estado && !!formData.tipoUsuario;
     } else if (step === 3) {
-      return !!formData.tempoUso && formData.drogas.length > 0;
+      return true;
     } else if (step === 4) {
       return !!formData.email && formData.password.length >= 6 && formData.aceitaTermos;
     }
@@ -142,25 +139,31 @@ const SignUp = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="nome">Nome completo</Label>
-              <Input
-                id="nome"
-                type="text"
-                value={formData.nome}
-                onChange={(e) => updateFormData("nome", e.target.value)}
-                placeholder="Digite seu nome completo"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
+              <div className="relative">
+                <Input
+                  id="nome"
+                  type="text"
+                  value={formData.nome}
+                  onChange={(e) => updateFormData("nome", e.target.value)}
+                  placeholder="Digite seu nome completo"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-10"
+                />
+                <User className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              </div>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="dataNascimento">Data de nascimento</Label>
-              <Input
-                id="dataNascimento"
-                type="date"
-                value={formData.dataNascimento}
-                onChange={(e) => updateFormData("dataNascimento", e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
+              <div className="relative">
+                <Input
+                  id="dataNascimento"
+                  type="date"
+                  value={formData.dataNascimento}
+                  onChange={(e) => updateFormData("dataNascimento", e.target.value)}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-10"
+                />
+                <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -196,14 +199,17 @@ const SignUp = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="cidade">Cidade</Label>
-              <Input
-                id="cidade"
-                type="text"
-                value={formData.cidade}
-                onChange={(e) => updateFormData("cidade", e.target.value)}
-                placeholder="Digite sua cidade"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
+              <div className="relative">
+                <Input
+                  id="cidade"
+                  type="text"
+                  value={formData.cidade}
+                  onChange={(e) => updateFormData("cidade", e.target.value)}
+                  placeholder="Digite sua cidade"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-10"
+                />
+                <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              </div>
             </div>
             
             <div className="space-y-2">
@@ -226,76 +232,41 @@ const SignUp = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="contato">Contato de emergência (opcional)</Label>
-              <Input
-                id="contato"
-                type="text"
-                value={formData.contatoEmergencia}
-                onChange={(e) => updateFormData("contatoEmergencia", e.target.value)}
-                placeholder="Nome e telefone de contato"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Você é</Label>
-              <RadioGroup
-                value={formData.tipoUsuario}
-                onValueChange={(value) => updateFormData("tipoUsuario", value as UserType)}
-                className="flex flex-col space-y-2"
+              <Label>Grau de Parentesco</Label>
+              <Select
+                value={formData.grauParentesco}
+                onValueChange={(value) => updateFormData("grauParentesco", value as RelationType)}
               >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="dependent" id="dependent" />
-                  <Label htmlFor="dependent">Dependente químico em recuperação</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="family" id="family" />
-                  <Label htmlFor="family">Familiar de dependente químico</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="professional" id="professional" />
-                  <Label htmlFor="professional">Profissional da área</Label>
-                </div>
-              </RadioGroup>
+                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                  <SelectValue placeholder="Selecione seu grau de parentesco" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="spouse">Cônjuge</SelectItem>
+                  <SelectItem value="father">Pai</SelectItem>
+                  <SelectItem value="mother">Mãe</SelectItem>
+                  <SelectItem value="sibling">Irmão/Irmã</SelectItem>
+                  <SelectItem value="uncle">Tio(a)</SelectItem>
+                  <SelectItem value="cousin">Primo(a)</SelectItem>
+                  <SelectItem value="friend">Amigo(a)</SelectItem>
+                  <SelectItem value="other">Outro</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         );
         
       case 3:
         return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="tempoUso">Tempo de uso de substâncias</Label>
-              <Select
-                value={formData.tempoUso}
-                onValueChange={(value) => updateFormData("tempoUso", value)}
-              >
-                <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                  <SelectValue placeholder="Selecione o tempo de uso" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="menos_6_meses">Menos de 6 meses</SelectItem>
-                  <SelectItem value="6_meses_1_ano">6 meses a 1 ano</SelectItem>
-                  <SelectItem value="1_3_anos">1 a 3 anos</SelectItem>
-                  <SelectItem value="3_5_anos">3 a 5 anos</SelectItem>
-                  <SelectItem value="5_10_anos">5 a 10 anos</SelectItem>
-                  <SelectItem value="mais_10_anos">Mais de 10 anos</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-3">
-              <Label>Drogas que já usou ou ainda enfrenta dificuldades</Label>
-              <div className="text-sm text-white/60 mb-2">
-                Selecione todas as opções aplicáveis
-              </div>
-              <DrugSelection
-                selectedDrugs={formData.drogas}
-                onDrugToggle={handleDrugToggle}
-              />
-            </div>
+          <div className="space-y-6 text-center">
+            <h3 className="text-xl text-white font-semibold">
+              Obrigado por fazer parte dessa jornada
+            </h3>
+            <p className="text-white/70">
+              Seu apoio é fundamental para a recuperação do seu ente querido.
+              Vamos para o último passo: criar suas credenciais de acesso.
+            </p>
           </div>
         );
         
@@ -304,26 +275,32 @@ const SignUp = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => updateFormData("email", e.target.value)}
-                placeholder="Digite seu email"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => updateFormData("email", e.target.value)}
+                  placeholder="Digite seu email"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-10"
+                />
+                <Mail className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              </div>
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => updateFormData("password", e.target.value)}
-                placeholder="Crie sua senha (mínimo 6 caracteres)"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => updateFormData("password", e.target.value)}
+                  placeholder="Crie sua senha (mínimo 6 caracteres)"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-10"
+                />
+                <Lock className="absolute left-3 top-2.5 h-5 w-5 text-white/50" />
+              </div>
             </div>
             
             <div className="flex items-center space-x-2 pt-4">
@@ -334,7 +311,7 @@ const SignUp = () => {
                 className="border-white/50"
               />
               <Label htmlFor="terms" className="text-sm">
-                Estou buscando ajuda e aceito começar essa jornada
+                Aceito apoiar e fazer parte desta jornada de recuperação
               </Label>
             </div>
           </div>
@@ -360,7 +337,7 @@ const SignUp = () => {
       <div className="flex-1 flex flex-col max-w-2xl mx-auto w-full">
         <div className="text-center mb-8">
           <h1 className="text-yellow-300 text-3xl font-bold mb-4">
-            CADASTRO DE PACIENTE
+            CADASTRO DE FAMILIAR
           </h1>
           
           <div className="flex justify-center items-center mb-6">
