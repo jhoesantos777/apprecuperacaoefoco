@@ -1,4 +1,3 @@
-
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -24,6 +23,23 @@ export const mockTalkToMeApi = async (
   const userMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
   
   try {
+    // Respostas para saudações e mensagens iniciais
+    const greetingPatterns = ['oi', 'olá', 'ola', 'bom dia', 'boa tarde', 'boa noite'];
+    if (greetingPatterns.some(pattern => userMessage.toLowerCase().includes(pattern))) {
+      return {
+        message: 'Olá! Que bom ter você aqui. Como está se sentindo hoje? Estou aqui para ouvir e conversar sobre o que você precisar.'
+      };
+    }
+
+    // Respostas para pedidos de ajuda genéricos
+    const helpPatterns = ['ajuda', 'ajude', 'preciso de ajuda', 'socorro'];
+    if (helpPatterns.some(pattern => userMessage.toLowerCase().includes(pattern))) {
+      return {
+        message: 'Estou aqui para te ajudar. Pode me contar um pouco mais sobre o que está passando? Às vezes o primeiro passo é simplesmente compartilhar o que está sentindo, sem julgamentos.'
+      };
+    }
+
+    // Mantém as respostas específicas para tópicos importantes
     const topicResponses: {[key: string]: string[]} = {
       ansiedade: [
         'A ansiedade durante o processo de recuperação é comum e compreensível. Podemos trabalhar juntos em técnicas específicas para gerenciá-la sem recorrer a substâncias. Você já identificou situações específicas que aumentam sua ansiedade? Como tem lidado com esses momentos?',
@@ -52,54 +68,26 @@ export const mockTalkToMeApi = async (
       ]
     };
 
-    // Check for specific questions
-    const questionPatterns = {
-      'como lidar': [
-        'Entendo sua busca por estratégias de enfrentamento. Vamos trabalhar juntos em técnicas específicas para sua situação. Poderia me contar mais sobre os momentos em que você sente maior dificuldade? Isso nos ajudará a desenvolver um plano personalizado.',
-        'Cada pessoa encontra diferentes formas de lidar com os desafios da recuperação. Vamos explorar quais estratégias podem funcionar melhor para você. Que métodos você já tentou? O que funcionou e o que não funcionou?'
-      ],
-      'quanto tempo': [
-        'A recuperação é uma jornada individual e cada pessoa tem seu próprio ritmo. Em vez de focar no tempo, vamos nos concentrar em como fortalecer suas estratégias de recuperação no presente. Como você tem medido seu progresso até agora?',
-        'É natural querer saber sobre prazos, mas cada jornada é única. O mais importante é fortalecer suas ferramentas de recuperação diariamente. Que aspectos da sua recuperação você sente que precisam de mais atenção agora?'
-      ],
-      'por que': [
-        'Sua pergunta sobre os motivos é muito importante e mostra seu desejo de compreender melhor o processo. Vamos explorar juntos os fatores que podem estar contribuindo para essa situação. Como você tem percebido esse aspecto afetando sua recuperação?',
-        'Entender o "por quê" é uma parte importante do processo de recuperação. Isso nos ajuda a desenvolver estratégias mais efetivas. Poderia me contar mais sobre quando você começou a notar isso?'
-      ]
-    };
-
-    // Default responses for when no specific pattern is matched
-    const defaultResponses = [
-      'Agradeço você compartilhar isso comigo. Como tem sido lidar com essa situação no seu dia a dia? Podemos explorar juntos algumas estratégias que podem ajudar.',
-      'Sua experiência é válida e importante. Vamos trabalhar juntos para encontrar as melhores formas de fortalecer sua recuperação. O que você sente que seria mais útil neste momento?',
-      'Obrigado por confiar em mim para compartilhar isso. Como você tem se sentido ao lidar com essa situação? Podemos desenvolver estratégias específicas para ajudar.'
-    ];
-
-    // Find matching topic response
-    let response = '';
+    // Procura por tópicos específicos na mensagem do usuário
     for (const [topic, responses] of Object.entries(topicResponses)) {
       if (userMessage.toLowerCase().includes(topic)) {
-        response = responses[Math.floor(Math.random() * responses.length)];
-        break;
+        return { 
+          message: responses[Math.floor(Math.random() * responses.length)] 
+        };
       }
     }
 
-    // If no topic matched, check for question patterns
-    if (!response) {
-      for (const [pattern, responses] of Object.entries(questionPatterns)) {
-        if (userMessage.toLowerCase().includes(pattern)) {
-          response = responses[Math.floor(Math.random() * responses.length)];
-          break;
-        }
-      }
-    }
+    // Respostas padrão mais naturais e engajadas
+    const defaultResponses = [
+      'Me conte mais sobre isso. Como você tem se sentido ultimamente? Estou aqui para te escutar e juntos podemos encontrar caminhos.',
+      'Entendo que cada situação é única. Pode me explicar melhor o que está acontecendo? Isso vai me ajudar a te apoiar da melhor forma possível.',
+      'Às vezes é difícil expressar o que estamos sentindo. Não se preocupe, pode ir no seu tempo. Estou aqui para te ouvir e apoiar.',
+      'O que você está sentindo é válido e importante. Vamos conversar mais sobre isso? Me conte um pouco mais sobre sua situação.'
+    ];
 
-    // If still no match, use default response
-    if (!response) {
-      response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-    }
-
-    return { message: response };
+    return { 
+      message: defaultResponses[Math.floor(Math.random() * defaultResponses.length)] 
+    };
     
   } catch (error) {
     console.error('Error in mock API response:', error);
