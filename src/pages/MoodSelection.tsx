@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -96,8 +95,7 @@ const MoodSelection = () => {
 
       if (moodError) throw moodError;
 
-      // Update profile's current mood using raw SQL
-      // This avoids TypeScript errors since we're using RPC instead of the profiles table directly
+      // Update profile's current mood using RPC
       const { error: profileError } = await supabase.rpc('update_user_mood', {
         mood_value: selectedMood,
         mood_timestamp: new Date().toISOString()
@@ -127,7 +125,7 @@ const MoodSelection = () => {
       
       <div className="max-w-md mx-auto space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-2">Como você está se sentindo?</h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Como você est�� se sentindo?</h1>
           <p className="text-white/80">Selecione a opção que melhor representa seu humor atual</p>
         </div>
 

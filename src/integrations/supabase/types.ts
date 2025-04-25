@@ -505,7 +505,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      update_user_mood: {
+        Args: { mood_value: string; mood_timestamp: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
