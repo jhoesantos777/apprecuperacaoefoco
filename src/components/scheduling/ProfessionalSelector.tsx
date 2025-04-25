@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { User } from 'lucide-react';
-import { Professional } from '@/types/scheduling';
+import type { Database } from "@/integrations/supabase/types";
+
+type Professional = Database['public']['Tables']['professionals']['Row'];
 
 interface ProfessionalSelectorProps {
   value: string | null;
@@ -15,8 +17,7 @@ export const ProfessionalSelector = ({ value, onChange }: ProfessionalSelectorPr
   const { data: professionals, isLoading } = useQuery({
     queryKey: ['professionals'],
     queryFn: async () => {
-      // Usando 'any' temporariamente para contornar a limitação do tipo
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('professionals')
         .select('*')
         .order('name');

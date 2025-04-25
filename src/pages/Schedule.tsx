@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -15,6 +14,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AvailableSlot } from '@/types/scheduling';
 
+type AvailableSlot = Database['public']['Tables']['available_slots']['Row'];
+
 const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedProfessional, setSelectedProfessional] = useState<string | null>(null);
@@ -27,8 +28,7 @@ const Schedule = () => {
     queryFn: async () => {
       if (!selectedDate || !selectedProfessional) return [];
       
-      // Usando 'any' temporariamente para contornar a limitação do tipo
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('available_slots')
         .select('*')
         .eq('professional_id', selectedProfessional)

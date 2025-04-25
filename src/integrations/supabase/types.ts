@@ -9,6 +9,110 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          created_at: string | null
+          end_time: string
+          id: string
+          notes: string | null
+          payment_amount: number
+          payment_id: string | null
+          payment_status: string
+          professional_id: string
+          slot_id: string
+          start_time: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          appointment_date: string
+          created_at?: string | null
+          end_time: string
+          id?: string
+          notes?: string | null
+          payment_amount: number
+          payment_id?: string | null
+          payment_status?: string
+          professional_id: string
+          slot_id: string
+          start_time: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          appointment_date?: string
+          created_at?: string | null
+          end_time?: string
+          id?: string
+          notes?: string | null
+          payment_amount?: number
+          payment_id?: string | null
+          payment_status?: string
+          professional_id?: string
+          slot_id?: string
+          start_time?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "available_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      available_slots: {
+        Row: {
+          created_at: string | null
+          date: string
+          end_time: string
+          id: string
+          is_available: boolean
+          professional_id: string
+          start_time: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          end_time: string
+          id?: string
+          is_available?: boolean
+          professional_id: string
+          start_time: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          professional_id?: string
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "available_slots_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string | null
@@ -164,6 +268,36 @@ export type Database = {
           mood?: string
           points?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      professionals: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          hourly_rate: number
+          id: string
+          image_url: string | null
+          name: string
+          specialty: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          hourly_rate: number
+          id?: string
+          image_url?: string | null
+          name: string
+          specialty: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          hourly_rate?: number
+          id?: string
+          image_url?: string | null
+          name?: string
+          specialty?: string
         }
         Relationships: []
       }
