@@ -6,7 +6,7 @@ export interface Professional {
   bio?: string;
   image_url?: string;
   hourly_rate: number;
-  created_at?: string;
+  created_at: string;
 }
 
 export interface AvailableSlot {
@@ -16,7 +16,7 @@ export interface AvailableSlot {
   start_time: string;
   end_time: string;
   is_available: boolean;
-  created_at?: string;
+  created_at: string;
 }
 
 export interface Appointment {
@@ -32,7 +32,7 @@ export interface Appointment {
   payment_amount: number;
   payment_id?: string;
   notes?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
   professionals?: Professional;
 }

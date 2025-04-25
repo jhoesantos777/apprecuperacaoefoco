@@ -3,9 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { Database } from "@/integrations/supabase/types";
-
-type AvailableSlot = Database['public']['Tables']['available_slots']['Row'];
+import { AvailableSlot } from '@/types/scheduling';
 
 interface TimeSlotSelectorProps {
   slots: AvailableSlot[];
