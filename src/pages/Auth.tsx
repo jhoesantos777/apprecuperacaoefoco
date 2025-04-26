@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,26 +23,61 @@ const Auth = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.email || !formData.password) {
+      toast.error("Por favor, preencha todos os campos.");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       if (isSignUp) {
         navigate("/signup");
         return;
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        // Log the attempt so we can debug
+        console.log(`Attempting login with email: ${formData.email}`);
+        
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
-        if (error) throw error;
-        toast.success("Login realizado com sucesso!");
-        navigate("/dashboard");
+        
+        if (error) {
+          console.error("Login error:", error);
+          throw error;
+        }
+        
+        if (data?.user) {
+          console.log("Login successful:", data.user.email);
+          toast.success("Login realizado com sucesso!");
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
+      console.error("Full error details:", error);
       const action = isSignUp ? "fazer cadastro" : "fazer login";
-      toast.error(`Erro ao ${action}: ` + (error as Error).message);
+      
+      // More specific error messages
+      let errorMessage = `Erro ao ${action}: ` + (error as Error).message;
+      
+      if ((error as Error).message.includes("Invalid login credentials")) {
+        errorMessage = "Email ou senha incorretos. Por favor, verifique suas credenciais.";
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Form input change handler
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (
@@ -75,9 +111,10 @@ const Auth = () => {
               <div>
                 <Input
                   type="email"
+                  name="email"
                   placeholder="ESCREVE SEU EMAIL AQUI"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={handleChange}
                   className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50"
                 />
               </div>
@@ -85,9 +122,10 @@ const Auth = () => {
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   placeholder="SENHA"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={handleChange}
                   className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50 pr-10"
                 />
                 <button
