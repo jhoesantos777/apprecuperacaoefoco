@@ -96,7 +96,7 @@ const MoodSelection = () => {
 
       if (moodError) throw moodError;
 
-      // Update profile's current mood using RPC
+      // Update profile's current mood using RPC - Fix: Pass parameters as an object with named properties
       const { error: profileError } = await supabase.rpc('update_user_mood', {
         mood_value: selectedMood,
         mood_timestamp: new Date().toISOString()
