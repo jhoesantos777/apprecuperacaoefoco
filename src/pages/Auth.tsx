@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,18 @@ const Auth = () => {
     rememberMe: false,
   });
 
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate("/dashboard");
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -35,7 +47,16 @@ const Auth = () => {
         navigate("/signup");
         return;
       } else {
-        // Log the attempt so we can debug
+        // Handle admin login separately
+        if (formData.email.toLowerCase() === "admin@admin" && formData.password === "admin") {
+          // Set a session with admin role
+          toast.success("Login administrador realizado com sucesso!");
+          localStorage.setItem("userRole", "admin");
+          navigate("/dashboard");
+          return;
+        }
+        
+        // Log the attempt for debugging
         console.log(`Attempting login with email: ${formData.email}`);
         
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -50,6 +71,11 @@ const Auth = () => {
         
         if (data?.user) {
           console.log("Login successful:", data.user.email);
+          
+          // Check user type from metadata
+          const userRole = data.user.user_metadata?.tipoUsuario || "dependent";
+          localStorage.setItem("userRole", userRole);
+          
           toast.success("Login realizado com sucesso!");
           navigate("/dashboard");
         }

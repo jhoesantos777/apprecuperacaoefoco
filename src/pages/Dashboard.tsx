@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,10 +16,38 @@ const Dashboard = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
+  const [userRole, setUserRole] = useState<string>("dependent");
+  
+  useEffect(() => {
+    // Get user role from localStorage or session
+    const savedRole = localStorage.getItem("userRole");
+    if (savedRole) {
+      setUserRole(savedRole);
+    } else {
+      // Check if we have a Supabase session
+      const checkUserRole = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.user_metadata?.tipoUsuario) {
+          setUserRole(user.user_metadata.tipoUsuario);
+          localStorage.setItem("userRole", user.user_metadata.tipoUsuario);
+        }
+      };
+      checkUserRole();
+    }
+  }, []);
   
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
+      // For admin users, return a mock profile
+      if (userRole === 'admin') {
+        return {
+          nome: 'Administrador',
+          tipoUsuario: 'admin',
+          id: 'admin-id'
+        };
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
       
@@ -28,11 +57,9 @@ const Dashboard = () => {
         .eq('id', user.id)
         .single();
 
-      const { data: { user: fullUser } } = await supabase.auth.getUser();
-      
       return {
         ...profile,
-        tipoUsuario: fullUser?.user_metadata?.tipoUsuario || 'dependent'
+        tipoUsuario: userRole
       };
     },
   });
@@ -77,6 +104,9 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
+      // Clear local storage first
+      localStorage.removeItem("userRole");
+      
       const { error } = await supabase.auth.signOut();
       
       if (error) {
@@ -99,99 +129,142 @@ const Dashboard = () => {
     }
   };
 
-  const categories = [
-    {
-      id: 'mood',
-      title: 'Atualizar Humor',
-      description: 'Como você está se sentindo hoje?',
-      icon: Smile,
-      path: '/mood-selection'
-    },
-    {
-      id: 'sobriety',
-      title: 'Dias em sobriedade',
-      description: 'Aqui ficará contabilidades dos dias, somando 1 a cada dia que registrar hoje eu não vou usar',
-      icon: CalendarDays,
-      path: '/sobriety'
-    },
-    {
-      id: 'humor',
-      title: 'Humor hoje',
-      description: 'Registre como está seu humor',
-      icon: Smile,
-      path: '/mood'
-    },
-    {
-      id: 'tasks',
-      title: 'Tarefas Diárias',
-      description: 'Complete suas atividades do dia',
-      icon: ListTodo,
-      path: '/tasks'
-    },
-    {
-      id: 'thermometer',
-      title: 'Termômetro da recuperação',
-      description: 'Acompanhe seu progresso',
-      icon: Thermometer,
-      path: '/recovery'
-    },
-    {
-      id: 'reflection',
-      title: 'Reflexão do dia',
-      description: 'Momento de reflexão',
-      icon: Star,
-      path: '/reflection'
-    },
-    {
-      id: 'achievements',
-      title: 'Minhas Conquistas',
-      description: 'Suas vitórias e marcos importantes',
-      icon: Award,
-      path: '/achievements'
-    },
-    {
-      id: 'courses',
-      title: 'Cursos',
-      description: 'Aprenda mais',
-      icon: BookOpen,
-      path: '/courses'
-    },
-    {
-      id: 'consultations',
-      title: 'Consultas',
-      description: 'Agende consultas',
-      icon: MessageSquare,
-      path: '/schedule'
-    },
-    {
-      id: 'devotional',
-      title: 'Devocional',
-      description: 'Momento espiritual',
-      icon: Star,
-      path: '/devotional'
-    },
-    {
-      id: 'chat',
-      title: 'Fale comigo',
-      description: 'Converse conosco',
-      icon: MessageSquare,
-      path: '/chat'
-    },
-    {
-      id: 'treatments',
-      title: 'Tratamentos',
-      description: 'Seus tratamentos',
-      icon: Heart,
-      path: '/treatments'
-    },
-    {
-      id: 'support',
-      title: 'centro de apoio',
-      description: 'Busque ajuda',
-      icon: Heart,
-      path: '/support'
-    },
-  ];
+  // Define categories based on user role
+  const getDashboardCategories = () => {
+    const commonCategories = [
+      {
+        id: 'mood',
+        title: 'Atualizar Humor',
+        description: 'Como você está se sentindo hoje?',
+        icon: Smile,
+        path: '/mood-selection'
+      }
+    ];
+    
+    const adminCategories = [
+      ...commonCategories,
+      {
+        id: 'users',
+        title: 'Gerenciar Usuários',
+        description: 'Administrar usuários do sistema',
+        icon: User,
+        path: '/admin/users'
+      },
+      {
+        id: 'professionals',
+        title: 'Gerenciar Profissionais',
+        description: 'Administrar profissionais',
+        icon: User,
+        path: '/admin/professionals'
+      },
+      {
+        id: 'reports',
+        title: 'Relatórios',
+        description: 'Ver relatórios do sistema',
+        icon: Star,
+        path: '/admin/reports'
+      }
+    ];
+    
+    const dependentCategories = [
+      ...commonCategories,
+      {
+        id: 'sobriety',
+        title: 'Dias em sobriedade',
+        description: 'Aqui ficará contabilidades dos dias, somando 1 a cada dia que registrar hoje eu não vou usar',
+        icon: CalendarDays,
+        path: '/sobriety'
+      },
+      {
+        id: 'humor',
+        title: 'Humor hoje',
+        description: 'Registre como está seu humor',
+        icon: Smile,
+        path: '/mood'
+      },
+      {
+        id: 'tasks',
+        title: 'Tarefas Diárias',
+        description: 'Complete suas atividades do dia',
+        icon: ListTodo,
+        path: '/tasks'
+      },
+      {
+        id: 'thermometer',
+        title: 'Termômetro da recuperação',
+        description: 'Acompanhe seu progresso',
+        icon: Thermometer,
+        path: '/recovery'
+      },
+      {
+        id: 'reflection',
+        title: 'Reflexão do dia',
+        description: 'Momento de reflexão',
+        icon: Star,
+        path: '/reflection'
+      },
+      {
+        id: 'achievements',
+        title: 'Minhas Conquistas',
+        description: 'Suas vitórias e marcos importantes',
+        icon: Award,
+        path: '/achievements'
+      },
+      {
+        id: 'courses',
+        title: 'Cursos',
+        description: 'Aprenda mais',
+        icon: BookOpen,
+        path: '/courses'
+      },
+      {
+        id: 'consultations',
+        title: 'Consultas',
+        description: 'Agende consultas',
+        icon: MessageSquare,
+        path: '/schedule'
+      },
+      {
+        id: 'devotional',
+        title: 'Devocional',
+        description: 'Momento espiritual',
+        icon: Star,
+        path: '/devotional'
+      },
+      {
+        id: 'chat',
+        title: 'Fale comigo',
+        description: 'Converse conosco',
+        icon: MessageSquare,
+        path: '/chat'
+      },
+      {
+        id: 'treatments',
+        title: 'Tratamentos',
+        description: 'Seus tratamentos',
+        icon: Heart,
+        path: '/treatments'
+      },
+      {
+        id: 'support',
+        title: 'centro de apoio',
+        description: 'Busque ajuda',
+        icon: Heart,
+        path: '/support'
+      },
+    ];
+    
+    // Return the correct categories based on user role
+    if (userRole === 'admin') {
+      return adminCategories;
+    } else if (userRole === 'family') {
+      return commonCategories; // Family users see the family dashboard, so just common categories
+    } else {
+      return dependentCategories; // Default to dependent categories
+    }
+  };
+  
+  const categories = getDashboardCategories();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
@@ -204,8 +277,19 @@ const Dashboard = () => {
             size="lg"
           />
           <div>
-            <h1 className="text-2xl font-bold text-white">Bem vindo</h1>
+            <h1 className="text-2xl font-bold text-white">
+              {userRole === 'admin' 
+                ? 'Painel Administrativo' 
+                : userRole === 'family' 
+                  ? 'Painel Familiar' 
+                  : 'Bem vindo'}
+            </h1>
             <p className="text-white/90">{profile?.nome || 'Usuário'}</p>
+            {userRole === 'admin' && (
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                Administrador
+              </span>
+            )}
           </div>
         </div>
         <Button 
@@ -217,9 +301,28 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {profile?.tipoUsuario === "family" ? (
+      {userRole === "family" ? (
         <FamilyDashboard />
+      ) : userRole === "admin" ? (
+        // Admin dashboard
+        <div className="px-6 pb-20">
+          <h2 className="text-xl font-semibold text-white mb-4">Painel de Administração</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {categories.map((category) => (
+              <Card 
+                key={category.id}
+                className="p-4 flex flex-col items-center text-center cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => navigate(category.path)}
+              >
+                <category.icon className="h-8 w-8 text-blue-600 mb-2" />
+                <h3 className="text-sm font-medium">{category.title}</h3>
+                <p className="text-xs text-gray-500">{category.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
       ) : (
+        // Dependent user dashboard
         <>
           <div className="px-6 mb-8">
             <Button 
