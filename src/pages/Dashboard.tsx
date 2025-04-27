@@ -44,7 +44,8 @@ const Dashboard = () => {
         return {
           nome: 'Administrador',
           tipoUsuario: 'admin',
-          id: 'admin-id'
+          id: 'admin-id',
+          avatar_url: null // Add this line to fix TypeScript error
         };
       }
       
