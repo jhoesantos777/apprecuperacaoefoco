@@ -112,7 +112,7 @@ const Recovery = () => {
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Registrar Gatilho</h2>
+          <h2 className="text-xl font-semibold mb-4">Identifique seus Gatilhos de Hoje</h2>
           <TriggerForm />
         </Card>
       </div>

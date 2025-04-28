@@ -1,54 +1,128 @@
 
 import React, { useState } from 'react';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "@/components/ui/sonner";
+import { triggers, TriggerType } from '@/utils/triggerTips';
 
 const TriggerForm = () => {
-  const [description, setDescription] = useState('');
+  const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
+  const [showTips, setShowTips] = useState(false);
+
+  const handleTriggerToggle = (triggerId: string) => {
+    setSelectedTriggers(prev =>
+      prev.includes(triggerId)
+        ? prev.filter(id => id !== triggerId)
+        : [...prev, triggerId]
+    );
+    setShowTips(false);
+  };
+
+  const handleShowTips = () => {
+    if (selectedTriggers.length === 0) {
+      toast("Selecione pelo menos um gatilho");
+      return;
+    }
+    setShowTips(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!description.trim()) return;
+    if (selectedTriggers.length === 0) {
+      toast("Selecione pelo menos um gatilho");
+      return;
+    }
 
     try {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast.error("Usuário não autenticado");
+        toast("Usuário não autenticado");
         return;
       }
 
-      const { error } = await supabase
-        .from('recovery_triggers')
-        .insert({
-          trigger_description: description, 
-          user_id: user.id
-        });
+      // Create a trigger entry for each selected trigger
+      const promises = selectedTriggers.map(triggerId => {
+        const trigger = triggers.find(t => t.id === triggerId);
+        return supabase
+          .from('recovery_triggers')
+          .insert({
+            trigger_description: trigger?.label || triggerId,
+            user_id: user.id
+          });
+      });
 
-      if (error) throw error;
+      await Promise.all(promises);
 
-      toast.success("Gatilho registrado com sucesso");
-      setDescription('');
+      toast("Gatilhos registrados com sucesso");
+      setSelectedTriggers([]);
+      setShowTips(false);
     } catch (error) {
-      console.error('Error registering trigger:', error);
-      toast.error("Erro ao registrar gatilho");
+      console.error('Error registering triggers:', error);
+      toast("Erro ao registrar gatilhos");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Descreva a situação de risco que você está enfrentando..."
-        className="min-h-[100px]"
-      />
-      <Button type="submit" className="w-full">
-        Registrar Gatilho
-      </Button>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {triggers.map((trigger) => {
+          const Icon = trigger.icon;
+          return (
+            <div key={trigger.id} className="flex items-start space-x-3">
+              <Checkbox
+                id={trigger.id}
+                checked={selectedTriggers.includes(trigger.id)}
+                onCheckedChange={() => handleTriggerToggle(trigger.id)}
+              />
+              <label
+                htmlFor={trigger.id}
+                className="flex items-center space-x-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                <Icon className="h-4 w-4" />
+                <span>{trigger.label}</span>
+              </label>
+            </div>
+          );
+        })}
+      </div>
+
+      {!showTips && selectedTriggers.length > 0 && (
+        <Button
+          type="button"
+          onClick={handleShowTips}
+          className="w-full"
+          variant="outline"
+        >
+          Ver Dicas de Ação
+        </Button>
+      )}
+
+      {showTips && selectedTriggers.length > 0 && (
+        <div className="space-y-4">
+          {selectedTriggers.map(triggerId => {
+            const trigger = triggers.find(t => t.id === triggerId);
+            return (
+              <Card key={triggerId} className="p-4 bg-muted">
+                <div className="flex items-start space-x-3">
+                  {trigger && <trigger.icon className="h-5 w-5 mt-0.5 flex-shrink-0" />}
+                  <div>
+                    <p className="font-medium">{trigger?.label}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{trigger?.tip}</p>
+                  </div>
+                </div>
+              </Card>
+            )})}
+        </div>
+      )}
+
+      {selectedTriggers.length > 0 && (
+        <Button type="submit" className="w-full">
+          Registrar Gatilhos
+        </Button>
+      )}
     </form>
   );
 };
