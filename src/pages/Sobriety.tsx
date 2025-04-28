@@ -1,7 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { CalendarDays, Edit2, Save } from "lucide-react";
+import { CalendarDays, Edit2, Save, Trophy } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,22 @@ const Sobriety = () => {
         setMotivationNote(profile.motivation_note);
       }
       return profile;
+    },
+  });
+
+  const { data: medals } = useQuery({
+    queryKey: ['sobriety-medals'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+      
+      const { data: medals } = await supabase
+        .from('sobriety_medals')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('days_milestone', { ascending: true });
+        
+      return medals;
     },
   });
 
@@ -77,6 +93,14 @@ const Sobriety = () => {
   const handleSaveNote = () => {
     updateProfile.mutate({ motivation_note: motivationNote });
     setIsEditingNote(false);
+  };
+
+  const getMedalColor = (days: number) => {
+    if (days >= 365) return "text-yellow-400";
+    if (days >= 180) return "text-purple-400";
+    if (days >= 90) return "text-blue-400";
+    if (days >= 30) return "text-green-400";
+    return "text-gray-400";
   };
 
   const motivationalPhrases = [
@@ -128,6 +152,21 @@ const Sobriety = () => {
             </PopoverContent>
           </Popover>
         </div>
+
+        {/* Medalhas */}
+        {medals && medals.length > 0 && (
+          <div className="bg-white/10 rounded-lg p-6 text-white backdrop-blur-sm">
+            <h2 className="text-lg font-semibold mb-4">Suas Conquistas</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {medals.map((medal) => (
+                <div key={medal.id} className="text-center">
+                  <Trophy className={`w-8 h-8 mx-auto mb-2 ${getMedalColor(medal.days_milestone)}`} />
+                  <p className="text-sm">{medal.days_milestone} dias</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Nota de Motivação */}
         <div className="bg-white/10 rounded-lg p-6 text-white backdrop-blur-sm">
