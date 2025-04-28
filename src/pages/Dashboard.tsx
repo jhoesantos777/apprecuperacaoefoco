@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,12 +18,10 @@ const Dashboard = () => {
   const [userRole, setUserRole] = useState<string>("dependent");
   
   useEffect(() => {
-    // Get user role from localStorage or session
     const savedRole = localStorage.getItem("userRole");
     if (savedRole) {
       setUserRole(savedRole);
     } else {
-      // Check if we have a Supabase session
       const checkUserRole = async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (user?.user_metadata?.tipoUsuario) {
@@ -39,13 +36,12 @@ const Dashboard = () => {
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      // For admin users, return a mock profile
       if (userRole === 'admin') {
         return {
           nome: 'Administrador',
           tipoUsuario: 'admin',
           id: 'admin-id',
-          avatar_url: null // Add this line to fix TypeScript error
+          avatar_url: null
         };
       }
       
@@ -105,7 +101,6 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      // Clear local storage first
       localStorage.removeItem("userRole");
       
       const { error } = await supabase.auth.signOut();
@@ -130,7 +125,6 @@ const Dashboard = () => {
     }
   };
 
-  // Define categories based on user role
   const getDashboardCategories = () => {
     const commonCategories = [
       {
@@ -253,18 +247,24 @@ const Dashboard = () => {
         icon: Heart,
         path: '/support'
       },
+      {
+        id: 'atualizar-humor',
+        title: 'Atualizar Humor',
+        description: 'Como você está se sentindo hoje?',
+        icon: Smile,
+        path: '/atualizar-humor'
+      }
     ];
     
-    // Return the correct categories based on user role
     if (userRole === 'admin') {
       return adminCategories;
     } else if (userRole === 'family') {
-      return commonCategories; // Family users see the family dashboard, so just common categories
+      return commonCategories;
     } else {
-      return dependentCategories; // Default to dependent categories
+      return dependentCategories;
     }
   };
-  
+
   const categories = getDashboardCategories();
 
   return (
@@ -305,7 +305,6 @@ const Dashboard = () => {
       {userRole === "family" ? (
         <FamilyDashboard />
       ) : userRole === "admin" ? (
-        // Admin dashboard
         <div className="px-6 pb-20">
           <h2 className="text-xl font-semibold text-white mb-4">Painel de Administração</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -323,7 +322,6 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        // Dependent user dashboard
         <>
           <div className="px-6 mb-8">
             <Button 

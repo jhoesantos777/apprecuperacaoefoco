@@ -182,6 +182,33 @@ export type Database = {
         }
         Relationships: []
       }
+      humores: {
+        Row: {
+          created_at: string | null
+          data_registro: string
+          emocao: string
+          id: string
+          pontos: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data_registro?: string
+          emocao: string
+          id?: string
+          pontos: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data_registro?: string
+          emocao?: string
+          id?: string
+          pontos?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       lessons: {
         Row: {
           content: string

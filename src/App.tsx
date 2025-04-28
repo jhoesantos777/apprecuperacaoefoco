@@ -27,6 +27,7 @@ import Devotional from "./pages/Devotional";
 import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
 import MoodSelection from "./pages/MoodSelection";
+import AtualizarHumor from "./pages/AtualizarHumor";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => {
               <Route path="/chat" element={<Navigate to="/talk-to-me" replace />} />
               <Route path="/treatments" element={<Treatments />} />
               <Route path="/mood-selection" element={<MoodSelection />} />
+              <Route path="/atualizar-humor" element={<AtualizarHumor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
