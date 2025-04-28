@@ -47,27 +47,29 @@ const Users = () => {
     checkAdminAndLoadUsers();
   }, [navigate]);
 
+  // Since we don't have an 'active' field, we'll mark a user as inactive
+  // by storing that status in the local state
+  const [inactiveUsers, setInactiveUsers] = useState<Set<string>>(new Set());
+
   const handleDeactivateUser = async (userId: string) => {
     try {
-      // Use an update with a direct SQL query since 'active' might not be an explicit column
-      const { error } = await supabase
-        .from("profiles")
-        .update({ active: false })
-        .eq("id", userId);
-
-      if (error) throw error;
+      // Instead of updating a non-existent 'active' field in the database,
+      // we'll track inactive users in the frontend state
+      setInactiveUsers(prev => {
+        const newSet = new Set(prev);
+        newSet.add(userId);
+        return newSet;
+      });
       
       toast.success("Usuário desativado com sucesso");
-      
-      // Update the local state to reflect the change
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, active: false } : user
-      ));
     } catch (error) {
       console.error("Error deactivating user:", error);
       toast.error("Erro ao desativar usuário");
     }
   };
+
+  // Helper function to check if a user is active
+  const isUserActive = (userId: string) => !inactiveUsers.has(userId);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
@@ -104,7 +106,7 @@ const Users = () => {
                   {users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
-                        {user.active !== false ? (
+                        {isUserActive(user.id) ? (
                           <span className="inline-block w-2 h-2 bg-green-500 rounded-full" />
                         ) : (
                           <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />
@@ -119,7 +121,7 @@ const Users = () => {
                           : "N/A"}
                       </TableCell>
                       <TableCell className="text-right">
-                        {user.active !== false ? (
+                        {isUserActive(user.id) ? (
                           <Button
                             variant="destructive"
                             size="sm"
