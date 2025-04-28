@@ -74,23 +74,31 @@ const TherapeuticEditor = () => {
         throw new Error('Failed to set admin access');
       }
 
-      const fileName = `${Date.now()}-${file.name}`;
+      const fileName = `therapeutic_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      
+      const contentType = file.type || 'audio/mpeg';
+
+      console.log('Uploading file:', fileName, 'Content-Type:', contentType);
+
       const { data, error } = await supabase.storage
         .from('audio_content')
         .upload(fileName, file, {
+          contentType: contentType,
           cacheControl: '3600',
-          upsert: false
+          upsert: true
         });
 
       if (error) {
-        console.error('Upload error:', error);
+        console.error('Upload error details:', error);
         throw new Error('Failed to upload audio file');
       }
 
       const { data: publicUrl } = supabase.storage
         .from('audio_content')
         .getPublicUrl(fileName);
-
+        
+      console.log('Upload successful, URL:', publicUrl);
+      
       return fileName;
     } catch (error) {
       console.error('Error in uploadAudio:', error);
@@ -111,9 +119,21 @@ const TherapeuticEditor = () => {
         return;
       }
 
+      const accessResult = await supabase.rpc('set_admin_access');
+      if (accessResult.error) {
+        console.error('Error setting admin access:', accessResult.error);
+        throw new Error('Failed to set admin access');
+      }
+
       let audioUrl = null;
       if (audioFile) {
-        audioUrl = await uploadAudio(audioFile);
+        try {
+          audioUrl = await uploadAudio(audioFile);
+          console.log('Audio uploaded successfully:', audioUrl);
+        } catch (uploadError) {
+          console.error('Audio upload failed:', uploadError);
+          toast.error('Falha ao fazer upload do áudio. Tentando continuar sem áudio.');
+        }
       }
 
       const { error } = await supabase
@@ -139,7 +159,7 @@ const TherapeuticEditor = () => {
       fetchActivities();
     } catch (error) {
       console.error('Erro ao adicionar atividade:', error);
-      toast.error('Não foi possível adicionar a atividade: ' + (error as Error).message);
+      toast.error('Não foi possível adicionar a atividade: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 
@@ -147,9 +167,20 @@ const TherapeuticEditor = () => {
     if (!editingActivity) return;
 
     try {
+      const accessResult = await supabase.rpc('set_admin_access');
+      if (accessResult.error) {
+        console.error('Error setting admin access:', accessResult.error);
+        throw new Error('Failed to set admin access');
+      }
+
       let audioUrl = editingActivity.audio_url;
       if (audioFile) {
-        audioUrl = await uploadAudio(audioFile);
+        try {
+          audioUrl = await uploadAudio(audioFile);
+        } catch (uploadError) {
+          console.error('Audio upload failed:', uploadError);
+          toast.error('Falha ao fazer upload do áudio. Mantendo áudio atual.');
+        }
       }
 
       const { error } = await supabase
@@ -169,7 +200,7 @@ const TherapeuticEditor = () => {
       fetchActivities();
     } catch (error) {
       console.error('Erro ao atualizar atividade:', error);
-      toast.error('Não foi possível atualizar a atividade: ' + (error as Error).message);
+      toast.error('Não foi possível atualizar a atividade: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 
@@ -192,7 +223,7 @@ const TherapeuticEditor = () => {
       fetchActivities();
     } catch (error) {
       console.error('Erro ao remover atividade:', error);
-      toast.error('Não foi possível remover a atividade: ' + (error as Error).message);
+      toast.error('Não foi possível remover a atividade: ' + (error instanceof Error ? error.message : String(error)));
     }
   };
 
