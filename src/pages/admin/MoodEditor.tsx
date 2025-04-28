@@ -119,12 +119,20 @@ const MoodEditor = () => {
     }
 
     try {
+      // Get the admin user ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Usuário não autenticado');
+        return;
+      }
+      
       const { error } = await supabase
         .from('humores')
         .insert([
           { 
             emocao: newEmotion.emocao, 
-            pontos: newEmotion.pontos 
+            pontos: newEmotion.pontos,
+            user_id: user.id  // Adiciona o ID do usuário administrador
           }
         ]);
       
