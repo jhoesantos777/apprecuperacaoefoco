@@ -11,7 +11,7 @@ const TherapeuticActivities = [
     title: "Meditação Guiada",
     description: "Práticas de mindfulness para reduzir ansiedade e estresse",
     icon: Brain,
-    route: "/meditation",
+    route: "/meditation", // Updated route
     color: "text-purple-500"
   },
   {

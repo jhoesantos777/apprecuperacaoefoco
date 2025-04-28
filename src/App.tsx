@@ -28,6 +28,7 @@ import Treatments from "./pages/Treatments";
 import AtualizarHumor from "./pages/AtualizarHumor";
 import Users from "./pages/admin/Users";
 import Therapeutic from "./pages/Therapeutic";
+import MeditationPage from "./pages/meditation/MeditationPage";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,7 @@ const App = () => {
               <Route path="/support" element={<TalkToMe />} />
               <Route path="/admin/users" element={<Users />} />
               <Route path="/therapeutic" element={<Therapeutic />} />
+              <Route path="/meditation" element={<MeditationPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
