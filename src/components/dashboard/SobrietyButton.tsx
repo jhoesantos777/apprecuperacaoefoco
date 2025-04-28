@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { registerActivity } from "@/utils/activityPoints";
 
 type SobrietyButtonProps = {
   hasConfirmedSobriety: boolean;
@@ -19,6 +20,7 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
+      // Declaração de sobriedade
       const { error } = await supabase
         .from('sobriety_declarations')
         .insert([
@@ -29,6 +31,9 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
         ]);
 
       if (error) throw error;
+
+      // Registrar atividade para o termômetro de recuperação
+      await registerActivity('HojeNãoVouUsar', 5, 'Declaração de sobriedade');
     },
     onSuccess: () => {
       onConfirm();
