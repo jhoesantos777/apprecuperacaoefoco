@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfDay, subDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,10 +10,15 @@ import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
 import { toast } from '@/components/ui/sonner';
 import { ResetButton } from '@/components/recovery/ResetButton';
+import { Button } from '@/components/ui/button';
+import { registerActivity } from '@/utils/activityPoints';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Recovery = () => {
   const today = startOfDay(new Date());
   const oneWeekAgo = subDays(today, 7);
+  const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: recoveryScore, isLoading, error } = useQuery({
     queryKey: ['recovery-score'],
@@ -23,6 +28,17 @@ const Recovery = () => {
         if (!userId) throw new Error('User not authenticated');
 
         console.log('Fetching activities for user:', userId);
+
+        // Check if user has confirmed sobriety today
+        const { data: sobrietyDeclarations } = await supabase
+          .from('sobriety_declarations')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('declared_at', new Date().toISOString().split('T')[0]);
+
+        if (sobrietyDeclarations && sobrietyDeclarations.length > 0) {
+          setHasConfirmedSobriety(true);
+        }
 
         const { data: activities, error } = await supabase
           .from('atividades_usuario')
@@ -100,6 +116,47 @@ const Recovery = () => {
     }
   }, [recoveryScore]);
 
+  // Handle sobriety declaration
+  const handleSobrietyDeclaration = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast("Você precisa estar logado para fazer esta declaração");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('sobriety_declarations')
+        .insert([
+          {
+            user_id: user.id,
+            declared_at: new Date().toISOString()
+          }
+        ]);
+
+      if (error) throw error;
+
+      // Register activity for the recovery thermometer
+      await registerActivity('HojeNãoVouUsar', 5, 'Declaração de sobriedade');
+      
+      // Update queries
+      queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['sobriety-medals'] });
+      
+      setHasConfirmedSobriety(true);
+      toast("Parabéns!", {
+        description: "Sua determinação é inspiradora. Continue firme!"
+      });
+    } catch (error) {
+      console.error('Error registering sobriety declaration:', error);
+      toast("Erro", {
+        description: "Não foi possível registrar sua declaração.",
+        style: { backgroundColor: 'hsl(var(--destructive))' }
+      });
+    }
+  };
+
   // Handle loading and error states
   if (isLoading) {
     console.log('Loading recovery score...');
@@ -119,8 +176,22 @@ const Recovery = () => {
         </h1>
         
         <DailyMotivation />
-        
+
         <Card className="p-6">
+          <Button 
+            className={`w-full py-6 text-lg font-bold transition-all duration-300 mb-6 ${
+              hasConfirmedSobriety 
+                ? 'bg-green-600 hover:bg-green-700' 
+                : 'bg-red-600 hover:bg-red-700'
+            } text-white`}
+            onClick={handleSobrietyDeclaration}
+            disabled={hasConfirmedSobriety}
+          >
+            {hasConfirmedSobriety 
+              ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
+              : "HOJE EU NAO VOU USAR!"}
+          </Button>
+
           <RecoveryThermometer 
             score={recoveryScore?.score || 0}
             hasMultipleTriggers={recoveryScore?.hasMultipleTriggers || false}
