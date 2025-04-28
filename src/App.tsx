@@ -80,7 +80,8 @@ const App = () => {
               <Route path="/meditation" element={<MeditationPage />} />
               <Route path="/meditation/:id" element={<MeditationSession />} />
               
-              {/* Admin Routes */}
+              <Route path="/therapeutic-activities-1" element={<TherapeuticActivities1 />} />
+              
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/mood-editor" element={<MoodEditor />} />
               <Route path="/admin/tasks-editor" element={<TasksEditor />} />

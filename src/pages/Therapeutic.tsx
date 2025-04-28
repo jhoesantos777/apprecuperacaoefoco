@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,11 +7,11 @@ import { BackButton } from "@/components/BackButton";
 
 const TherapeuticActivities = [
   {
-    title: "Meditação Guiada",
-    description: "Práticas de mindfulness para reduzir ansiedade e estresse",
+    title: "Meditações Guiadas 1",
+    description: "Série de meditações guiadas para relaxamento e mindfulness",
     icon: Brain,
-    route: "/meditation", // Updated route
-    color: "text-purple-500"
+    route: "/therapeutic-activities-1",
+    color: "text-blue-500"
   },
   {
     title: "Diário Terapêutico",
