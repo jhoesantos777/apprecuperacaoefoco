@@ -16,11 +16,16 @@ type SobrietyDatePickerProps = {
 
 export const SobrietyDatePicker = ({ startDate, onDateSelect }: SobrietyDatePickerProps) => {
   return (
-    <div className="bg-white/10 rounded-lg p-6 text-white backdrop-blur-sm">
-      <h2 className="text-lg font-semibold mb-4">Data de Início</h2>
+    <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl p-6 text-white backdrop-blur-sm border border-white/10 shadow-lg">
+      <h2 className="text-xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
+        Data de Início
+      </h2>
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
+          <Button 
+            variant="outline" 
+            className="w-full justify-between bg-white/5 border-white/10 hover:bg-white/10 hover:text-white text-white"
+          >
             {startDate ? (
               format(new Date(startDate), "dd/MM/yyyy")
             ) : (

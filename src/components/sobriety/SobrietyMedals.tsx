@@ -22,13 +22,20 @@ export const SobrietyMedals = ({ medals }: SobrietyMedalsProps) => {
   if (!medals || medals.length === 0) return null;
 
   return (
-    <div className="bg-white/10 rounded-lg p-6 text-white backdrop-blur-sm">
-      <h2 className="text-lg font-semibold mb-4">Suas Conquistas</h2>
-      <div className="grid grid-cols-3 gap-4">
+    <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl p-6 text-white backdrop-blur-sm border border-white/10 shadow-lg">
+      <h2 className="text-xl font-semibold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
+        Suas Conquistas
+      </h2>
+      <div className="grid grid-cols-3 gap-6">
         {medals.map((medal) => (
-          <div key={medal.id} className="text-center">
-            <Trophy className={`w-8 h-8 mx-auto mb-2 ${getMedalColor(medal.days_milestone)}`} />
-            <p className="text-sm">{medal.days_milestone} dias</p>
+          <div 
+            key={medal.id} 
+            className="bg-white/5 p-4 rounded-lg text-center hover:bg-white/10 transition-colors"
+          >
+            <Trophy className={`w-8 h-8 mx-auto mb-3 ${getMedalColor(medal.days_milestone)}`} />
+            <p className="text-sm font-medium">
+              {medal.days_milestone} dias
+            </p>
           </div>
         ))}
       </div>
