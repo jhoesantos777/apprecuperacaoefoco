@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +20,6 @@ const Auth = () => {
     rememberMe: false,
   });
 
-  // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
@@ -47,16 +45,13 @@ const Auth = () => {
         navigate("/signup");
         return;
       } else {
-        // Handle admin login separately
-        if (formData.email.toLowerCase() === "admin@admin" && formData.password === "admin") {
-          // Set a session with admin role
+        if (formData.email.toLowerCase() === "admin@admin" && formData.password === "45452775") {
           toast.success("Login administrador realizado com sucesso!");
           localStorage.setItem("userRole", "admin");
           navigate("/dashboard");
           return;
         }
         
-        // Log the attempt for debugging
         console.log(`Attempting login with email: ${formData.email}`);
         
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -72,7 +67,6 @@ const Auth = () => {
         if (data?.user) {
           console.log("Login successful:", data.user.email);
           
-          // Check user type from metadata
           const userRole = data.user.user_metadata?.tipoUsuario || "dependent";
           localStorage.setItem("userRole", userRole);
           
@@ -84,7 +78,6 @@ const Auth = () => {
       console.error("Full error details:", error);
       const action = isSignUp ? "fazer cadastro" : "fazer login";
       
-      // More specific error messages
       let errorMessage = `Erro ao ${action}: ` + (error as Error).message;
       
       if ((error as Error).message.includes("Invalid login credentials")) {
@@ -97,7 +90,6 @@ const Auth = () => {
     }
   };
 
-  // Form input change handler
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
