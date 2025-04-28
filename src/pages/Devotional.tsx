@@ -1,16 +1,36 @@
+
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Book, Book as BibleIcon, Music, Heart } from "lucide-react";
+import { Book as BibleIcon, Music, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { BackButton } from '@/components/BackButton';
+import { DevotionalNotes } from '@/components/devotional/DevotionalNotes';
+import { supabase } from "@/integrations/supabase/client";
 
 const Devotional = () => {
   const { toast } = useToast();
   const currentDate = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: ptBR });
+
+  const { data: notes } = useQuery({
+    queryKey: ['devotional-notes', new Date().toISOString().split('T')[0]],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from('devotional_notes')
+        .select('notes')
+        .eq('user_id', user.id)
+        .eq('verse_date', new Date().toISOString().split('T')[0])
+        .single();
+
+      return data?.notes;
+    },
+  });
 
   // Temporary static content - in a real app this would come from a database
   const devotional = {
@@ -59,6 +79,11 @@ const Devotional = () => {
               <p className="text-gray-700 leading-relaxed">{devotional.reflection}</p>
             </div>
           </div>
+        </Card>
+
+        {/* Notes Section */}
+        <Card className="p-6 bg-white/80 backdrop-blur-sm border border-purple-100 shadow-sm">
+          <DevotionalNotes currentNotes={notes} />
         </Card>
 
         {/* Audio Controls */}

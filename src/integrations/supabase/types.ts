@@ -191,6 +191,30 @@ export type Database = {
         }
         Relationships: []
       }
+      devotional_notes: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          user_id: string
+          verse_date: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id: string
+          verse_date?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+          verse_date?: string
+        }
+        Relationships: []
+      }
       devotional_visits: {
         Row: {
           id: string
