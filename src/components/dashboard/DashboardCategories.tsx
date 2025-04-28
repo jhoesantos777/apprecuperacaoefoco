@@ -99,7 +99,7 @@ const getDashboardCategories = (userRole: string): Category[] => {
     {
       id: 'chat',
       title: 'Fale comigo',
-      description: 'Converse conosco',
+      description: 'Converse com um terapeuta especializado em dependência química',
       icon: MessageSquare,
       path: '/chat'
     }
