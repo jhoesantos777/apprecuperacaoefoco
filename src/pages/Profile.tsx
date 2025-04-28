@@ -19,7 +19,7 @@ const Profile = () => {
   const [tratamentosTentados, setTratamentosTentados] = useState(0);
   const [tratamentosConcluidos, setTratamentosConcluidos] = useState(0);
   const [historicoFamiliar, setHistoricoFamiliar] = useState(false);
-  const [idade, setIdade] = useState<number | "">("");
+  const [idade, setIdade] = useState<number>(0);
 
   useEffect(() => {
     loadUserProfile();
@@ -45,12 +45,11 @@ const Profile = () => {
         setTratamentosTentados(profile.tratamentos_tentados || 0);
         setTratamentosConcluidos(profile.tratamentos_concluidos || 0);
         setHistoricoFamiliar(profile.historico_familiar_uso || false);
-        setIdade(profile.idade || "");
+        setIdade(profile.idade || 0);
       }
     } catch (error) {
       console.error("Error loading profile:", error);
       toast({
-        title: "Erro",
         description: "Não foi possível carregar seu perfil",
         variant: "destructive",
       });
@@ -90,13 +89,11 @@ const Profile = () => {
       if (error) throw error;
 
       toast({
-        title: "Perfil atualizado",
         description: "Suas informações foram salvas com sucesso!",
       });
     } catch (error) {
       console.error("Error saving profile:", error);
       toast({
-        title: "Erro",
         description: "Não foi possível salvar suas informações",
         variant: "destructive",
       });
