@@ -32,7 +32,9 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
     },
     onSuccess: () => {
       onConfirm();
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
+      queryClient.invalidateQueries({ queryKey: ['sobriety-medals'] });
       toast({
         title: "Parabéns!",
         description: "Sua determinação é inspiradora. Continue firme!",
