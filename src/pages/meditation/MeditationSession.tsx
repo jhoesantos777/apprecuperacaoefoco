@@ -1,10 +1,9 @@
-
 import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { meditations } from '@/data/meditations';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Pause, Play, Volume2 } from "lucide-react";
+import { Check, Pause, Play, Upload } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +15,9 @@ const MeditationSession = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const meditation = meditations.find(m => m.id === id);
 
@@ -35,7 +36,6 @@ const MeditationSession = () => {
   const handlePlayAudio = async () => {
     if (isLoading) return;
 
-    // If we already have audio, just play/pause it
     if (audioUrl) {
       if (audioRef.current) {
         if (isPlaying) {
@@ -52,7 +52,6 @@ const MeditationSession = () => {
     try {
       setIsLoading(true);
       
-      // Call the Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('text-to-speech', {
         body: {
           text: meditation.description,
@@ -71,7 +70,6 @@ const MeditationSession = () => {
       const audio = `data:audio/mp3;base64,${data.audioContent}`;
       setAudioUrl(audio);
       
-      // Play the audio
       if (audioRef.current) {
         audioRef.current.src = audio;
         audioRef.current.play();
@@ -86,6 +84,51 @@ const MeditationSession = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleUploadAudio = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${meditation.id}-${Date.now()}.${fileExt}`;
+      const filePath = `meditations/${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('audio')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('audio')
+        .getPublicUrl(filePath);
+
+      setAudioUrl(publicUrl);
+      
+      if (audioRef.current) {
+        audioRef.current.src = publicUrl;
+      }
+
+      toast({
+        title: "Sucesso",
+        description: "Áudio enviado com sucesso!",
+      });
+    } catch (error) {
+      console.error('Erro ao fazer upload do áudio:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível fazer o upload do áudio.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -109,21 +152,42 @@ const MeditationSession = () => {
                 <p className="text-gray-600 whitespace-pre-line flex-1">
                   {meditation.description}
                 </p>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="flex-shrink-0"
-                  onClick={handlePlayAudio}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="animate-pulse">...</span>
-                  ) : isPlaying ? (
-                    <Pause className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
-                </Button>
+                <div className="flex-shrink-0 space-y-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handlePlayAudio}
+                    disabled={isLoading || isUploading}
+                  >
+                    {isLoading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : isPlaying ? (
+                      <Pause className="h-4 w-4" />
+                    ) : (
+                      <Play className="h-4 w-4" />
+                    )}
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <span className="animate-pulse">...</span>
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="audio/*"
+                    onChange={handleUploadAudio}
+                  />
+                </div>
               </div>
             </div>
             
