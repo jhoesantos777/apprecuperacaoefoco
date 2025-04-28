@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -28,6 +27,7 @@ import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
 import AtualizarHumor from "./pages/AtualizarHumor";
 import Users from "./pages/admin/Users";
+import Therapeutic from "./pages/Therapeutic";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +67,7 @@ const App = () => {
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
               <Route path="/support" element={<TalkToMe />} />
               <Route path="/admin/users" element={<Users />} />
+              <Route path="/therapeutic" element={<Therapeutic />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

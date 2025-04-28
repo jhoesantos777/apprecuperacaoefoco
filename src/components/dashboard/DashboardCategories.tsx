@@ -9,9 +9,10 @@ import {
   Star, 
   Award, 
   BookOpen, 
-  MessageSquare, 
-  Book, 
-  User 
+  MessageCircle, 
+  Book,
+  User,
+  Heart 
 } from "lucide-react";
 
 type Category = {
@@ -99,8 +100,15 @@ const getDashboardCategories = (userRole: string): Category[] => {
       id: 'chat',
       title: 'Fale comigo',
       description: 'Converse com um terapeuta especializado em dependência química',
-      icon: MessageSquare,
+      icon: MessageCircle,
       path: '/chat'
+    },
+    {
+      id: 'therapeutic',
+      title: 'Atividades Terapêuticas',
+      description: 'Exercícios e ferramentas para sua recuperação',
+      icon: Heart,
+      path: '/therapeutic'
     }
   ];
 
