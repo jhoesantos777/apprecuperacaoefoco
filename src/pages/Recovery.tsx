@@ -13,82 +13,46 @@ import { toast } from '@/components/ui/sonner';
 const Recovery = () => {
   const today = startOfDay(new Date());
 
-  const { data: dailyScore } = useQuery({
+  const { data: recoveryScore } = useQuery({
     queryKey: ['recovery-score'],
     queryFn: async () => {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       if (!userId) throw new Error('User not authenticated');
 
-      const [
-        taskCompletions,
-        moodEntries,
-        devotionalVisits,
-        sobrietyDeclarations,
-        recoveryTriggers
-      ] = await Promise.all([
-        supabase
-          .from('user_task_completions')
-          .select('task_id')
-          .gte('completed_at', today.toISOString())
-          .eq('user_id', userId),
-        supabase
-          .from('mood_entries')
-          .select('points')
-          .gte('created_at', today.toISOString())
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(1),
-        supabase
-          .from('devotional_visits')
-          .select('*')
-          .gte('visited_at', today.toISOString())
-          .eq('user_id', userId),
-        supabase
-          .from('sobriety_declarations')
-          .select('*')
-          .gte('declared_at', today.toISOString())
-          .eq('user_id', userId),
-        supabase
-          .from('recovery_triggers')
-          .select('*')
-          .gte('created_at', today.toISOString())
-          .eq('user_id', userId)
-      ]);
+      const { data: activities, error } = await supabase
+        .from('atividades_usuario')
+        .select('*')
+        .gte('data_registro', today.toISOString())
+        .eq('user_id', userId);
 
-      // Tasks points - calculate based on actual completions (max 27)
-      const taskPoints = taskCompletions.data?.length || 0;
+      if (error) throw error;
 
-      // Mood points (max 5)
-      const moodPoints = moodEntries.data?.[0]?.points || 0;
+      // Calculate points from all activities
+      const points = activities?.reduce((acc, activity) => {
+        return acc + activity.pontos;
+      }, 0) || 0;
 
-      // Devotional points (max 2)
-      const devotionalPoints = devotionalVisits.data?.length ? 2 : 0;
-
-      // Sobriety declaration points (max 5)
-      const sobrietyPoints = sobrietyDeclarations.data?.length ? 5 : 0;
-
-      // Reflection points (max 3) - temporarily set to 0 or mock data
-      // Since we don't have a daily_reflections table yet
-      const reflectionPoints = 0;
-
-      // Calculate total score and normalize to 0-10 scale
-      const totalPoints = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + reflectionPoints;
+      // Normalize score to 0-10 scale
       const MAX_POSSIBLE_POINTS = 42; // 27 + 5 + 2 + 5 + 3
-      const normalizedScore = (totalPoints / MAX_POSSIBLE_POINTS) * 10;
+      const normalizedScore = (points / MAX_POSSIBLE_POINTS) * 10;
 
       // Check for multiple triggers as a risk factor
-      const hasMultipleTriggers = (recoveryTriggers.data?.length || 0) > 1;
+      const hasMultipleTriggers = activities?.filter(
+        a => a.tipo_atividade === 'Gatilho'
+      ).length > 1;
+
+      const details = {
+        taskPoints: activities?.filter(a => a.tipo_atividade === 'Tarefas').reduce((acc, a) => acc + a.pontos, 0) || 0,
+        moodPoints: activities?.filter(a => a.tipo_atividade === 'Humor').reduce((acc, a) => acc + a.pontos, 0) || 0,
+        devotionalPoints: activities?.filter(a => a.tipo_atividade === 'Devocional').reduce((acc, a) => acc + a.pontos, 0) || 0,
+        sobrietyPoints: activities?.filter(a => a.tipo_atividade === 'HojeNãoVouUsar').reduce((acc, a) => acc + a.pontos, 0) || 0,
+        reflectionPoints: activities?.filter(a => a.tipo_atividade === 'Reflexão').reduce((acc, a) => acc + a.pontos, 0) || 0
+      };
 
       return {
         score: parseFloat(normalizedScore.toFixed(1)),
         hasMultipleTriggers,
-        details: {
-          taskPoints,
-          moodPoints,
-          devotionalPoints,
-          sobrietyPoints,
-          reflectionPoints
-        }
+        details
       };
     }
   });
@@ -106,9 +70,9 @@ const Recovery = () => {
         
         <Card className="p-6">
           <RecoveryThermometer 
-            score={dailyScore?.score || 0}
-            hasMultipleTriggers={dailyScore?.hasMultipleTriggers || false}
-            details={dailyScore?.details}
+            score={recoveryScore?.score || 0}
+            hasMultipleTriggers={recoveryScore?.hasMultipleTriggers || false}
+            details={recoveryScore?.details}
           />
         </Card>
 

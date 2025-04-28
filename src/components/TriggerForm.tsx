@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "@/components/ui/sonner";
 import { triggers, TriggerType } from '@/utils/triggerTips';
+import { registerActivity } from '@/utils/activityPoints';
 
 const TriggerForm = () => {
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
@@ -43,15 +44,14 @@ const TriggerForm = () => {
         return;
       }
 
-      // Create a trigger entry for each selected trigger
+      // Register each trigger as a negative point activity
       const promises = selectedTriggers.map(triggerId => {
         const trigger = triggers.find(t => t.id === triggerId);
-        return supabase
-          .from('recovery_triggers')
-          .insert({
-            trigger_description: trigger?.label || triggerId,
-            user_id: user.id
-          });
+        return registerActivity(
+          'Gatilho',
+          -1, // Negative point for each trigger
+          trigger?.label
+        );
       });
 
       await Promise.all(promises);

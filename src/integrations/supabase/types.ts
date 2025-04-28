@@ -75,6 +75,33 @@ export type Database = {
           },
         ]
       }
+      atividades_usuario: {
+        Row: {
+          data_registro: string
+          descricao: string | null
+          id: string
+          pontos: number
+          tipo_atividade: string
+          user_id: string
+        }
+        Insert: {
+          data_registro?: string
+          descricao?: string | null
+          id?: string
+          pontos: number
+          tipo_atividade: string
+          user_id: string
+        }
+        Update: {
+          data_registro?: string
+          descricao?: string | null
+          id?: string
+          pontos?: number
+          tipo_atividade?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       available_slots: {
         Row: {
           created_at: string | null
