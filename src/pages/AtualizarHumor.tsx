@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -19,12 +18,11 @@ const AtualizarHumor = () => {
       if (!user) {
         toast("Erro: Você precisa estar logado para registrar seu humor.", {
           description: "Faça login e tente novamente.",
-          variant: "destructive"
+          style: { backgroundColor: 'hsl(var(--destructive))' }
         });
         return;
       }
 
-      // Registrar na tabela humores (mantendo a funcionalidade original)
       const { error: humorError } = await supabase.from('humores').insert({
         user_id: user.id,
         emocao,
@@ -33,14 +31,12 @@ const AtualizarHumor = () => {
 
       if (humorError) throw humorError;
 
-      // Registrar também na tabela de atividades para o termômetro
       await registerActivity('Humor', pontos, `Humor: ${emocao}`);
       
-      // Invalidar a consulta do termômetro para atualizar a pontuação
       await queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
 
       toast("Sucesso!", {
-        description: "Seu humor foi registrado com sucesso.",
+        description: "Seu humor foi registrado com sucesso."
       });
 
       navigate('/dashboard');
@@ -48,7 +44,7 @@ const AtualizarHumor = () => {
       console.error('Erro ao registrar humor:', error);
       toast("Erro", {
         description: "Não foi possível registrar seu humor. Tente novamente.",
-        variant: "destructive"
+        style: { backgroundColor: 'hsl(var(--destructive))' }
       });
     }
   };
