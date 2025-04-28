@@ -25,12 +25,13 @@ import {
   Mail
 } from "lucide-react";
 import { toast } from "sonner";
+import { UserType } from "@/types/signup";
 
 interface User {
   id: string;
   nome: string | null;
   email: string | null;
-  tipoUsuario: string;
+  tipoUsuario: UserType;
   created_at: string;
 }
 
@@ -51,10 +52,26 @@ export const AdminUsers = () => {
         throw error;
       }
       
-      const formattedUsers = data.map(user => ({
-        ...user,
-        tipoUsuario: user.tipoUsuario || localStorage.getItem("userRole") || "dependent"
-      }));
+      // Transform the data to include tipoUsuario property
+      const formattedUsers = data.map(user => {
+        // Get user role from localStorage for this demo
+        // In a real app, this would come from a user_roles table or similar
+        let userRole: UserType = "dependent";
+        
+        if (user.email === "admin@admin") {
+          userRole = "admin" as UserType;
+        } else {
+          // Try to get from localStorage, but this is just a fallback
+          // since localStorage is browser-specific and won't work across users
+          const savedRole = localStorage.getItem("userRole");
+          userRole = (savedRole as UserType) || "dependent";
+        }
+        
+        return {
+          ...user,
+          tipoUsuario: userRole
+        };
+      });
       
       setUsers(formattedUsers);
     } catch (error) {
