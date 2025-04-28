@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { meditations } from '@/data/meditations';
@@ -90,7 +91,7 @@ const MeditationSession = () => {
             <audio 
               ref={audioRef}
               onTimeUpdate={handleTimeUpdate}
-              onEnded={() => setAudioState(prev => ({ ...prev, isPlaying: false }))}
+              onEnded={() => handlePlay()}
               onError={(e) => {
                 console.error('Audio error:', e);
                 toast({
