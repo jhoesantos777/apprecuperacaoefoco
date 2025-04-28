@@ -27,6 +27,7 @@ import Devotional from "./pages/Devotional";
 import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
 import AtualizarHumor from "./pages/AtualizarHumor";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => {
               <Route path="/treatments" element={<Treatments />} />
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
               <Route path="/support" element={<TalkToMe />} /> {/* Redirecting /support to TalkToMe page for now */}
+              <Route path="/admin" element={<Admin />} /> {/* Nova rota para o painel administrativo */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

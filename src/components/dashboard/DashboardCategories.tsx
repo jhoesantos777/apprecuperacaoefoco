@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
   Smile, CalendarDays, ListTodo, Thermometer, Star, 
-  Award, BookOpen, MessageSquare, Book, UserCircle
+  Award, BookOpen, MessageSquare, Book, UserCircle, Settings
 } from "lucide-react";
 
 type Category = {
@@ -34,6 +34,13 @@ const getDashboardCategories = (userRole: string): Category[] => {
       description: 'Administrar usuários do sistema',
       icon: UserCircle,
       path: '/admin/users'
+    },
+    {
+      id: 'admin',
+      title: 'Painel Administrativo',
+      description: 'Acesso completo ao sistema',
+      icon: Settings,
+      path: '/admin'
     }
   ];
   
