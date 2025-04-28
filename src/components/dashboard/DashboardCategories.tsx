@@ -3,18 +3,8 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
-  Smile, 
-  CalendarDays, 
-  ListTodo, 
-  Thermometer, 
-  Star, 
-  Award, 
-  BookOpen, 
-  MessageCircle, 
-  Book,
-  User,
-  Heart,
-  Settings
+  Smile, CalendarDays, ListTodo, Thermometer, Star, 
+  Award, BookOpen, MessageSquare, Book
 } from "lucide-react";
 
 type Category = {
@@ -44,13 +34,6 @@ const getDashboardCategories = (userRole: string): Category[] => {
       description: 'Administrar usuários do sistema',
       icon: User,
       path: '/admin/users'
-    },
-    {
-      id: 'admin-dashboard',
-      title: 'Painel de Administração',
-      description: 'Configurações do sistema',
-      icon: Settings,
-      path: '/admin/dashboard'
     }
   ];
   
@@ -108,16 +91,9 @@ const getDashboardCategories = (userRole: string): Category[] => {
     {
       id: 'chat',
       title: 'Fale comigo',
-      description: 'Converse com um terapeuta especializado em dependência química',
-      icon: MessageCircle,
+      description: 'Converse conosco',
+      icon: MessageSquare,
       path: '/chat'
-    },
-    {
-      id: 'therapeutic',
-      title: 'Atividades Terapêuticas',
-      description: 'Exercícios e ferramentas para sua recuperação',
-      icon: Heart,
-      path: '/therapeutic'
     }
   ];
 
