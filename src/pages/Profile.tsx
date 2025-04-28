@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -49,10 +48,7 @@ const Profile = () => {
       }
     } catch (error) {
       console.error("Error loading profile:", error);
-      toast({
-        description: "Não foi possível carregar seu perfil",
-        variant: "destructive",
-      });
+      toast("Não foi possível carregar seu perfil");
     }
   };
 
@@ -88,15 +84,10 @@ const Profile = () => {
 
       if (error) throw error;
 
-      toast({
-        description: "Suas informações foram salvas com sucesso!",
-      });
+      toast("Suas informações foram salvas com sucesso!");
     } catch (error) {
       console.error("Error saving profile:", error);
-      toast({
-        description: "Não foi possível salvar suas informações",
-        variant: "destructive",
-      });
+      toast("Não foi possível salvar suas informações");
     } finally {
       setLoading(false);
     }
