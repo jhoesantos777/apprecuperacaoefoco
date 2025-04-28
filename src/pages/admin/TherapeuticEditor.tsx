@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -67,13 +68,22 @@ const TherapeuticEditor = () => {
   };
 
   const uploadAudio = async (file: File) => {
-    const fileName = `${Date.now()}-${file.name}`;
-    const { data, error } = await supabase.storage
-      .from('audio_content')
-      .upload(fileName, file);
+    try {
+      const fileName = `${Date.now()}-${file.name}`;
+      
+      // Call set_admin_access para garantir permissão de upload
+      await supabase.rpc('set_admin_access');
+      
+      const { data, error } = await supabase.storage
+        .from('audio_content')
+        .upload(fileName, file);
 
-    if (error) throw error;
-    return `${fileName}`;
+      if (error) throw error;
+      return fileName;
+    } catch (error) {
+      console.error('Erro ao fazer upload do áudio:', error);
+      throw new Error('Falha ao fazer upload do arquivo de áudio.');
+    }
   };
 
   const handleAddActivity = async () => {
@@ -94,18 +104,31 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
-      await supabase.rpc('set_admin_access');
+      // Certifique-se de chamar set_admin_access antes de qualquer operação
+      const accessResult = await supabase.rpc('set_admin_access');
+      if (accessResult.error) {
+        console.error('Erro ao configurar acesso admin:', accessResult.error);
+        throw accessResult.error;
+      }
+
+      console.log("Admin access configurado:", accessResult);
+
+      // Tente inserir atividade com flag de acesso admin ativada
       const { error } = await supabase
         .from('therapeutic_activities')
         .insert([
           {
             title: newActivity.title,
             description: newActivity.description,
-            audio_url: audioUrl
+            audio_url: audioUrl,
+            active: true
           }
         ]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Detalhe do erro de inserção:', error);
+        throw error;
+      }
 
       toast.success('Atividade adicionada com sucesso!');
       setNewActivity({ title: '', description: '' });
@@ -127,7 +150,13 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
-      await supabase.rpc('set_admin_access');
+      // Certifique-se de chamar set_admin_access antes de qualquer operação
+      const accessResult = await supabase.rpc('set_admin_access');
+      if (accessResult.error) {
+        console.error('Erro ao configurar acesso admin:', accessResult.error);
+        throw accessResult.error;
+      }
+
       const { error } = await supabase
         .from('therapeutic_activities')
         .update({
@@ -151,7 +180,13 @@ const TherapeuticEditor = () => {
 
   const handleDeleteActivity = async (id: string) => {
     try {
-      await supabase.rpc('set_admin_access');
+      // Certifique-se de chamar set_admin_access antes de qualquer operação
+      const accessResult = await supabase.rpc('set_admin_access');
+      if (accessResult.error) {
+        console.error('Erro ao configurar acesso admin:', accessResult.error);
+        throw accessResult.error;
+      }
+      
       const { error } = await supabase
         .from('therapeutic_activities')
         .delete()
