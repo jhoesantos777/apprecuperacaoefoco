@@ -49,10 +49,10 @@ const TherapeuticActivities1 = () => {
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid gap-6 md:grid-cols-2">
           {audios?.map((audio) => (
-            <Card key={audio.id} className="p-6 hover:shadow-xl transition-all">
-              <h3 className="text-xl font-semibold mb-4">{audio.title}</h3>
+            <Card key={audio.id} className="p-6 hover:shadow-xl transition-all bg-white/95 backdrop-blur">
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">{audio.title}</h3>
               <audio
                 controls
                 className="w-full"
