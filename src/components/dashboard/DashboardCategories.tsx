@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
   Smile, CalendarDays, ListTodo, Thermometer, Star, 
-  Award, BookOpen, MessageSquare, User
+  Award, BookOpen, MessageSquare, Book
 } from "lucide-react";
 
 type Category = {
@@ -44,6 +45,13 @@ const getDashboardCategories = (userRole: string): Category[] => {
       description: 'Aqui ficará contabilidades dos dias, somando 1 a cada dia que registrar hoje eu não vou usar',
       icon: CalendarDays,
       path: '/sobriety'
+    },
+    {
+      id: 'devotional',
+      title: 'Devocional',
+      description: 'Reflexão diária e meditação',
+      icon: Book,
+      path: '/devotional'
     },
     {
       id: 'tasks',
