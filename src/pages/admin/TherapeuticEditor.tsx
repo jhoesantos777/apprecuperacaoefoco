@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -69,20 +68,33 @@ const TherapeuticEditor = () => {
 
   const uploadAudio = async (file: File) => {
     try {
+      const accessResult = await supabase.rpc('set_admin_access');
+      if (accessResult.error) {
+        console.error('Error setting admin access:', accessResult.error);
+        throw new Error('Failed to set admin access');
+      }
+
       const fileName = `${Date.now()}-${file.name}`;
-      
-      // Call set_admin_access para garantir permissão de upload
-      await supabase.rpc('set_admin_access');
-      
       const { data, error } = await supabase.storage
         .from('audio_content')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Upload error:', error);
+        throw new Error('Failed to upload audio file');
+      }
+
+      const { data: publicUrl } = supabase.storage
+        .from('audio_content')
+        .getPublicUrl(fileName);
+
       return fileName;
     } catch (error) {
-      console.error('Erro ao fazer upload do áudio:', error);
-      throw new Error('Falha ao fazer upload do arquivo de áudio.');
+      console.error('Error in uploadAudio:', error);
+      throw error;
     }
   };
 
@@ -104,16 +116,6 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
-      // Certifique-se de chamar set_admin_access antes de qualquer operação
-      const accessResult = await supabase.rpc('set_admin_access');
-      if (accessResult.error) {
-        console.error('Erro ao configurar acesso admin:', accessResult.error);
-        throw accessResult.error;
-      }
-
-      console.log("Admin access configurado:", accessResult);
-
-      // Tente inserir atividade com flag de acesso admin ativada
       const { error } = await supabase
         .from('therapeutic_activities')
         .insert([
@@ -150,13 +152,6 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
-      // Certifique-se de chamar set_admin_access antes de qualquer operação
-      const accessResult = await supabase.rpc('set_admin_access');
-      if (accessResult.error) {
-        console.error('Erro ao configurar acesso admin:', accessResult.error);
-        throw accessResult.error;
-      }
-
       const { error } = await supabase
         .from('therapeutic_activities')
         .update({
@@ -180,11 +175,10 @@ const TherapeuticEditor = () => {
 
   const handleDeleteActivity = async (id: string) => {
     try {
-      // Certifique-se de chamar set_admin_access antes de qualquer operação
       const accessResult = await supabase.rpc('set_admin_access');
       if (accessResult.error) {
-        console.error('Erro ao configurar acesso admin:', accessResult.error);
-        throw accessResult.error;
+        console.error('Error setting admin access:', accessResult.error);
+        throw new Error('Failed to set admin access');
       }
       
       const { error } = await supabase
