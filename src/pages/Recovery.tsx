@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfDay } from 'date-fns';
@@ -22,16 +23,17 @@ const Recovery = () => {
         moodEntries,
         devotionalVisits,
         sobrietyDeclarations,
-        recoveryTriggers
+        recoveryTriggers,
+        reflectionEntries
       ] = await Promise.all([
         supabase
           .from('user_task_completions')
-          .select('*')
+          .select('task_id')
           .gte('completed_at', today.toISOString())
           .eq('user_id', userId),
         supabase
           .from('mood_entries')
-          .select('*')
+          .select('points')
           .gte('created_at', today.toISOString())
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
@@ -50,44 +52,46 @@ const Recovery = () => {
           .from('recovery_triggers')
           .select('*')
           .gte('created_at', today.toISOString())
+          .eq('user_id', userId),
+        supabase
+          .from('reflections')
+          .select('*')
+          .gte('created_at', today.toISOString())
           .eq('user_id', userId)
       ]);
 
-      // Calculate points from tasks (each task = +1)
-      const taskPoints = (taskCompletions.data?.length || 0);
+      // Tasks points (max 27)
+      const taskPoints = taskCompletions.data?.length || 0;
 
-      // Calculate points from mood (positive = +2, neutral = +1, negative = 0)
-      let moodPoints = 0;
-      if (moodEntries.data?.[0]) {
-        const mood = moodEntries.data[0];
-        if (mood.points > 0) moodPoints = 2;
-        else if (mood.points === 0) moodPoints = 1;
-      }
+      // Mood points (max 5)
+      const moodPoints = moodEntries.data?.[0]?.points || 0;
 
-      // Points from devotional visit (+1)
-      const devotionalPoints = devotionalVisits.data?.length ? 1 : 0;
+      // Devotional points (max 2)
+      const devotionalPoints = devotionalVisits.data?.length ? 2 : 0;
 
-      // Points from sobriety declaration (+1)
-      const sobrietyPoints = sobrietyDeclarations.data?.length ? 1 : 0;
+      // Sobriety declaration points (max 5)
+      const sobrietyPoints = sobrietyDeclarations.data?.length ? 5 : 0;
 
-      // Negative points from triggers (-1 per trigger)
-      const triggerPoints = (recoveryTriggers.data?.length || 0) * -1;
+      // Reflection points (max 3)
+      const reflectionPoints = reflectionEntries.data?.length ? 3 : 0;
 
-      // Calculate total score
-      const totalScore = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + triggerPoints;
+      // Calculate total score and normalize to 0-10 scale
+      const totalPoints = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + reflectionPoints;
+      const MAX_POSSIBLE_POINTS = 42; // 27 + 5 + 2 + 5 + 3
+      const normalizedScore = (totalPoints / MAX_POSSIBLE_POINTS) * 10;
 
-      // Check for multiple triggers
+      // Check for multiple triggers as a risk factor
       const hasMultipleTriggers = (recoveryTriggers.data?.length || 0) > 1;
 
       return {
-        score: Math.max(totalScore, 0),
+        score: parseFloat(normalizedScore.toFixed(1)),
         hasMultipleTriggers,
         details: {
           taskPoints,
           moodPoints,
           devotionalPoints,
           sobrietyPoints,
-          triggerPoints
+          reflectionPoints
         }
       };
     }
