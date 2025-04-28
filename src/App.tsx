@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -27,12 +26,12 @@ import Devotional from "./pages/Devotional";
 import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
 import AtualizarHumor from "./pages/AtualizarHumor";
+import Users from "./pages/Users";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Setup mock API
     setupMockApi();
   }, []);
 
@@ -65,7 +64,8 @@ const App = () => {
               <Route path="/chat" element={<Navigate to="/talk-to-me" replace />} />
               <Route path="/treatments" element={<Treatments />} />
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
-              <Route path="/support" element={<TalkToMe />} /> {/* Redirecting /support to TalkToMe page for now */}
+              <Route path="/support" element={<TalkToMe />} />
+              <Route path="/admin/users" element={<Users />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
