@@ -37,27 +37,41 @@ const Recovery = () => {
 
         console.log('Activities fetched:', activities);
 
-        // Calculate points from all activities
-        const points = activities?.reduce((acc, activity) => {
-          return acc + activity.pontos;
-        }, 0) || 0;
+        // Calcular pontos por tipo de atividade
+        const taskPoints = activities?.filter(a => a.tipo_atividade === 'Tarefas').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const moodPoints = activities?.filter(a => a.tipo_atividade === 'Humor').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const devotionalPoints = activities?.filter(a => a.tipo_atividade === 'Devocional').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const sobrietyPoints = activities?.filter(a => a.tipo_atividade === 'HojeNãoVouUsar').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const reflectionPoints = activities?.filter(a => a.tipo_atividade === 'Reflexão').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        
+        // Somar todos os pontos
+        const totalPoints = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + reflectionPoints;
 
-        // Normalize score to 0-10 scale
+        // Pontos negativos de gatilhos
+        const triggerPoints = activities?.filter(a => a.tipo_atividade === 'Gatilho').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        
+        // Pontuação total com os gatilhos
+        const points = totalPoints + triggerPoints;
+
+        // Normalizar score para escala 0-10
         const MAX_POSSIBLE_POINTS = 42; // 27 + 5 + 2 + 5 + 3
-        const normalizedScore = (points / MAX_POSSIBLE_POINTS) * 10;
+        let normalizedScore = (points / MAX_POSSIBLE_POINTS) * 10;
+        
+        // Garantir que o score fique entre 0 e 10
+        normalizedScore = Math.max(0, Math.min(10, normalizedScore));
 
-        // Check for multiple triggers as a risk factor
+        // Verificar múltiplos gatilhos como fator de risco
         const hasMultipleTriggers = activities?.filter(
           a => a.tipo_atividade === 'Gatilho'
         ).length > 1;
 
-        // Calculate details for different activity types
+        // Calcular detalhes para diferentes tipos de atividade
         const details = {
-          taskPoints: activities?.filter(a => a.tipo_atividade === 'Tarefas').reduce((acc, a) => acc + a.pontos, 0) || 0,
-          moodPoints: activities?.filter(a => a.tipo_atividade === 'Humor').reduce((acc, a) => acc + a.pontos, 0) || 0,
-          devotionalPoints: activities?.filter(a => a.tipo_atividade === 'Devocional').reduce((acc, a) => acc + a.pontos, 0) || 0,
-          sobrietyPoints: activities?.filter(a => a.tipo_atividade === 'HojeNãoVouUsar').reduce((acc, a) => acc + a.pontos, 0) || 0,
-          reflectionPoints: activities?.filter(a => a.tipo_atividade === 'Reflexão').reduce((acc, a) => acc + a.pontos, 0) || 0
+          taskPoints,
+          moodPoints,
+          devotionalPoints,
+          sobrietyPoints,
+          reflectionPoints
         };
 
         console.log('Recovery score details:', {

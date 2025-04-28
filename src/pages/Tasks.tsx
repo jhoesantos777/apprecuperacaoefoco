@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { BackButton } from '@/components/BackButton';
+import { registerActivity } from '@/utils/activityPoints';
 import type { Database } from '@/integrations/supabase/types';
 
 interface Task {
@@ -104,16 +105,39 @@ const Tasks = () => {
 
   const completeTask = useMutation({
     mutationFn: async (taskId: string) => {
-      const userId = (await supabase.auth.getUser()).data.user?.id;
-      const { error } = await supabase
-        .from('user_task_completions')
-        .insert({ 
-          task_id: taskId, 
-          user_id: userId
-        }) as { error: Error | null };
-      
-      if (error) throw error;
-      return { success: true };
+      try {
+        const userId = (await supabase.auth.getUser()).data.user?.id;
+        if (!userId) throw new Error("User not authenticated");
+        
+        // Encontrar a tarefa para obter os pontos
+        const task = tasks?.find(t => t.id === taskId);
+        if (!task) throw new Error("Task not found");
+        
+        // Registrar na tabela de completions (manter a funcionalidade original)
+        const { error } = await supabase
+          .from('user_task_completions')
+          .insert({ 
+            task_id: taskId, 
+            user_id: userId
+          });
+        
+        if (error) throw error;
+        
+        // Registrar também como atividade para o termômetro
+        await registerActivity(
+          'Tarefas', 
+          task.points, 
+          `Tarefa: ${task.name}`
+        );
+        
+        // Invalidar consultas
+        await queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
+        
+        return { success: true };
+      } catch (error) {
+        console.error("Error completing task:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-completions'] });
