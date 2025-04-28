@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
   Smile, CalendarDays, ListTodo, Thermometer, Star, 
-  Award, BookOpen, MessageSquare, Book
+  Award, BookOpen, MessageSquare, Book, User
 } from "lucide-react";
 
 type Category = {
