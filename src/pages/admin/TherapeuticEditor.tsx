@@ -81,9 +81,15 @@ const TherapeuticEditor = () => {
 
   const handleAddActivity = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('Usuário não autenticado');
+      // Check if user is logged in - if using admin login via localStorage we need to handle differently
+      const userRole = localStorage.getItem("userRole");
+      if (userRole !== "admin") {
+        toast.error('Acesso não autorizado');
+        return;
+      }
+      
+      if (!newActivity.title || !newActivity.description) {
+        toast.error("Preencha o título e a descrição da atividade");
         return;
       }
 
@@ -92,18 +98,42 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
-      const { error } = await supabase
-        .from('therapeutic_activities')
-        .insert([
-          {
-            title: newActivity.title,
-            description: newActivity.description,
-            audio_url: audioUrl,
-            created_by: user.id
-          }
-        ]);
+      // For admin users who might be using the special login
+      if (userRole === "admin") {
+        const { error } = await supabase
+          .from('therapeutic_activities')
+          .insert([
+            {
+              title: newActivity.title,
+              description: newActivity.description,
+              audio_url: audioUrl,
+              // Since we're using a special admin login, we don't have a user ID
+              // The RLS policy should allow this for admin role
+            }
+          ]);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // Normal flow for authenticated users through Supabase
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast.error('Usuário não autenticado');
+          return;
+        }
+
+        const { error } = await supabase
+          .from('therapeutic_activities')
+          .insert([
+            {
+              title: newActivity.title,
+              description: newActivity.description,
+              audio_url: audioUrl,
+              created_by: user.id
+            }
+          ]);
+
+        if (error) throw error;
+      }
 
       toast.success('Atividade adicionada com sucesso!');
       setNewActivity({ title: '', description: '' });
@@ -112,7 +142,7 @@ const TherapeuticEditor = () => {
       fetchActivities();
     } catch (error) {
       console.error('Erro ao adicionar atividade:', error);
-      toast.error('Não foi possível adicionar a atividade');
+      toast.error('Não foi possível adicionar a atividade: ' + (error as Error).message);
     }
   };
 
@@ -142,7 +172,7 @@ const TherapeuticEditor = () => {
       fetchActivities();
     } catch (error) {
       console.error('Erro ao atualizar atividade:', error);
-      toast.error('Não foi possível atualizar a atividade');
+      toast.error('Não foi possível atualizar a atividade: ' + (error as Error).message);
     }
   };
 
@@ -159,7 +189,7 @@ const TherapeuticEditor = () => {
       fetchActivities();
     } catch (error) {
       console.error('Erro ao remover atividade:', error);
-      toast.error('Não foi possível remover a atividade');
+      toast.error('Não foi possível remover a atividade: ' + (error as Error).message);
     }
   };
 
