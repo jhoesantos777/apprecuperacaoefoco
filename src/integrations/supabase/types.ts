@@ -338,13 +338,17 @@ export type Database = {
           drogas_uso: string[] | null
           email: string | null
           estado: string | null
+          historico_familiar_uso: boolean | null
           id: string
+          idade: number | null
           mood_points: number | null
           motivation_note: string | null
           nome: string | null
           sobriety_start_date: string | null
           telefone: string | null
           tempo_uso: string | null
+          tratamentos_concluidos: number | null
+          tratamentos_tentados: number | null
           updated_at: string | null
         }
         Insert: {
@@ -356,13 +360,17 @@ export type Database = {
           drogas_uso?: string[] | null
           email?: string | null
           estado?: string | null
+          historico_familiar_uso?: boolean | null
           id: string
+          idade?: number | null
           mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
           sobriety_start_date?: string | null
           telefone?: string | null
           tempo_uso?: string | null
+          tratamentos_concluidos?: number | null
+          tratamentos_tentados?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -374,13 +382,17 @@ export type Database = {
           drogas_uso?: string[] | null
           email?: string | null
           estado?: string | null
+          historico_familiar_uso?: boolean | null
           id?: string
+          idade?: number | null
           mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
           sobriety_start_date?: string | null
           telefone?: string | null
           tempo_uso?: string | null
+          tratamentos_concluidos?: number | null
+          tratamentos_tentados?: number | null
           updated_at?: string | null
         }
         Relationships: []

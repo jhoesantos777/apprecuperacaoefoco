@@ -1,78 +1,61 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
-import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Award, Calendar, Clock, Edit2, User, Save } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "@/components/ui/sonner";
 import { DrugSelection } from "@/components/DrugSelection";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [isEditingDrugs, setIsEditingDrugs] = useState(false);
-  const [isEditingTempoUso, setIsEditingTempoUso] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedDrugs, setSelectedDrugs] = useState<string[]>([]);
   const [tempoUso, setTempoUso] = useState("");
+  const [tratamentosTentados, setTratamentosTentados] = useState(0);
+  const [tratamentosConcluidos, setTratamentosConcluidos] = useState(0);
+  const [historicoFamiliar, setHistoricoFamiliar] = useState(false);
+  const [idade, setIdade] = useState<number | "">("");
 
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const loadUserProfile = async () => {
+    try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-      
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
+
       const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
-        
-      if (profile?.drogas_uso) {
-        setSelectedDrugs(profile.drogas_uso);
+
+      if (profile) {
+        setSelectedDrugs(profile.drogas_uso || []);
+        setTempoUso(profile.tempo_uso || "");
+        setTratamentosTentados(profile.tratamentos_tentados || 0);
+        setTratamentosConcluidos(profile.tratamentos_concluidos || 0);
+        setHistoricoFamiliar(profile.historico_familiar_uso || false);
+        setIdade(profile.idade || "");
       }
-      if (profile?.tempo_uso) {
-        setTempoUso(profile.tempo_uso);
-      }
-      return profile;
-    },
-  });
-
-  const updateProfile = useMutation({
-    mutationFn: async (updates: { drogas_uso?: string[], tempo_uso?: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast({
-        title: "Sucesso!",
-        description: "Suas informações foram atualizadas.",
-      });
-      setIsEditingDrugs(false);
-      setIsEditingTempoUso(false);
-    },
-    onError: (error) => {
+    } catch (error) {
+      console.error("Error loading profile:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível atualizar suas informações.",
+        description: "Não foi possível carregar seu perfil",
         variant: "destructive",
       });
-      console.error('Error updating profile:', error);
-    },
-  });
+    }
+  };
 
   const handleDrugToggle = (drug: string) => {
     setSelectedDrugs(prev => 
@@ -82,183 +65,131 @@ const Profile = () => {
     );
   };
 
-  const handleSaveDrugs = () => {
-    updateProfile.mutate({ drogas_uso: selectedDrugs });
-  };
-
-  const handleSaveTempoUso = () => {
-    updateProfile.mutate({ tempo_uso: tempoUso });
-  };
-
-  const { data: medals } = useQuery({
-    queryKey: ['user-medals'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('user_medals')
-        .select(`
-          *,
-          medal:medals (
-            title,
-            description,
-            icon
-          )
-        `)
-        .order('earned_at', { ascending: false });
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
       
-      return data;
-    },
-  });
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
 
-  const calculateAge = (birthDate: string) => {
-    if (!birthDate) return null;
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          drogas_uso: selectedDrugs,
+          tempo_uso: tempoUso,
+          tratamentos_tentados: tratamentosTentados,
+          tratamentos_concluidos: tratamentosConcluidos,
+          historico_familiar_uso: historicoFamiliar,
+          idade: idade,
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Perfil atualizado",
+        description: "Suas informações foram salvas com sucesso!",
+      });
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar suas informações",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    return age;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900">
-      <div className="p-6">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="text-white/70 hover:text-white flex items-center gap-2 mb-6"
-        >
-          <ArrowLeft size={24} />
-          Voltar
-        </button>
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
+      <BackButton />
+      
+      <div className="max-w-4xl mx-auto space-y-6">
+        <h1 className="text-3xl font-bold text-white mb-6">
+          Gerenciar Perfil
+        </h1>
 
-        <div className="flex items-center gap-6 mb-8">
-          <Avatar className="h-24 w-24 border-4 border-white">
-            <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
-            <AvatarFallback>
-              {profile?.nome?.[0] || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-3xl font-bold text-white">{profile?.nome || 'Usuário'}</h1>
-            <p className="text-white/70">
-              {calculateAge(profile?.data_nascimento)} anos
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <Card className="bg-white/10 border-none text-white">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Calendar className="h-5 w-5 text-yellow-300" />
-                <p className="font-medium">Dias em Sobriedade</p>
-              </div>
-              <p className="text-2xl font-bold text-yellow-300">
-                {profile?.dias_sobriedade || 0}
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-white/10 border-none text-white">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-yellow-300" />
-                  <p className="font-medium">Tempo de Uso</p>
-                </div>
-                {!isEditingTempoUso ? (
-                  <Button variant="ghost" size="sm" onClick={() => setIsEditingTempoUso(true)}>
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button variant="ghost" size="sm" onClick={handleSaveTempoUso}>
-                    <Save className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-              {isEditingTempoUso ? (
-                <Input
-                  value={tempoUso}
-                  onChange={(e) => setTempoUso(e.target.value)}
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
-                  placeholder="Ex: 5 anos"
-                />
-              ) : (
-                <p className="text-lg">
-                  {profile?.tempo_uso || 'Não informado'}
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="bg-white/10 border-none text-white mb-8">
-          <CardHeader className="p-4 pb-2">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <User className="h-5 w-5 text-yellow-300" />
-                Drogas de Uso
-              </h2>
-              {!isEditingDrugs ? (
-                <Button variant="ghost" size="sm" onClick={() => setIsEditingDrugs(true)}>
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button variant="ghost" size="sm" onClick={handleSaveDrugs}>
-                  <Save className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            {isEditingDrugs ? (
-              <DrugSelection 
+        <Card className="p-6 space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Histórico de Uso</h2>
+            
+            <div>
+              <Label>Tipo(s) de Droga(s) Usada(s)</Label>
+              <DrugSelection
                 selectedDrugs={selectedDrugs}
                 onDrugToggle={handleDrugToggle}
               />
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {profile?.drogas_uso?.map((droga) => (
-                  <Badge key={droga} variant="secondary" className="bg-white/20">
-                    {droga}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white/10 border-none text-white">
-          <CardHeader className="p-4 pb-2">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Award className="h-5 w-5 text-yellow-300" />
-              Medalhas Conquistadas
-            </h2>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="grid grid-cols-2 gap-4">
-              {medals?.map((medal) => (
-                <div 
-                  key={medal.id} 
-                  className="flex items-center gap-3 bg-white/5 rounded-lg p-3"
-                >
-                  <div className="text-2xl">{medal.medal.icon}</div>
-                  <div>
-                    <p className="font-medium">{medal.medal.title}</p>
-                    <p className="text-sm text-white/70">{medal.medal.description}</p>
-                  </div>
-                </div>
-              ))}
-              {!medals?.length && (
-                <p className="text-white/70 col-span-2 text-center py-4">
-                  Ainda não conquistou medalhas
-                </p>
-              )}
             </div>
-          </CardContent>
+
+            <div>
+              <Label htmlFor="tempoUso">Tempo de Uso</Label>
+              <Input
+                id="tempoUso"
+                placeholder="Ex: 2 anos e 3 meses"
+                value={tempoUso}
+                onChange={(e) => setTempoUso(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="tratamentosTentados">Tentativas de Tratamento</Label>
+                <Input
+                  id="tratamentosTentados"
+                  type="number"
+                  min={0}
+                  value={tratamentosTentados}
+                  onChange={(e) => setTratamentosTentados(Number(e.target.value))}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="tratamentosConcluidos">Tratamentos Concluídos</Label>
+                <Input
+                  id="tratamentosConcluidos"
+                  type="number"
+                  min={0}
+                  max={tratamentosTentados}
+                  value={tratamentosConcluidos}
+                  onChange={(e) => setTratamentosConcluidos(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Label htmlFor="historicoFamiliar">Histórico de Uso na Família</Label>
+              <Switch
+                id="historicoFamiliar"
+                checked={historicoFamiliar}
+                onCheckedChange={setHistoricoFamiliar}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="idade">Idade</Label>
+              <Input
+                id="idade"
+                type="number"
+                min={0}
+                max={120}
+                value={idade}
+                onChange={(e) => setIdade(Number(e.target.value))}
+              />
+            </div>
+          </div>
+          
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full"
+          >
+            {loading ? "Salvando..." : "Salvar Perfil"}
+          </Button>
         </Card>
       </div>
     </div>
