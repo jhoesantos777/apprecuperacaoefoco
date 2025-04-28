@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
@@ -49,9 +48,7 @@ const TherapeuticEditor = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('therapeutic_activities')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .rpc('get_therapeutic_activities');
       
       if (error) throw error;
       setActivities(data || []);
@@ -81,7 +78,6 @@ const TherapeuticEditor = () => {
 
   const handleAddActivity = async () => {
     try {
-      // Check if user is logged in - if using admin login via localStorage we need to handle differently
       const userRole = localStorage.getItem("userRole");
       if (userRole !== "admin") {
         toast.error('Acesso não autorizado');
@@ -98,42 +94,18 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
-      // For admin users who might be using the special login
-      if (userRole === "admin") {
-        const { error } = await supabase
-          .from('therapeutic_activities')
-          .insert([
-            {
-              title: newActivity.title,
-              description: newActivity.description,
-              audio_url: audioUrl,
-              // Since we're using a special admin login, we don't have a user ID
-              // The RLS policy should allow this for admin role
-            }
-          ]);
+      await supabase.rpc('set_admin_access');
+      const { error } = await supabase
+        .from('therapeutic_activities')
+        .insert([
+          {
+            title: newActivity.title,
+            description: newActivity.description,
+            audio_url: audioUrl
+          }
+        ]);
 
-        if (error) throw error;
-      } else {
-        // Normal flow for authenticated users through Supabase
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          toast.error('Usuário não autenticado');
-          return;
-        }
-
-        const { error } = await supabase
-          .from('therapeutic_activities')
-          .insert([
-            {
-              title: newActivity.title,
-              description: newActivity.description,
-              audio_url: audioUrl,
-              created_by: user.id
-            }
-          ]);
-
-        if (error) throw error;
-      }
+      if (error) throw error;
 
       toast.success('Atividade adicionada com sucesso!');
       setNewActivity({ title: '', description: '' });
@@ -155,6 +127,7 @@ const TherapeuticEditor = () => {
         audioUrl = await uploadAudio(audioFile);
       }
 
+      await supabase.rpc('set_admin_access');
       const { error } = await supabase
         .from('therapeutic_activities')
         .update({
@@ -178,6 +151,7 @@ const TherapeuticEditor = () => {
 
   const handleDeleteActivity = async (id: string) => {
     try {
+      await supabase.rpc('set_admin_access');
       const { error } = await supabase
         .from('therapeutic_activities')
         .delete()

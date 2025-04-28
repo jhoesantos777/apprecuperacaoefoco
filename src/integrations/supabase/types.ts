@@ -721,6 +721,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_therapeutic_activities: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          title: string
+          description: string
+          audio_url: string
+          created_at: string
+          updated_at: string
+          created_by: string
+          active: boolean
+        }[]
+      }
+      set_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_user_mood: {
         Args: { mood_value: string; mood_timestamp: string }
         Returns: undefined
