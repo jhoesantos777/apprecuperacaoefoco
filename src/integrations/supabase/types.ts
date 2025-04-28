@@ -102,6 +102,33 @@ export type Database = {
         }
         Relationships: []
       }
+      audios: {
+        Row: {
+          created_at: string | null
+          file_path: string
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_path: string
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       available_slots: {
         Row: {
           created_at: string | null
