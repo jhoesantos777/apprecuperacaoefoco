@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Alert } from '@/components/ui/alert';
-import { AlertTriangle, Check, CircleAlert, Flag, CheckCircle, AlertCircle, Gauge } from 'lucide-react';
+import { AlertCircle, Flag, CheckCircle, Gauge } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -23,33 +23,42 @@ interface ThermometerProps {
 
 const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: ThermometerProps) => {
   const getStatus = () => {
+    if (score >= 9) return { 
+      level: 'Zona Saudável', 
+      color: 'bg-green-500', 
+      textColor: 'text-green-500',
+      bgColor: 'bg-green-50',
+      icon: CheckCircle,
+      emoji: '😄',
+      message: "Você está brilhando! Parabéns!"
+    };
     if (score >= 7) return { 
       level: 'Zona Saudável', 
       color: 'bg-green-500', 
       textColor: 'text-green-500',
       bgColor: 'bg-green-50',
-      icon: CheckCircle 
+      icon: CheckCircle,
+      emoji: '🙂',
+      message: "Ótimo trabalho! Continue firme!"
     };
     if (score >= 4) return { 
       level: 'Zona de Atenção', 
       color: 'bg-yellow-500', 
       textColor: 'text-yellow-500',
       bgColor: 'bg-yellow-50',
-      icon: Flag 
+      icon: Flag,
+      emoji: '😐',
+      message: "Você está no caminho. Continue!"
     };
     return { 
       level: 'Zona Crítica', 
       color: 'bg-red-500', 
       textColor: 'text-red-500',
       bgColor: 'bg-red-50',
-      icon: AlertCircle 
+      icon: AlertCircle,
+      emoji: '😟',
+      message: "Todo dia é uma nova chance. Força!"
     };
-  };
-
-  const getMessage = () => {
-    if (score >= 7) return "Continue assim! Você está mantendo um excelente equilíbrio hoje.";
-    if (score >= 4) return "Atenção! Que tal reforçar algumas atividades de recuperação?";
-    return "Momento delicado. A recaída começa no pensamento. Busque ajuda agora.";
   };
 
   const status = getStatus();
@@ -61,7 +70,7 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
           <Gauge className={cn("w-8 h-8", status.textColor)} />
         </div>
         <div>
-          <h3 className="font-semibold text-xl">{status.level}</h3>
+          <h3 className="font-semibold text-xl">Seu Termômetro de Recuperação</h3>
           <p className="text-lg text-gray-500">Pontuação: {score}/10</p>
         </div>
       </div>
@@ -72,7 +81,10 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
             value={score * 10} 
             className={cn("h-4 rounded-full", status.color)} 
           />
-          <p className="text-lg font-medium">{getMessage()}</p>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{status.emoji}</span>
+            <p className="text-lg font-medium">{status.message}</p>
+          </div>
         </div>
       </Card>
 
@@ -81,7 +93,7 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
           <h4 className="font-semibold text-lg">Detalhes da Pontuação</h4>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span>✅ Tarefas completadas ({details.taskPoints}/27)</span>
+              <span>✅ Tarefas completadas (0-27)</span>
               <span>+{details.taskPoints}</span>
             </div>
             <div className="flex justify-between">
@@ -99,14 +111,6 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
             <div className="flex justify-between">
               <span>📝 Reflexão do Dia (0-3)</span>
               <span>+{details.reflectionPoints}</span>
-            </div>
-            <div className="h-px bg-gray-200 my-2" />
-            <div className="flex justify-between font-semibold">
-              <span>Total</span>
-              <span>
-                {(details.taskPoints + details.moodPoints + details.devotionalPoints + 
-                  details.sobrietyPoints + details.reflectionPoints)}/42
-              </span>
             </div>
           </div>
         </Card>

@@ -53,53 +53,83 @@ const Recovery = () => {
 
         console.log('Activities fetched:', activities);
 
-        // Calcular pontos por tipo de atividade
-        const taskPoints = activities?.filter(a => a.tipo_atividade === 'Tarefas').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const moodPoints = activities?.filter(a => a.tipo_atividade === 'Humor').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const devotionalPoints = activities?.filter(a => a.tipo_atividade === 'Devocional').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const sobrietyPoints = activities?.filter(a => a.tipo_atividade === 'HojeNãoVouUsar').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const reflectionPoints = activities?.filter(a => a.tipo_atividade === 'Reflexão').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        
-        // Somar todos os pontos
-        const totalPoints = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + reflectionPoints;
+        if (!activities || activities.length === 0) {
+          return {
+            score: 0,
+            hasMultipleTriggers: false,
+            details: {
+              taskPoints: 0,
+              moodPoints: 0,
+              devotionalPoints: 0,
+              sobrietyPoints: 0,
+              reflectionPoints: 0
+            }
+          };
+        }
 
-        // Pontos negativos de gatilhos
-        const triggerPoints = activities?.filter(a => a.tipo_atividade === 'Gatilho').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        // NOVO ALGORITMO: 
+        // 1. Agrupar atividades por dia
+        const activitiesByDate = activities.reduce((acc, activity) => {
+          const date = new Date(activity.data_registro).toISOString().split('T')[0];
+          if (!acc[date]) {
+            acc[date] = [];
+          }
+          acc[date].push(activity);
+          return acc;
+        }, {} as Record<string, typeof activities>);
         
-        // Pontuação total com os gatilhos
-        const points = totalPoints + triggerPoints;
-
-        // Normalizar score para escala 0-10
-        const MAX_POSSIBLE_POINTS = 42; // 27 + 5 + 2 + 5 + 3
-        let normalizedScore = (points / MAX_POSSIBLE_POINTS) * 10;
+        // 2. Calcular dias únicos com registros
+        const diasComRegistros = Object.keys(activitiesByDate).length;
         
-        // Garantir que o score fique entre 0 e 10
-        normalizedScore = Math.max(0, Math.min(10, normalizedScore));
-
+        // 3. Somar todos os pontos (positivos e negativos)
+        const pontuacaoTotalSemana = activities.reduce((acc, activity) => acc + activity.pontos, 0);
+        
+        // 4. Calcular a pontuação máxima possível (42 pontos por dia com registro)
+        const pontuacaoMaximaSemana = diasComRegistros * 42;
+        
+        // 5. Calcular o termômetro normalizado (escala 0-10)
+        let termometroFinal = (pontuacaoTotalSemana / pontuacaoMaximaSemana) * 10;
+        
+        // Garantir que o valor está entre 0 e 10
+        termometroFinal = Math.max(0, Math.min(10, termometroFinal));
+        
+        // Calcular detalhes para diferentes tipos de atividade (para exibição)
+        const taskPoints = activities.filter(a => a.tipo_atividade === 'Tarefas').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const moodPoints = activities.filter(a => a.tipo_atividade === 'Humor').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const devotionalPoints = activities.filter(a => a.tipo_atividade === 'Devocional').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const sobrietyPoints = activities.filter(a => a.tipo_atividade === 'HojeNãoVouUsar').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        const reflectionPoints = activities.filter(a => a.tipo_atividade === 'Reflexão').reduce((acc, a) => acc + a.pontos, 0) || 0;
+        
         // Verificar múltiplos gatilhos como fator de risco
-        const hasMultipleTriggers = activities?.filter(
+        const hasMultipleTriggers = activities.filter(
           a => a.tipo_atividade === 'Gatilho'
         ).length > 1;
 
-        // Calcular detalhes para diferentes tipos de atividade
-        const details = {
-          taskPoints,
-          moodPoints,
-          devotionalPoints,
-          sobrietyPoints,
-          reflectionPoints
-        };
-
-        console.log('Recovery score details:', {
-          score: parseFloat(normalizedScore.toFixed(1)),
+        console.log('Novo cálculo do termômetro:', {
+          score: parseFloat(termometroFinal.toFixed(1)),
+          pontuacaoTotalSemana,
+          diasComRegistros,
+          pontuacaoMaximaSemana,
           hasMultipleTriggers,
-          details
+          details: {
+            taskPoints,
+            moodPoints,
+            devotionalPoints,
+            sobrietyPoints,
+            reflectionPoints
+          }
         });
 
         return {
-          score: parseFloat(normalizedScore.toFixed(1)),
+          score: parseFloat(termometroFinal.toFixed(1)),
           hasMultipleTriggers,
-          details
+          details: {
+            taskPoints,
+            moodPoints,
+            devotionalPoints,
+            sobrietyPoints,
+            reflectionPoints
+          }
         };
       } catch (error) {
         console.error('Error calculating recovery score:', error);
