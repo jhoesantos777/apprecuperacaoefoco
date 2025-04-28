@@ -170,6 +170,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_reflections: {
+        Row: {
+          active: boolean | null
+          audio_url: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          scheduled_for: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          audio_url?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          scheduled_for?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          audio_url?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          scheduled_for?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       daily_tasks: {
         Row: {
           description: string
@@ -188,6 +224,42 @@ export type Database = {
           id?: string
           name?: string
           points?: number
+        }
+        Relationships: []
+      }
+      daily_verses: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          reflection: string
+          scheduled_for: string | null
+          updated_at: string | null
+          verse_reference: string
+          verse_text: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          reflection: string
+          scheduled_for?: string | null
+          updated_at?: string | null
+          verse_reference: string
+          verse_text: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          reflection?: string
+          scheduled_for?: string | null
+          updated_at?: string | null
+          verse_reference?: string
+          verse_text?: string
         }
         Relationships: []
       }
@@ -505,6 +577,39 @@ export type Database = {
           earned_at?: string | null
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      therapeutic_activities: {
+        Row: {
+          active: boolean | null
+          audio_url: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string
+          id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          audio_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          id?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          audio_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          id?: string
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -36,6 +35,8 @@ import MeditationSession from "./pages/meditation/MeditationSession";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import MoodEditor from "./pages/admin/MoodEditor";
 import TasksEditor from "./pages/admin/TasksEditor";
+import TherapeuticEditor from "./pages/admin/TherapeuticEditor";
+import DevotionalEditor from "./pages/admin/DevotionalEditor";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,8 @@ const App = () => {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/mood-editor" element={<MoodEditor />} />
               <Route path="/admin/tasks-editor" element={<TasksEditor />} />
+              <Route path="/admin/therapeutic-editor" element={<TherapeuticEditor />} />
+              <Route path="/admin/devotional-editor" element={<DevotionalEditor />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

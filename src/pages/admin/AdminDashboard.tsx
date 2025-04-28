@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
@@ -84,6 +83,13 @@ const AdminDashboard = () => {
       description: 'Configure atividades com texto e áudio',
       icon: Brain,
       path: '/admin/therapeutic-editor'
+    },
+    {
+      id: 'devotional',
+      title: 'Devocional',
+      description: 'Gerencie versículos e reflexões diárias',
+      icon: Book,
+      path: '/admin/devotional-editor'
     }
   ];
 
