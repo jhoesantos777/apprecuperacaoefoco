@@ -3,7 +3,7 @@ import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Book as BibleIcon, Music, Heart } from "lucide-react";
+import { Book, Book as BibleIcon, Music, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";

@@ -44,7 +44,6 @@ export const DevotionalNotes = ({ currentNotes }: DevotionalNotesProps) => {
     onError: (error) => {
       toast("Erro ao salvar", {
         description: "Não foi possível salvar suas anotações.",
-        variant: "destructive",
       });
       console.error('Error saving devotional notes:', error);
     },
