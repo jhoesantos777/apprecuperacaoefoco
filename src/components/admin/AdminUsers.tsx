@@ -59,7 +59,7 @@ export const AdminUsers = () => {
         let userRole: UserType = "dependent";
         
         if (user.email === "admin@admin") {
-          userRole = "admin" as UserType;
+          userRole = "admin";
         } else {
           // Try to get from localStorage, but this is just a fallback
           // since localStorage is browser-specific and won't work across users

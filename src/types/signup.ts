@@ -5,7 +5,7 @@ export interface DrugCategory {
   drugs: string[];
 }
 
-export type UserType = "dependent" | "family" | "professional";
+export type UserType = "dependent" | "family" | "professional" | "admin";
 
 export type RelationType = "spouse" | "father" | "mother" | "sibling" | "uncle" | "cousin" | "friend" | "other";
 
