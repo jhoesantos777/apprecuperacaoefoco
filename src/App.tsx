@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -31,6 +30,7 @@ import Users from "./pages/admin/Users";
 import Therapeutic from "./pages/Therapeutic";
 import MeditationPage from "./pages/meditation/MeditationPage";
 import MeditationSession from "./pages/meditation/MeditationSession";
+import TherapeuticActivities from "./pages/TherapeuticActivities";
 import TherapeuticActivities1 from "./pages/TherapeuticActivities1";
 
 // Admin pages
@@ -82,6 +82,7 @@ const App = () => {
               <Route path="/meditation" element={<MeditationPage />} />
               <Route path="/meditation/:id" element={<MeditationSession />} />
               
+              <Route path="/therapeutic-activities" element={<TherapeuticActivities />} />
               <Route path="/therapeutic-activities-1" element={<TherapeuticActivities1 />} />
               
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
