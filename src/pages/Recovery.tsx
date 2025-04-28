@@ -24,8 +24,7 @@ const Recovery = () => {
         moodEntries,
         devotionalVisits,
         sobrietyDeclarations,
-        recoveryTriggers,
-        dailyReflections
+        recoveryTriggers
       ] = await Promise.all([
         supabase
           .from('user_task_completions')
@@ -53,11 +52,6 @@ const Recovery = () => {
           .from('recovery_triggers')
           .select('*')
           .gte('created_at', today.toISOString())
-          .eq('user_id', userId),
-        supabase
-          .from('daily_reflections')
-          .select('*')
-          .gte('created_at', today.toISOString())
           .eq('user_id', userId)
       ]);
 
@@ -73,8 +67,9 @@ const Recovery = () => {
       // Sobriety declaration points (max 5)
       const sobrietyPoints = sobrietyDeclarations.data?.length ? 5 : 0;
 
-      // Reflection points (max 3) - now checking if there are daily reflections
-      const reflectionPoints = dailyReflections?.data?.length ? 3 : 0;
+      // Reflection points (max 3) - temporarily set to 0 or mock data
+      // Since we don't have a daily_reflections table yet
+      const reflectionPoints = 0;
 
       // Calculate total score and normalize to 0-10 scale
       const totalPoints = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + reflectionPoints;
