@@ -8,6 +8,7 @@ import TriggerForm from '@/components/TriggerForm';
 import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
+import { toast } from '@/components/ui/sonner';
 
 const Recovery = () => {
   const today = startOfDay(new Date());
@@ -23,8 +24,7 @@ const Recovery = () => {
         moodEntries,
         devotionalVisits,
         sobrietyDeclarations,
-        recoveryTriggers,
-        reflectionEntries
+        recoveryTriggers
       ] = await Promise.all([
         supabase
           .from('user_task_completions')
@@ -52,11 +52,6 @@ const Recovery = () => {
           .from('recovery_triggers')
           .select('*')
           .gte('created_at', today.toISOString())
-          .eq('user_id', userId),
-        supabase
-          .from('reflections')
-          .select('*')
-          .gte('created_at', today.toISOString())
           .eq('user_id', userId)
       ]);
 
@@ -72,8 +67,8 @@ const Recovery = () => {
       // Sobriety declaration points (max 5)
       const sobrietyPoints = sobrietyDeclarations.data?.length ? 5 : 0;
 
-      // Reflection points (max 3)
-      const reflectionPoints = reflectionEntries.data?.length ? 3 : 0;
+      // Reflection points (max 3) - temporarily hardcoded to 0 until reflections table is created
+      const reflectionPoints = 0;
 
       // Calculate total score and normalize to 0-10 scale
       const totalPoints = taskPoints + moodPoints + devotionalPoints + sobrietyPoints + reflectionPoints;
