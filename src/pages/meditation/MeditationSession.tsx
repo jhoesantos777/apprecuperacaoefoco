@@ -7,6 +7,7 @@ import { Check, Pause, Play, Upload } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useTherapeuticActivities } from '@/hooks/useTherapeuticActivities';
 
 const MeditationSession = () => {
   const { id } = useParams();
@@ -15,11 +16,22 @@ const MeditationSession = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const meditation = meditations.find(m => m.id === id);
+  const { data: dbMeditations } = useTherapeuticActivities();
+  const staticMeditation = meditations.find(m => m.id === id);
+  const dbMeditation = dbMeditations?.find(m => m.id === id);
+  
+  const meditation = staticMeditation || (dbMeditation ? {
+    id: dbMeditation.id,
+    title: dbMeditation.title,
+    objective: dbMeditation.description,
+    description: dbMeditation.description,
+    duration: "10-15 minutos",
+    benefits: ["Reduz ansiedade", "Melhora o foco", "Promove bem-estar"],
+    audioUrl: dbMeditation.audio_url
+  } : null);
 
   if (!meditation) {
     return <div>Meditação não encontrada</div>;
@@ -36,50 +48,67 @@ const MeditationSession = () => {
   const handlePlayAudio = async () => {
     if (isLoading) return;
 
-    if (audioUrl) {
-      if (audioRef.current) {
-        if (isPlaying) {
-          audioRef.current.pause();
-          setIsPlaying(false);
-        } else {
+    try {
+      if (meditation.audioUrl) {
+        // If we have a direct audio URL from the database
+        const { data: audioData } = await supabase.storage
+          .from('audio')
+          .getPublicUrl(meditation.audioUrl);
+
+        if (audioRef.current) {
+          audioRef.current.src = audioData.publicUrl;
+          if (isPlaying) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+          } else {
+            await audioRef.current.play();
+            setIsPlaying(true);
+          }
+        }
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        
+        const { data, error } = await supabase.functions.invoke('text-to-speech', {
+          body: {
+            text: meditation.description,
+            voice: 'alloy'
+          }
+        });
+  
+        if (error) {
+          throw new Error(error.message);
+        }
+  
+        if (!data || !data.audioContent) {
+          throw new Error('No audio content returned from the API');
+        }
+  
+        const audio = `data:audio/mp3;base64,${data.audioContent}`;
+        setAudioUrl(audio);
+        
+        if (audioRef.current) {
+          audioRef.current.src = audio;
           audioRef.current.play();
           setIsPlaying(true);
         }
-      }
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      
-      const { data, error } = await supabase.functions.invoke('text-to-speech', {
-        body: {
-          text: meditation.description,
-          voice: 'alloy'
-        }
-      });
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (!data || !data.audioContent) {
-        throw new Error('No audio content returned from the API');
-      }
-
-      const audio = `data:audio/mp3;base64,${data.audioContent}`;
-      setAudioUrl(audio);
-      
-      if (audioRef.current) {
-        audioRef.current.src = audio;
-        audioRef.current.play();
-        setIsPlaying(true);
+      } catch (error) {
+        console.error('Error generating audio:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível gerar o áudio da meditação.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error generating audio:', error);
+      console.error('Error playing audio:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível gerar o áudio da meditação.",
+        description: "Não foi possível reproduzir o áudio da meditação.",
         variant: "destructive",
       });
     } finally {
@@ -157,7 +186,7 @@ const MeditationSession = () => {
                     variant="outline"
                     size="icon"
                     onClick={handlePlayAudio}
-                    disabled={isLoading || isUploading}
+                    disabled={isLoading}
                   >
                     {isLoading ? (
                       <span className="animate-pulse">...</span>
@@ -172,9 +201,9 @@ const MeditationSession = () => {
                     variant="outline"
                     size="icon"
                     onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
+                    disabled={isLoading}
                   >
-                    {isUploading ? (
+                    {isLoading ? (
                       <span className="animate-pulse">...</span>
                     ) : (
                       <Upload className="h-4 w-4" />
