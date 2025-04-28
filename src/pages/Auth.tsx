@@ -42,21 +42,22 @@ const Auth = () => {
     }
     
     setIsLoading(true);
+    
     try {
       if (isSignUp) {
         navigate("/signup");
         return;
       } else {
-        // Handle admin login separately
-        if (formData.email.toLowerCase() === "admin@admin" && formData.password === "admin") {
-          // Set a session with admin role
-          toast.success("Login administrador realizado com sucesso!");
+        // Special case for admin login
+        if (formData.email.toLowerCase() === "admin@admin" && formData.password === "45452775") {
+          console.log("Admin login detected");
           localStorage.setItem("userRole", "admin");
+          toast.success("Login administrador realizado com sucesso!");
           navigate("/dashboard");
           return;
         }
         
-        // Log the attempt for debugging
+        // Regular user login via Supabase
         console.log(`Attempting login with email: ${formData.email}`);
         
         const { data, error } = await supabase.auth.signInWithPassword({
