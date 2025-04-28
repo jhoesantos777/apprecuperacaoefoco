@@ -17,9 +17,8 @@ const AtualizarHumor = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          title: "Erro",
-          description: "Você precisa estar logado para registrar seu humor.",
+        toast("Erro: Você precisa estar logado para registrar seu humor.", {
+          description: "Faça login e tente novamente.",
           variant: "destructive"
         });
         return;
@@ -40,16 +39,14 @@ const AtualizarHumor = () => {
       // Invalidar a consulta do termômetro para atualizar a pontuação
       await queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
 
-      toast({
-        title: "Sucesso!",
+      toast("Sucesso!", {
         description: "Seu humor foi registrado com sucesso.",
       });
 
       navigate('/dashboard');
     } catch (error) {
       console.error('Erro ao registrar humor:', error);
-      toast({
-        title: "Erro",
+      toast("Erro", {
         description: "Não foi possível registrar seu humor. Tente novamente.",
         variant: "destructive"
       });
