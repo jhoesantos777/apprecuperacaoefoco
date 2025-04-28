@@ -9,6 +9,7 @@ import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
 import { toast } from '@/components/ui/sonner';
+import { ResetButton } from '@/components/recovery/ResetButton';
 
 const Recovery = () => {
   const today = startOfDay(new Date());
@@ -111,6 +112,9 @@ const Recovery = () => {
             hasMultipleTriggers={recoveryScore?.hasMultipleTriggers || false}
             details={recoveryScore?.details}
           />
+          <div className="mt-4">
+            <ResetButton />
+          </div>
         </Card>
 
         <Card className="p-6">
