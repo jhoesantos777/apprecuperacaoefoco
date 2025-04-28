@@ -424,6 +424,27 @@ export type Database = {
         }
         Relationships: []
       }
+      sobriety_medals: {
+        Row: {
+          days_milestone: number
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          days_milestone: number
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          days_milestone?: number
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_course_progress: {
         Row: {
           completed_at: string | null

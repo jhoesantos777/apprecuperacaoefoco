@@ -123,6 +123,7 @@ const Sobriety = () => {
                 onSelect={handleDateSelect}
                 disabled={(date) => date > new Date()}
                 initialFocus
+                className="pointer-events-auto"
               />
             </PopoverContent>
           </Popover>
