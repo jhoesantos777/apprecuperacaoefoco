@@ -102,6 +102,33 @@ export type Database = {
         }
         Relationships: []
       }
+      audios: {
+        Row: {
+          created_at: string | null
+          file_path: string
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_path: string
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       available_slots: {
         Row: {
           created_at: string | null
@@ -170,6 +197,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_reflections: {
+        Row: {
+          active: boolean | null
+          audio_url: string | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          scheduled_for: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          audio_url?: string | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          scheduled_for?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          audio_url?: string | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          scheduled_for?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       daily_tasks: {
         Row: {
           description: string
@@ -188,6 +251,42 @@ export type Database = {
           id?: string
           name?: string
           points?: number
+        }
+        Relationships: []
+      }
+      daily_verses: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          reflection: string
+          scheduled_for: string | null
+          updated_at: string | null
+          verse_reference: string
+          verse_text: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          reflection: string
+          scheduled_for?: string | null
+          updated_at?: string | null
+          verse_reference: string
+          verse_text: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          reflection?: string
+          scheduled_for?: string | null
+          updated_at?: string | null
+          verse_reference?: string
+          verse_text?: string
         }
         Relationships: []
       }
@@ -508,6 +607,39 @@ export type Database = {
         }
         Relationships: []
       }
+      therapeutic_activities: {
+        Row: {
+          active: boolean | null
+          audio_url: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string
+          id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          audio_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          id?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          audio_url?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       user_course_progress: {
         Row: {
           completed_at: string | null
@@ -616,6 +748,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_therapeutic_activities: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          title: string
+          description: string
+          audio_url: string
+          created_at: string
+          updated_at: string
+          created_by: string
+          active: boolean
+        }[]
+      }
+      set_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_user_mood: {
         Args: { mood_value: string; mood_timestamp: string }
         Returns: undefined
