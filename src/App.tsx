@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -30,6 +31,11 @@ import Users from "./pages/admin/Users";
 import Therapeutic from "./pages/Therapeutic";
 import MeditationPage from "./pages/meditation/MeditationPage";
 import MeditationSession from "./pages/meditation/MeditationSession";
+
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import MoodEditor from "./pages/admin/MoodEditor";
+import TasksEditor from "./pages/admin/TasksEditor";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +78,12 @@ const App = () => {
               <Route path="/therapeutic" element={<Therapeutic />} />
               <Route path="/meditation" element={<MeditationPage />} />
               <Route path="/meditation/:id" element={<MeditationSession />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/mood-editor" element={<MoodEditor />} />
+              <Route path="/admin/tasks-editor" element={<TasksEditor />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
