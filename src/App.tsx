@@ -16,7 +16,6 @@ import Premium from "./pages/Premium";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Sobriety from "./pages/Sobriety";
-import Mood from "./pages/Mood";
 import Tasks from "./pages/Tasks";
 import Recovery from "./pages/Recovery";
 import Reflection from "./pages/Reflection";
@@ -26,7 +25,6 @@ import Schedule from "./pages/Schedule";
 import Devotional from "./pages/Devotional";
 import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
-import MoodSelection from "./pages/MoodSelection";
 import AtualizarHumor from "./pages/AtualizarHumor";
 
 const queryClient = new QueryClient();
@@ -54,7 +52,6 @@ const App = () => {
               <Route path="/premium" element={<Premium />} />
               <Route path="/about" element={<About />} />
               <Route path="/sobriety" element={<Sobriety />} />
-              <Route path="/mood" element={<Mood />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/recovery" element={<Recovery />} />
               <Route path="/reflection" element={<Reflection />} />
@@ -66,7 +63,6 @@ const App = () => {
               <Route path="/talk-to-me" element={<TalkToMe />} />
               <Route path="/chat" element={<Navigate to="/talk-to-me" replace />} />
               <Route path="/treatments" element={<Treatments />} />
-              <Route path="/mood-selection" element={<MoodSelection />} />
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

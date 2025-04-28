@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
@@ -6,6 +5,7 @@ import { DashboardCategories } from '@/components/dashboard/DashboardCategories'
 import { BottomNavigation } from '@/components/dashboard/BottomNavigation';
 import { SobrietyButton } from '@/components/dashboard/SobrietyButton';
 import FamilyDashboard from '@/components/FamilyDashboard';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);

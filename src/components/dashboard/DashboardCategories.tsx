@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
   Smile, CalendarDays, ListTodo, Thermometer, Star, 
-  Award, BookOpen, MessageSquare, Heart, User
+  Award, BookOpen, MessageSquare, User
 } from "lucide-react";
 
 type Category = {
@@ -22,7 +21,7 @@ const getDashboardCategories = (userRole: string): Category[] => {
       title: 'Atualizar Humor',
       description: 'Como você está se sentindo hoje?',
       icon: Smile,
-      path: '/mood-selection'
+      path: '/atualizar-humor'
     }
   ];
   
@@ -45,13 +44,6 @@ const getDashboardCategories = (userRole: string): Category[] => {
       description: 'Aqui ficará contabilidades dos dias, somando 1 a cada dia que registrar hoje eu não vou usar',
       icon: CalendarDays,
       path: '/sobriety'
-    },
-    {
-      id: 'humor',
-      title: 'Humor hoje',
-      description: 'Registre como está seu humor',
-      icon: Smile,
-      path: '/mood'
     },
     {
       id: 'tasks',
@@ -94,13 +86,6 @@ const getDashboardCategories = (userRole: string): Category[] => {
       description: 'Converse conosco',
       icon: MessageSquare,
       path: '/chat'
-    },
-    {
-      id: 'atualizar-humor',
-      title: 'Atualizar Humor',
-      description: 'Como você está se sentindo hoje?',
-      icon: Smile,
-      path: '/atualizar-humor'
     }
   ];
 
