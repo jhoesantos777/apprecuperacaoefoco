@@ -6,6 +6,7 @@ export interface MeditationType {
   description: string;
   duration: string;
   benefits: string[];
+  audioUrl?: string; // Added audioUrl as an optional property
 }
 
 export interface AudioState {
