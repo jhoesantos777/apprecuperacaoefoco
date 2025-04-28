@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -30,6 +31,7 @@ import Users from "./pages/admin/Users";
 import Therapeutic from "./pages/Therapeutic";
 import MeditationPage from "./pages/meditation/MeditationPage";
 import MeditationSession from "./pages/meditation/MeditationSession";
+import TherapeuticActivities1 from "./pages/TherapeuticActivities1";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
