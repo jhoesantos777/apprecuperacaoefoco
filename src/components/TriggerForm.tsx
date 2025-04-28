@@ -7,10 +7,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "@/components/ui/sonner";
 import { triggers, TriggerType } from '@/utils/triggerTips';
 import { registerActivity } from '@/utils/activityPoints';
+import { useQueryClient } from '@tanstack/react-query';
 
 const TriggerForm = () => {
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
   const [showTips, setShowTips] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleTriggerToggle = (triggerId: string) => {
     setSelectedTriggers(prev =>
@@ -37,6 +40,7 @@ const TriggerForm = () => {
     }
 
     try {
+      setIsSubmitting(true);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -55,6 +59,9 @@ const TriggerForm = () => {
       });
 
       await Promise.all(promises);
+      
+      // Invalidate recovery score query to update the thermometer
+      queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
 
       toast("Gatilhos registrados com sucesso");
       setSelectedTriggers([]);
@@ -62,6 +69,8 @@ const TriggerForm = () => {
     } catch (error) {
       console.error('Error registering triggers:', error);
       toast("Erro ao registrar gatilhos");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -119,8 +128,12 @@ const TriggerForm = () => {
       )}
 
       {selectedTriggers.length > 0 && (
-        <Button type="submit" className="w-full">
-          Registrar Gatilhos
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Registrando...' : 'Registrar Gatilhos'}
         </Button>
       )}
     </form>

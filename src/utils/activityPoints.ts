@@ -14,17 +14,28 @@ export const registerActivity = async (
   pontos: number,
   descricao?: string
 ) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
 
-  const { error } = await supabase
-    .from('atividades_usuario')
-    .insert({
-      user_id: user.id,
-      tipo_atividade: tipo,
-      pontos,
-      descricao
-    });
+    const { error } = await supabase
+      .from('atividades_usuario')
+      .insert({
+        user_id: user.id,
+        tipo_atividade: tipo,
+        pontos,
+        descricao
+      });
 
-  if (error) throw error;
+    if (error) {
+      console.error('Error registering activity:', error);
+      throw error;
+    }
+
+    console.log('Activity registered successfully:', tipo, pontos);
+    return true;
+  } catch (error) {
+    console.error('Failed to register activity:', error);
+    throw error;
+  }
 };
