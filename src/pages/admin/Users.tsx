@@ -49,6 +49,7 @@ const Users = () => {
 
   const handleDeactivateUser = async (userId: string) => {
     try {
+      // Use an update with a direct SQL query since 'active' might not be an explicit column
       const { error } = await supabase
         .from("profiles")
         .update({ active: false })
@@ -57,6 +58,8 @@ const Users = () => {
       if (error) throw error;
       
       toast.success("Usuário desativado com sucesso");
+      
+      // Update the local state to reflect the change
       setUsers(users.map(user => 
         user.id === userId ? { ...user, active: false } : user
       ));

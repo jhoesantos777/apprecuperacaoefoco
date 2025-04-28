@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -26,7 +27,7 @@ import Devotional from "./pages/Devotional";
 import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
 import AtualizarHumor from "./pages/AtualizarHumor";
-import Users from "./pages/Users";
+import Users from "./pages/admin/Users";
 
 const queryClient = new QueryClient();
 
