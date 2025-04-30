@@ -35,7 +35,6 @@ import {
   Mail,
   Shield,
   ShieldX,
-  Clock
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserType } from "@/types/signup";
@@ -70,8 +69,8 @@ export const AdminUsers = () => {
         throw error;
       }
       
-      // Transform the data to include tipoUsuario property
-      const formattedUsers = data.map(user => {
+      // Transform the database results to include the required User interface properties
+      const formattedUsers: User[] = data.map(user => {
         // Get user role from localStorage for this demo
         // In a real app, this would come from a user_roles table or similar
         let userRole: UserType = "dependent";
@@ -129,9 +128,15 @@ export const AdminUsers = () => {
     
     try {
       const newStatus = !selectedUser.is_active;
+      
+      // Add the necessary fields to match the profiles table schema
+      const updateData = {
+        is_active: newStatus
+      };
+      
       const { error } = await supabase
         .from('profiles')
-        .update({ is_active: newStatus })
+        .update(updateData)
         .eq('id', selectedUser.id);
 
       if (error) throw error;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Card,
@@ -28,7 +27,8 @@ import {
   Trash2,
   Eye,
   Filter,
-  Search
+  Search,
+  Lock
 } from "lucide-react";
 
 interface Course {
@@ -516,7 +516,7 @@ export const AdminCourses = () => {
                       
                       <div className="flex gap-4 mt-2 text-sm">
                         <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
+                          <Lock className="h-3 w-3" />
                           {lesson.duration}
                         </span>
                         {lesson.video_url && (
