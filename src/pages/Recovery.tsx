@@ -1,10 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfDay, subDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import RecoveryThermometer from '@/components/RecoveryThermometer';
-import TriggerForm from '@/components/TriggerForm';
 import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
@@ -13,12 +11,14 @@ import { ResetButton } from '@/components/recovery/ResetButton';
 import { Button } from '@/components/ui/button';
 import { registerActivity } from '@/utils/activityPoints';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 const Recovery = () => {
   const today = startOfDay(new Date());
   const oneWeekAgo = subDays(today, 7);
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: recoveryScore, isLoading, error } = useQuery({
     queryKey: ['recovery-score'],
@@ -196,6 +196,10 @@ const Recovery = () => {
     console.error('Recovery score error:', error);
   }
 
+  const handleGoToTriggers = () => {
+    navigate('/triggers');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
       <BackButton />
@@ -233,8 +237,13 @@ const Recovery = () => {
         </Card>
 
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Identifique seus Gatilhos de Hoje</h2>
-          <TriggerForm />
+          <Button 
+            variant="outline" 
+            onClick={handleGoToTriggers} 
+            className="w-full"
+          >
+            Identifique seus Gatilhos de Hoje
+          </Button>
         </Card>
       </div>
     </div>

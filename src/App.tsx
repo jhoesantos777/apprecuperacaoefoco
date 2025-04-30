@@ -25,10 +25,10 @@ import Achievements from "./pages/Achievements";
 import Courses from "./pages/Courses";
 import Schedule from "./pages/Schedule";
 import Devotional from "./pages/Devotional";
-import TalkToMe from "./pages/TalkToMe";
 import Treatments from "./pages/Treatments";
 import AtualizarHumor from "./pages/AtualizarHumor";
 import Admin from "./pages/Admin";
+import Triggers from "./pages/Triggers";
 
 const queryClient = new QueryClient();
 
@@ -64,12 +64,13 @@ const App = () => {
               <Route path="/schedule" element={<Schedule />} />
               <Route path="/consultations" element={<Navigate to="/schedule" replace />} />
               <Route path="/devotional" element={<Devotional />} />
-              <Route path="/talk-to-me" element={<TalkToMe />} />
-              <Route path="/chat" element={<Navigate to="/talk-to-me" replace />} />
+              <Route path="/triggers" element={<Triggers />} />
+              <Route path="/talk-to-me" element={<Navigate to="/triggers" replace />} />
+              <Route path="/chat" element={<Navigate to="/triggers" replace />} />
               <Route path="/treatments" element={<Treatments />} />
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
-              <Route path="/support" element={<TalkToMe />} /> {/* Redirecting /support to TalkToMe page for now */}
-              <Route path="/admin" element={<Admin />} /> {/* Nova rota para o painel administrativo */}
+              <Route path="/support" element={<Navigate to="/triggers" replace />} /> 
+              <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

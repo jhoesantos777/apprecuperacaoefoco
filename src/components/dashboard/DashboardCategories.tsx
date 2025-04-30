@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
   Smile, CalendarDays, ListTodo, Thermometer, Star, 
-  Award, BookOpen, MessageSquare, Book, UserCircle, Settings
+  Award, BookOpen, Brain, Book, UserCircle, Settings
 } from "lucide-react";
 
 type Category = {
@@ -96,11 +96,11 @@ const getDashboardCategories = (userRole: string): Category[] => {
       path: '/courses'
     },
     {
-      id: 'chat',
-      title: 'Fale comigo',
-      description: 'Converse conosco',
-      icon: MessageSquare,
-      path: '/chat'
+      id: 'triggers',
+      title: 'Identifique seus Gatilhos',
+      description: 'Reconheça e gerencie seus gatilhos',
+      icon: Brain,
+      path: '/triggers'
     }
   ];
 
