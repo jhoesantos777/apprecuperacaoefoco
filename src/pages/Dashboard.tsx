@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { ProfilePicture } from '@/components/ProfilePicture';
-import { Crown } from 'lucide-react';
+import { Crown, Siren } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
@@ -37,6 +36,11 @@ const Dashboard = () => {
 
   const navigateTo = (path: string) => {
     navigate(path);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
   };
 
   if (userRole === "family") {
@@ -121,24 +125,7 @@ const Dashboard = () => {
             <span className="text-yellow-500 text-sm mt-2 text-center">Dias em sobriedade</span>
           </div>
           
-          {/* Dias em sobriedade (repetido na imagem) */}
-          <div 
-            className="aspect-square bg-gray-800 rounded-xl flex flex-col items-center justify-center cursor-pointer"
-            onClick={() => navigateTo('/sobriety')}
-          >
-            <div className="h-12 w-12 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-8 h-8">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-                <path d="M9 16l2 2 4-4" />
-              </svg>
-            </div>
-            <span className="text-yellow-500 text-sm mt-2 text-center">Dias em sobriedade</span>
-          </div>
-          
-          {/* Devocional */}
+          {/* Devocional - Replacing the duplicate sobriety tile */}
           <div 
             className="aspect-square bg-gray-800 rounded-xl flex flex-col items-center justify-center cursor-pointer"
             onClick={() => navigateTo('/devotional')}
@@ -240,9 +227,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation with updated links */}
       <div className="mt-auto p-4 bg-teal-400 rounded-t-3xl flex justify-around">
-        <button className="flex flex-col items-center justify-center">
+        <button 
+          className="flex flex-col items-center justify-center"
+          onClick={() => navigate('/dashboard')}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-white">
             <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
             <polyline points="9 22 9 12 15 12 15 22" />
@@ -250,27 +240,32 @@ const Dashboard = () => {
           <span className="text-white text-xs mt-1">Inicial</span>
         </button>
         
-        <button className="flex flex-col items-center justify-center">
+        <button 
+          className="flex flex-col items-center justify-center"
+          onClick={handleLogout}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-white">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-          <span className="text-white text-xs mt-1">Diario</span>
+          <span className="text-white text-xs mt-1">Sair</span>
         </button>
         
-        <button className="flex flex-col items-center justify-center">
+        <button 
+          className="flex flex-col items-center justify-center"
+          onClick={() => navigate('/emergency')}
+        >
           <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="w-6 h-6">
-              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-              <line x1="6" y1="1" x2="6" y2="4" />
-              <line x1="10" y1="1" x2="10" y2="4" />
-              <line x1="14" y1="1" x2="14" y2="4" />
-            </svg>
+            <Siren className="h-6 w-6 text-white" />
           </div>
           <span className="text-white text-xs mt-1">Emergência</span>
         </button>
         
-        <button className="flex flex-col items-center justify-center">
+        <button 
+          className="flex flex-col items-center justify-center"
+          onClick={() => navigate('/settings')}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-white">
             <circle cx="12" cy="12" r="3" />
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -278,7 +273,10 @@ const Dashboard = () => {
           <span className="text-white text-xs mt-1">Configuração</span>
         </button>
         
-        <button className="flex flex-col items-center justify-center">
+        <button 
+          className="flex flex-col items-center justify-center"
+          onClick={() => navigate('/profile')}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-white">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
