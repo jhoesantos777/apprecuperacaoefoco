@@ -29,6 +29,14 @@ const GUIDING_QUESTIONS = [
   "O que posso fazer melhor amanhã?"
 ];
 
+// Define a type for reflection history item
+type ReflectionHistoryItem = {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+};
+
 export const ReflectionForm = () => {
   const [reflection, setReflection] = useState('');
   const [showHistory, setShowHistory] = useState(false);
@@ -44,7 +52,7 @@ export const ReflectionForm = () => {
 
       const { data, error } = await supabase
         .from('reflections')
-        .select('content, created_at')
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -53,7 +61,7 @@ export const ReflectionForm = () => {
         return [];
       }
 
-      return data;
+      return data as ReflectionHistoryItem[];
     },
     enabled: showHistory
   });
@@ -67,8 +75,7 @@ export const ReflectionForm = () => {
         .from('reflections')
         .insert({
           user_id: user.id,
-          content: reflection,
-          created_at: new Date().toISOString()
+          content: reflection
         });
 
       if (error) throw error;

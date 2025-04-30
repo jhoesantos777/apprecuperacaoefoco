@@ -568,6 +568,27 @@ export type Database = {
         }
         Relationships: []
       }
+      reflections: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sobriety_declarations: {
         Row: {
           declared_at: string
