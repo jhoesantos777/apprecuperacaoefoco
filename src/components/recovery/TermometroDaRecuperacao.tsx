@@ -60,29 +60,27 @@ const TermometroDaRecuperacao = () => {
 
       <div className="w-40 h-40 mx-auto">
         <CircularProgressbar
-          value={pontuacao}
-          text={`${pontuacao}/100`}
+          value={0}
+          text={`0/100`}
           styles={buildStyles({
-            pathColor: getCor(pontuacao),
-            textColor: getCor(pontuacao),
+            pathColor: getCor(0),
+            textColor: getCor(0),
             trailColor: '#eee'
           })}
         />
       </div>
 
       <div className="text-center">
-        {pontuacao < 40 && <p>⚠️ Risco de recaída. Procure apoio.</p>}
-        {pontuacao >= 40 && pontuacao < 70 && <p>😐 Atenção redobrada. Continue se cuidando.</p>}
-        {pontuacao >= 70 && <p>💪 Você está indo bem. Continue firme!</p>}
+        <p>⚠️ Risco de recaída. Procure apoio.</p>
       </div>
 
       <div className="space-y-2">
-        <p>✅ Tarefas Diárias: +{Math.round((dados.tarefasDiarias / 27) * 30)} pts</p>
-        <p>😊 Humor do Dia: +{Math.round((dados.humorDoDia / 5) * 20)} pts</p>
-        <p>🙏 Devocional: +{Math.round((dados.fezDevocional / 2) * 20)} pts</p>
-        <p>🚨 Hoje Eu Não Vou Usar: +{Math.round((dados.hojeNaoVouUsar / 5) * 20)} pts</p>
-        <p>📝 Reflexão do Dia: +{Math.round((dados.fezReflexao / 3) * 10)} pts</p>
-        <p>🔻 Gatilhos: -{dados.gatilhosSelecionados.length * 2} pts</p>
+        <p>✅ Tarefas Diárias: +0 pts</p>
+        <p>😊 Humor do Dia: +0 pts</p>
+        <p>🙏 Devocional: +0 pts</p>
+        <p>🚨 Hoje Eu Não Vou Usar: +0 pts</p>
+        <p>📝 Reflexão do Dia: +0 pts</p>
+        <p>🔻 Gatilhos: -0 pts</p>
       </div>
 
       <div className="flex justify-between">

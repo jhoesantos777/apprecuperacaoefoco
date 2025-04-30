@@ -1,10 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfDay, subDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import RecoveryThermometer from '@/components/RecoveryThermometer';
-import TermometroDaRecuperacao from '@/components/recovery/TermometroDaRecuperacao'; // Import new component
+import TermometroDaRecuperacao from '@/components/recovery/TermometroDaRecuperacao';
 import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
@@ -123,14 +121,14 @@ const Recovery = () => {
         });
 
         return {
-          score: parseFloat(termometroFinal.toFixed(1)),
-          hasMultipleTriggers,
+          score: 0,
+          hasMultipleTriggers: false,
           details: {
-            taskPoints,
-            moodPoints,
-            devotionalPoints,
-            sobrietyPoints,
-            reflectionPoints
+            taskPoints: 0,
+            moodPoints: 0,
+            devotionalPoints: 0,
+            sobrietyPoints: 0,
+            reflectionPoints: 0
           }
         };
       } catch (error) {
@@ -141,7 +139,6 @@ const Recovery = () => {
     }
   });
 
-  // Log the recovery score when it changes
   useEffect(() => {
     if (recoveryScore) {
       console.log('Recovery score updated:', recoveryScore);
@@ -189,7 +186,6 @@ const Recovery = () => {
     }
   };
 
-  // Handle loading and error states
   if (isLoading) {
     console.log('Loading recovery score...');
   }
@@ -228,15 +224,8 @@ const Recovery = () => {
               : "HOJE EU NAO VOU USAR!"}
           </Button>
 
-          {/* The existing RecoveryThermometer */}
-          <RecoveryThermometer 
-            score={recoveryScore?.score || 0}
-            hasMultipleTriggers={recoveryScore?.hasMultipleTriggers || false}
-            details={recoveryScore?.details}
-          />
-          
-          {/* Adding new component */}
-          <div className="mt-6">
+          {/* Only show the new TermometroDaRecuperacao component */}
+          <div>
             <TermometroDaRecuperacao />
           </div>
           
