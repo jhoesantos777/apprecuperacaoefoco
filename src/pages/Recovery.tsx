@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import TermometroDaRecuperacao from '@/components/recovery/TermometroDaRecuperacao';
+import RecoveryThermometer from '@/components/RecoveryThermometer';
 import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { registerActivity } from '@/utils/activityPoints';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Brain, AlertTriangle } from 'lucide-react';
 
 const Recovery = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
@@ -19,7 +21,7 @@ const Recovery = () => {
   const navigate = useNavigate();
 
   // Check if user has already confirmed sobriety today
-  useQuery({
+  const { data: sobrietyData } = useQuery({
     queryKey: ['sobriety-check'],
     queryFn: async () => {
       try {
@@ -38,6 +40,93 @@ const Recovery = () => {
       } catch (error) {
         console.error('Error checking sobriety status:', error);
         return { hasConfirmed: false };
+      }
+    },
+  });
+
+  // Calculate recovery score and details for the thermometer
+  const { data: recoveryData } = useQuery({
+    queryKey: ['recovery-thermometer'],
+    queryFn: async () => {
+      try {
+        const userId = (await supabase.auth.getUser()).data.user?.id;
+        if (!userId) throw new Error('User not authenticated');
+
+        // Get today's activities
+        const today = new Date().toISOString().split('T')[0];
+        const { data: activities, error } = await supabase
+          .from('atividades_usuario')
+          .select('*')
+          .eq('user_id', userId)
+          .gte('data_registro', today);
+
+        if (error) throw error;
+
+        // Calculate points for each category
+        const taskPoints = Math.min(30, activities
+          ?.filter(a => a.tipo_atividade === 'Tarefas')
+          .reduce((sum, a) => sum + a.pontos, 0) || 0);
+
+        const moodPoints = Math.min(20, activities
+          ?.filter(a => a.tipo_atividade === 'Humor')
+          .reduce((sum, a) => sum + a.pontos, 0) || 0);
+
+        const devotionalPoints = Math.min(20, activities
+          ?.filter(a => a.tipo_atividade === 'Devocional')
+          .reduce((sum, a) => sum + a.pontos, 0) || 0);
+
+        const sobrietyPoints = Math.min(20, activities
+          ?.filter(a => a.tipo_atividade === 'HojeNãoVouUsar')
+          .reduce((sum, a) => sum + a.pontos, 0) || 0);
+
+        const reflectionPoints = Math.min(10, activities
+          ?.filter(a => a.tipo_atividade === 'Reflexão')
+          .reduce((sum, a) => sum + a.pontos, 0) || 0);
+
+        // Calculate trigger penalties
+        const triggerPoints = activities
+          ?.filter(a => a.tipo_atividade === 'Gatilho')
+          .length * 2 || 0;
+
+        // Calculate total score
+        const totalScore = Math.max(0, 
+          taskPoints + 
+          moodPoints + 
+          devotionalPoints + 
+          sobrietyPoints + 
+          reflectionPoints - 
+          triggerPoints
+        );
+
+        // Check if there are multiple triggers
+        const hasMultipleTriggers = (activities
+          ?.filter(a => a.tipo_atividade === 'Gatilho')
+          .length || 0) > 1;
+
+        return {
+          score: totalScore,
+          hasMultipleTriggers,
+          details: {
+            taskPoints,
+            moodPoints,
+            devotionalPoints,
+            sobrietyPoints,
+            reflectionPoints
+          }
+        };
+      } catch (error) {
+        console.error('Error calculating recovery score:', error);
+        return {
+          score: 0,
+          hasMultipleTriggers: false,
+          details: {
+            taskPoints: 0,
+            moodPoints: 0,
+            devotionalPoints: 0,
+            sobrietyPoints: 0,
+            reflectionPoints: 0
+          }
+        };
       }
     },
   });
@@ -63,7 +152,7 @@ const Recovery = () => {
       if (error) throw error;
 
       // Register activity for the recovery thermometer
-      await registerActivity('HojeNãoVouUsar', 5, 'Declaração de sobriedade');
+      await registerActivity('HojeNãoVouUsar', 20, 'Declaração de sobriedade');
       
       // Update queries
       queryClient.invalidateQueries({ queryKey: ['recovery-thermometer'] });
@@ -89,51 +178,93 @@ const Recovery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gradient-to-b from-blue-700 to-indigo-900 p-6"
+      style={{
+        backgroundImage: 'url("/bg-pattern-blue.svg")',
+        backgroundSize: 'cover',
+        backgroundBlendMode: 'soft-light'
+      }}
+    >
       <BackButton />
       
       <div className="max-w-md mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-white mb-6">
-          🧠 Termômetro da Recuperação
-        </h1>
+        <motion.div
+          initial={{ y: -20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <Brain className="h-8 w-8 text-blue-300" />
+            <h1 className="text-3xl font-bold text-white">
+              Termômetro da Recuperação
+            </h1>
+          </div>
+        </motion.div>
         
-        <DailyMotivation />
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          <DailyMotivation />
+        </motion.div>
 
-        <Card className="p-6">
-          <Button 
-            className={`w-full py-6 text-lg font-bold transition-all duration-300 mb-6 ${
-              hasConfirmedSobriety 
-                ? 'bg-green-600 hover:bg-green-700' 
-                : 'bg-red-600 hover:bg-red-700'
-            } text-white`}
-            onClick={handleSobrietyDeclaration}
-            disabled={hasConfirmedSobriety}
-          >
-            {hasConfirmedSobriety 
-              ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
-              : "HOJE EU NAO VOU USAR!"}
-          </Button>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <Card className="p-6 border border-white/20 bg-white/10 backdrop-blur-md rounded-xl shadow-xl">
+            <Button 
+              className={`w-full py-6 text-lg font-bold transition-all duration-300 mb-6 ${
+                hasConfirmedSobriety 
+                  ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600' 
+                  : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600'
+              } text-white rounded-xl shadow-lg transform hover:scale-[1.02] active:scale-[0.98]`}
+              onClick={handleSobrietyDeclaration}
+              disabled={hasConfirmedSobriety}
+            >
+              {hasConfirmedSobriety 
+                ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
+                : "HOJE EU NAO VOU USAR!"}
+            </Button>
 
-          <div>
-            <TermometroDaRecuperacao />
-          </div>
-          
-          <div className="mt-4">
-            <ResetButton />
-          </div>
-        </Card>
+            {recoveryData && (
+              <RecoveryThermometer 
+                score={recoveryData.score} 
+                hasMultipleTriggers={recoveryData.hasMultipleTriggers}
+                details={recoveryData.details}
+              />
+            )}
+            
+            <div className="mt-6">
+              <ResetButton />
+            </div>
+          </Card>
+        </motion.div>
 
-        <Card className="p-6">
-          <Button 
-            variant="outline" 
-            onClick={handleGoToTriggers} 
-            className="w-full"
-          >
-            Identifique seus Gatilhos de Hoje
-          </Button>
-        </Card>
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <Card className="p-6 border border-white/20 bg-white/10 backdrop-blur-md rounded-xl shadow-md">
+            <Button 
+              variant="outline" 
+              onClick={handleGoToTriggers} 
+              className="w-full rounded-lg bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white flex items-center gap-2 justify-center transform hover:scale-[1.02] transition-all"
+            >
+              <AlertTriangle className="h-5 w-5" />
+              <span>Identifique seus Gatilhos de Hoje</span>
+            </Button>
+          </Card>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
