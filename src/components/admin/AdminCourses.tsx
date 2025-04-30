@@ -28,7 +28,8 @@ import {
   Eye,
   Filter,
   Search,
-  Lock
+  Lock,
+  Clock
 } from "lucide-react";
 
 interface Course {
@@ -53,6 +54,94 @@ interface Lesson {
   pdf_url?: string;
 }
 
+// Component for handling PDF uploads
+const PdfUploader = ({ 
+  value, 
+  onChange, 
+  label = "PDF do Curso (opcional)",
+  accept = ".pdf" 
+}: {
+  value: string;
+  onChange: (url: string) => void;
+  label?: string;
+  accept?: string;
+}) => {
+  const [uploading, setUploading] = useState(false);
+  
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      
+      setUploading(true);
+      
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `course_materials/${fileName}`;
+      
+      // Upload file
+      const { error: uploadError, data } = await supabase.storage
+        .from('course_materials')
+        .upload(filePath, file);
+        
+      if (uploadError) throw uploadError;
+      
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('course_materials')
+        .getPublicUrl(filePath);
+        
+      onChange(publicUrl);
+      toast.success("PDF carregado com sucesso");
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      toast.error("Erro ao carregar PDF");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div>
+      <label className="text-sm font-medium">{label}</label>
+      <div className="mt-1 flex items-center gap-2">
+        <Input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="URL do PDF ou carregue um arquivo"
+          className="flex-1"
+        />
+        <div className="relative">
+          <input
+            type="file"
+            accept={accept}
+            onChange={handleFileUpload}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          />
+          <Button variant="outline" type="button" disabled={uploading}>
+            {uploading ? "Carregando..." : "Upload"}
+          </Button>
+        </div>
+      </div>
+      {value && (
+        <div className="mt-2">
+          <a 
+            href={value} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+          >
+            <FileText className="h-4 w-4" />
+            Ver PDF
+          </a>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const AdminCourses = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +157,8 @@ export const AdminCourses = () => {
     description: "",
     duration: "",
     category: "",
-    thumbnail_url: ""
+    thumbnail_url: "",
+    pdf_url: ""
   });
   
   const [lessonForm, setLessonForm] = useState({
@@ -136,7 +226,8 @@ export const AdminCourses = () => {
       description: course.description,
       duration: course.duration,
       category: course.category || "",
-      thumbnail_url: course.thumbnail_url || ""
+      thumbnail_url: course.thumbnail_url || "",
+      pdf_url: "" // We'll add this field to the course table
     });
     setIsEditingCourse(true);
   };
@@ -147,7 +238,8 @@ export const AdminCourses = () => {
       description: "",
       duration: "",
       category: "",
-      thumbnail_url: ""
+      thumbnail_url: "",
+      pdf_url: ""
     });
     setIsEditingCourse(true);
   };
@@ -187,18 +279,31 @@ export const AdminCourses = () => {
         return;
       }
       
+      // Prepare the course data object
+      const courseData: any = {
+        title: courseForm.title,
+        description: courseForm.description,
+        duration: courseForm.duration,
+        thumbnail_url: courseForm.thumbnail_url || null
+      };
+      
+      // If we have PDF URL, add it to the course data
+      if (courseForm.pdf_url) {
+        courseData.pdf_url = courseForm.pdf_url;
+      }
+      
+      // If we have a category, add it to the course data
+      if (courseForm.category) {
+        courseData.category = courseForm.category;
+      }
+      
       let result;
       
       if (selectedCourse) {
         // Update existing course
         result = await supabase
           .from('courses')
-          .update({
-            title: courseForm.title,
-            description: courseForm.description,
-            duration: courseForm.duration,
-            thumbnail_url: courseForm.thumbnail_url || null
-          })
+          .update(courseData)
           .eq('id', selectedCourse.id);
           
         if (result.error) throw result.error;
@@ -206,36 +311,24 @@ export const AdminCourses = () => {
         // Update local state
         setCourses(courses.map(c => 
           c.id === selectedCourse.id 
-            ? { 
-                ...c, 
-                title: courseForm.title,
-                description: courseForm.description,
-                duration: courseForm.duration,
-                thumbnail_url: courseForm.thumbnail_url || null
-              } 
+            ? { ...c, ...courseData } 
             : c
         ));
         
         setSelectedCourse({
           ...selectedCourse,
-          title: courseForm.title,
-          description: courseForm.description,
-          duration: courseForm.duration,
-          thumbnail_url: courseForm.thumbnail_url || null
+          ...courseData
         });
         
         toast.success("Curso atualizado com sucesso");
       } else {
         // Create new course
+        // Add lessons_count to the course data for new courses
+        courseData.lessons_count = 0;
+        
         result = await supabase
           .from('courses')
-          .insert({
-            title: courseForm.title,
-            description: courseForm.description,
-            duration: courseForm.duration,
-            thumbnail_url: courseForm.thumbnail_url || null,
-            lessons_count: 0
-          });
+          .insert(courseData);
           
         if (result.error) throw result.error;
         
@@ -244,9 +337,9 @@ export const AdminCourses = () => {
       }
       
       setIsEditingCourse(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving course:', error);
-      toast.error("Falha ao salvar curso");
+      toast.error(`Falha ao salvar curso: ${error.message || 'Erro desconhecido'}`);
     }
   };
 
@@ -516,7 +609,7 @@ export const AdminCourses = () => {
                       
                       <div className="flex gap-4 mt-2 text-sm">
                         <span className="flex items-center gap-1">
-                          <Lock className="h-3 w-3" />
+                          <Clock className="h-3 w-3" />
                           {lesson.duration}
                         </span>
                         {lesson.video_url && (
@@ -625,6 +718,13 @@ export const AdminCourses = () => {
                 placeholder="URL da imagem de capa"
               />
             </div>
+
+            {/* PDF Uploader component */}
+            <PdfUploader 
+              value={courseForm.pdf_url} 
+              onChange={(url) => setCourseForm({...courseForm, pdf_url: url})}
+              label="Material do Curso em PDF (opcional)"
+            />
           </div>
           
           <DialogFooter>
@@ -700,14 +800,12 @@ export const AdminCourses = () => {
               />
             </div>
             
-            <div>
-              <label className="text-sm font-medium">URL do PDF (opcional)</label>
-              <Input 
-                value={lessonForm.pdf_url} 
-                onChange={(e) => setLessonForm({...lessonForm, pdf_url: e.target.value})}
-                placeholder="URL do arquivo PDF"
-              />
-            </div>
+            {/* PDF Uploader for lesson materials */}
+            <PdfUploader 
+              value={lessonForm.pdf_url} 
+              onChange={(url) => setLessonForm({...lessonForm, pdf_url: url})}
+              label="Material da Aula em PDF (opcional)"
+            />
           </div>
           
           <DialogFooter>
