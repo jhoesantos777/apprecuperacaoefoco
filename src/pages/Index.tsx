@@ -1,3 +1,4 @@
+
 import { ArrowDown } from "lucide-react";
 
 const Index = () => {
@@ -29,7 +30,7 @@ const Index = () => {
             ENTRAR
           </a>
           <a
-            href="/auth?mode=signup"
+            href="/cadastro-simplificado"
             className="border-2 border-yellow-300 text-yellow-300 px-8 py-3 rounded-full font-bold text-lg hover:bg-yellow-300/10 transition-colors"
           >
             SE INSCREVER

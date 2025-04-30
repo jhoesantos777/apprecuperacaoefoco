@@ -21,6 +21,13 @@ const Auth = () => {
     rememberMe: false,
   });
 
+  // Redirect to cadastro-simplificado if mode is signup
+  useEffect(() => {
+    if (isSignUp) {
+      navigate("/cadastro-simplificado");
+    }
+  }, [isSignUp, navigate]);
+
   // Check if user is already logged in
   useEffect(() => {
     const checkSession = async () => {
@@ -108,6 +115,11 @@ const Auth = () => {
     }));
   };
 
+  // If we're in signup mode, don't render anything as we'll redirect
+  if (isSignUp) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 flex flex-col px-6 py-8">
       <BackButton text="Início" className="text-white/70 hover:text-white" />
@@ -126,87 +138,77 @@ const Auth = () => {
 
         <div className="text-center mb-12">
           <h1 className="text-yellow-300 text-3xl font-bold mb-2">
-            {isSignUp ? "BEM-VINDO!" : "OLÁ!"}
+            OLÁ!
           </h1>
           <h2 className="text-yellow-300 text-2xl font-bold">
-            {isSignUp ? "CRIE SUA CONTA" : "QUE BOM TE VER NOVAMENTE!"}
+            QUE BOM TE VER NOVAMENTE!
           </h2>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-6">
-          {!isSignUp && (
-            <>
-              <div>
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder="ESCREVE SEU EMAIL AQUI"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50"
-                />
-              </div>
+          <div>
+            <Input
+              type="email"
+              name="email"
+              placeholder="ESCREVE SEU EMAIL AQUI"
+              value={formData.email}
+              onChange={handleChange}
+              className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50"
+            />
+          </div>
 
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="SENHA"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-0 top-2 text-white/50"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="SENHA"
+              value={formData.password}
+              onChange={handleChange}
+              className="bg-transparent border-b border-white/20 rounded-none px-0 text-white placeholder:text-white/50 pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-0 top-2 text-white/50"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
 
-              <div className="flex items-center justify-between text-sm text-white/70">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="remember"
-                    checked={formData.rememberMe}
-                    onCheckedChange={(checked) =>
-                      setFormData({ ...formData, rememberMe: checked as boolean })
-                    }
-                    className="border-white/50"
-                  />
-                  <label htmlFor="remember">ME LEMBRE</label>
-                </div>
-                <button type="button" className="hover:text-white">
-                  ESQUECEU A SENHA?
-                </button>
-              </div>
-            </>
-          )}
+          <div className="flex items-center justify-between text-sm text-white/70">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="remember"
+                checked={formData.rememberMe}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, rememberMe: checked as boolean })
+                }
+                className="border-white/50"
+              />
+              <label htmlFor="remember">ME LEMBRE</label>
+            </div>
+            <button type="button" className="hover:text-white">
+              ESQUECEU A SENHA?
+            </button>
+          </div>
 
           <Button
             type="submit"
             disabled={isLoading}
             className="w-full bg-yellow-300 hover:bg-yellow-400 text-teal-900 font-bold py-6 rounded-full text-lg"
           >
-            {isLoading
-              ? isSignUp
-                ? "Cadastrando..."
-                : "Entrando..."
-              : isSignUp
-              ? "CADASTRAR"
-              : "ENTRAR"}
+            {isLoading ? "Entrando..." : "ENTRAR"}
           </Button>
         </form>
 
         <div className="mt-8 text-center">
           <p className="text-white/70">
-            {isSignUp ? "JÁ TEM UMA CONTA? " : "NÃO TEM UMA CONTA? "}
+            NÃO TEM UMA CONTA?{" "}
             <a
-              href={isSignUp ? "/auth?mode=login" : "/auth?mode=signup"}
+              href="/cadastro-simplificado"
               className="text-yellow-300 hover:underline font-bold"
             >
-              {isSignUp ? "ENTRAR" : "CADASTRE-SE"}
+              CADASTRE-SE
             </a>
           </p>
         </div>
