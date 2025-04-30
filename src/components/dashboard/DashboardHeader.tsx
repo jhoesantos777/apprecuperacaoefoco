@@ -48,10 +48,10 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
           size="lg"
         />
         <div>
-          <h1 className="text-2xl font-bold text-white bg-black/60 px-3 py-1 rounded-lg backdrop-blur-sm">
+          <h1 className="text-2xl font-bold text-white bg-black/70 px-3 py-1 rounded-lg backdrop-blur-sm">
             {profile?.nome || 'Usuário'}
           </h1>
-          <p className="text-white font-medium text-lg px-3 py-1 bg-black/50 rounded-lg mt-1">
+          <p className="text-white font-medium text-lg px-3 py-1 bg-black/60 rounded-lg mt-1">
             {userRole === 'admin' 
               ? 'Painel Administrativo' 
               : userRole === 'family' 

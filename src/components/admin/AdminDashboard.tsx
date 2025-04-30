@@ -23,7 +23,7 @@ export const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Get total users count from profiles table
+        // Get total users count from profiles table - no exceptions
         const { count: totalUsers, error } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true });
@@ -61,7 +61,9 @@ export const AdminDashboard = () => {
         <Card className="bg-white shadow-md border-blue-100 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Total Usuários</CardTitle>
-            <Users className="h-5 w-5 text-blue-600" />
+            <div className="bg-blue-600 p-2 rounded-full">
+              <Users className="h-6 w-6 text-white" />
+            </div>
           </CardHeader>
           <CardContent className="pt-4">
             {stats.loading ? (
@@ -80,7 +82,9 @@ export const AdminDashboard = () => {
         <Card className="bg-white shadow-md border-green-100 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-green-50 to-green-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Usuários Ativos</CardTitle>
-            <Calendar className="h-5 w-5 text-green-600" />
+            <div className="bg-green-600 p-2 rounded-full">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
           </CardHeader>
           <CardContent className="pt-4">
             {stats.loading ? (
@@ -99,7 +103,9 @@ export const AdminDashboard = () => {
         <Card className="bg-white shadow-md border-yellow-100 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Contas Premium</CardTitle>
-            <Award className="h-5 w-5 text-yellow-600" />
+            <div className="bg-yellow-600 p-2 rounded-full">
+              <Award className="h-6 w-6 text-white" />
+            </div>
           </CardHeader>
           <CardContent className="pt-4">
             {stats.loading ? (
@@ -118,7 +124,9 @@ export const AdminDashboard = () => {
         <Card className="bg-white shadow-md border-purple-100 hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-purple-50 to-purple-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Logins Diários</CardTitle>
-            <Clock className="h-5 w-5 text-purple-600" />
+            <div className="bg-purple-600 p-2 rounded-full">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
           </CardHeader>
           <CardContent className="pt-4">
             {stats.loading ? (

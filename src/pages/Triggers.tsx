@@ -22,8 +22,8 @@ const Triggers = () => {
       
       <div className="max-w-lg mx-auto space-y-6 mt-4 z-10">
         <div className="bg-black/60 p-6 rounded-xl backdrop-blur-sm flex items-center gap-3">
-          <div className="bg-yellow-500/90 p-3 rounded-full flex items-center justify-center">
-            <AlertTriangle size={36} className="text-white" />
+          <div className="bg-yellow-500 p-3 rounded-full flex items-center justify-center shadow-lg">
+            <AlertTriangle size={42} className="text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white">
             Gatilhos Diários
