@@ -7,7 +7,9 @@ import {
   Crown, 
   LayoutDashboard, 
   FileEdit,
-  LogOut
+  LogOut,
+  GraduationCap,
+  Book
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -88,6 +90,24 @@ export const AdminSidebar = ({ activeTab, setActiveTab }: AdminSidebarProps) => 
         >
           <FileEdit className="mr-2 h-5 w-5" />
           Conteúdo
+        </Button>
+
+        <Button 
+          variant={activeTab === "courses" ? "secondary" : "ghost"} 
+          className="w-full justify-start" 
+          onClick={() => setActiveTab("courses")}
+        >
+          <Book className="mr-2 h-5 w-5" />
+          Cursos
+        </Button>
+        
+        <Button 
+          variant={activeTab === "certificates" ? "secondary" : "ghost"} 
+          className="w-full justify-start" 
+          onClick={() => setActiveTab("certificates")}
+        >
+          <GraduationCap className="mr-2 h-5 w-5" />
+          Certificados
         </Button>
       </nav>
 

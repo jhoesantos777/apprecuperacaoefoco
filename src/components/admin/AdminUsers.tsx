@@ -15,6 +15,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -22,7 +32,10 @@ import {
   Search,
   UserPlus,
   RefreshCcw,
-  Mail
+  Mail,
+  Shield,
+  ShieldX,
+  Clock
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserType } from "@/types/signup";
@@ -33,12 +46,17 @@ interface User {
   email: string | null;
   tipoUsuario: UserType;
   created_at: string;
+  last_login: string | null;
+  is_active: boolean;
 }
 
 export const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"block" | "unblock">("block");
 
   const fetchUsers = async () => {
     try {
@@ -69,7 +87,9 @@ export const AdminUsers = () => {
         
         return {
           ...user,
-          tipoUsuario: userRole
+          tipoUsuario: userRole,
+          last_login: user.last_login || "Nunca",
+          is_active: user.is_active !== false // Default to true if not set
         };
       });
       
@@ -98,6 +118,44 @@ export const AdminUsers = () => {
     toast.info(`Link de redefinição será enviado para ${userEmail}`);
   };
 
+  const openBlockConfirmDialog = (user: User) => {
+    setSelectedUser(user);
+    setConfirmAction(user.is_active ? "block" : "unblock");
+    setConfirmDialogOpen(true);
+  };
+
+  const handleToggleUserStatus = async () => {
+    if (!selectedUser) return;
+    
+    try {
+      const newStatus = !selectedUser.is_active;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_active: newStatus })
+        .eq('id', selectedUser.id);
+
+      if (error) throw error;
+      
+      // Update local state
+      setUsers(users.map(user => 
+        user.id === selectedUser.id ? {...user, is_active: newStatus} : user
+      ));
+      
+      toast.success(
+        newStatus 
+          ? `Usuário ${selectedUser.nome || selectedUser.email} desbloqueado com sucesso.` 
+          : `Usuário ${selectedUser.nome || selectedUser.email} bloqueado com sucesso.`
+      );
+      
+    } catch (error) {
+      console.error('Error toggling user status:', error);
+      toast.error("Falha ao alterar status do usuário");
+    } finally {
+      setConfirmDialogOpen(false);
+      setSelectedUser(null);
+    }
+  };
+
   const filteredUsers = users.filter(user => 
     user.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     user.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -106,7 +164,7 @@ export const AdminUsers = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Gerenciar Usuários</h1>
+        <h1 className="text-3xl font-bold text-black">Gerenciar Usuários</h1>
         
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={fetchUsers}>
@@ -133,35 +191,37 @@ export const AdminUsers = () => {
         </div>
       </div>
 
-      <div className="border rounded-md">
+      <div className="border rounded-md bg-white/40 backdrop-blur-lg">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
-              <TableHead className="w-[80px]">Ações</TableHead>
+              <TableHead className="text-black">Nome</TableHead>
+              <TableHead className="text-black">Email</TableHead>
+              <TableHead className="text-black">Tipo</TableHead>
+              <TableHead className="text-black">Data de Cadastro</TableHead>
+              <TableHead className="text-black">Último Acesso</TableHead>
+              <TableHead className="text-black">Status</TableHead>
+              <TableHead className="w-[80px] text-black">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">
+                <TableCell colSpan={7} className="text-center py-10 text-black">
                   Carregando usuários...
                 </TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">
+                <TableCell colSpan={7} className="text-center py-10 text-black">
                   Nenhum usuário encontrado
                 </TableCell>
               </TableRow>
             ) : (
               filteredUsers.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.nome || "—"}</TableCell>
-                  <TableCell>{user.email || "—"}</TableCell>
+                  <TableCell className="font-medium text-black">{user.nome || "—"}</TableCell>
+                  <TableCell className="text-black">{user.email || "—"}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded text-xs ${
                       user.tipoUsuario === "admin" 
@@ -173,8 +233,23 @@ export const AdminUsers = () => {
                       {user.tipoUsuario || "dependent"}
                     </span>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-black">
                     {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                  </TableCell>
+                  <TableCell className="text-black">
+                    {user.last_login ? new Date(user.last_login).toLocaleDateString('pt-BR', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }) : "Nunca"}
+                  </TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded text-xs ${
+                      user.is_active 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-red-100 text-red-800"
+                    }`}>
+                      {user.is_active ? "Ativo" : "Inativo"}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -195,6 +270,19 @@ export const AdminUsers = () => {
                           <Mail className="h-4 w-4 mr-2" />
                           Enviar reset de senha
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openBlockConfirmDialog(user)}>
+                          {user.is_active ? (
+                            <>
+                              <ShieldX className="h-4 w-4 mr-2" />
+                              Bloquear usuário
+                            </>
+                          ) : (
+                            <>
+                              <Shield className="h-4 w-4 mr-2" />
+                              Desbloquear usuário
+                            </>
+                          )}
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -204,6 +292,31 @@ export const AdminUsers = () => {
           </TableBody>
         </Table>
       </div>
+
+      <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <AlertDialogContent className="bg-white text-black">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction === "block" ? "Bloquear usuário?" : "Desbloquear usuário?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction === "block" 
+                ? "Esta ação impedirá que o usuário acesse o aplicativo. Você pode reverter isso mais tarde."
+                : "Esta ação permitirá que o usuário acesse o aplicativo novamente."
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleToggleUserStatus}
+              className={confirmAction === "block" ? "bg-red-600 hover:bg-red-700" : ""}
+            >
+              {confirmAction === "block" ? "Bloquear" : "Desbloquear"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
