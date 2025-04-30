@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -97,7 +96,7 @@ const getDashboardCategories = (userRole: string): Category[] => {
     },
     {
       id: 'triggers',
-      title: 'Identifique seus Gatilhos',
+      title: 'Gatilhos Diários',
       description: 'Reconheça e gerencie seus gatilhos',
       icon: Brain,
       path: '/triggers'

@@ -5,14 +5,16 @@ import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "@/components/ui/sonner";
-import { triggers, TriggerType } from '@/utils/triggerTips';
+import { triggers, TriggerType, getCategoryTriggers } from '@/utils/triggerTips';
 import { registerActivity } from '@/utils/activityPoints';
 import { useQueryClient } from '@tanstack/react-query';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const TriggerForm = () => {
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
   const [showTips, setShowTips] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>("social");
   const queryClient = useQueryClient();
 
   const handleTriggerToggle = (triggerId: string) => {
@@ -74,29 +76,49 @@ const TriggerForm = () => {
     }
   };
 
+  const categories = [
+    { id: "social", label: "Social" },
+    { id: "emocional", label: "Emocional" },
+    { id: "local", label: "Local" },
+    { id: "biologico", label: "Biológico" },
+    { id: "outros", label: "Outros" }
+  ];
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {triggers.map((trigger) => {
-          const Icon = trigger.icon;
-          return (
-            <div key={trigger.id} className="flex items-start space-x-3">
-              <Checkbox
-                id={trigger.id}
-                checked={selectedTriggers.includes(trigger.id)}
-                onCheckedChange={() => handleTriggerToggle(trigger.id)}
-              />
-              <label
-                htmlFor={trigger.id}
-                className="flex items-center space-x-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
-                <Icon className="h-4 w-4" />
-                <span>{trigger.label}</span>
-              </label>
+      <Tabs defaultValue="social" value={activeCategory} onValueChange={setActiveCategory}>
+        <TabsList className="w-full grid grid-cols-5 mb-4">
+          {categories.map(category => (
+            <TabsTrigger key={category.id} value={category.id}>{category.label}</TabsTrigger>
+          ))}
+        </TabsList>
+
+        {categories.map(category => (
+          <TabsContent key={category.id} value={category.id} className="mt-0">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {getCategoryTriggers(category.id).map((trigger) => {
+                const Icon = trigger.icon;
+                return (
+                  <div key={trigger.id} className="flex items-start space-x-3">
+                    <Checkbox
+                      id={trigger.id}
+                      checked={selectedTriggers.includes(trigger.id)}
+                      onCheckedChange={() => handleTriggerToggle(trigger.id)}
+                    />
+                    <label
+                      htmlFor={trigger.id}
+                      className="flex items-center space-x-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{trigger.label}</span>
+                    </label>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          </TabsContent>
+        ))}
+      </Tabs>
 
       {!showTips && selectedTriggers.length > 0 && (
         <Button
