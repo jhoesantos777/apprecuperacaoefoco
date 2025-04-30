@@ -4,7 +4,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { ProfilePicture } from '@/components/ProfilePicture';
-import { Crown, Siren, BarChart3, Calendar, BookOpen, CheckCircle, MessageSquare, Award, GraduationCap, MessageCircle, Thermometer } from 'lucide-react';
+import { Crown, Siren, BarChart3, Calendar, BookOpen, CheckCircle, MessageSquare, Award, GraduationCap, AlertTriangle, Thermometer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/sonner';
@@ -136,11 +136,11 @@ const Dashboard = () => {
       >
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-white text-lg mb-1 opacity-90">Seja bem vindo</h2>
-            <h1 className="text-white text-2xl font-bold">{profile?.nome || '(nome do usuário)'}</h1>
-            <div className="flex items-center mt-1">
+            <h2 className="text-lg mb-1 text-white bg-black/40 px-3 py-1 rounded-lg font-semibold">Seja bem vindo</h2>
+            <h1 className="text-2xl font-bold text-white bg-black/30 px-3 py-1 rounded-lg">{profile?.nome || 'Usuário'}</h1>
+            <div className="flex items-center mt-2">
               <Crown className="h-4 w-4 text-yellow-300" />
-              <span className="text-white text-sm ml-1 opacity-80">Versão beta</span>
+              <span className="text-white text-sm ml-1 font-medium bg-black/30 px-2 py-0.5 rounded">Versão beta</span>
             </div>
           </div>
           <div>
@@ -163,7 +163,7 @@ const Dashboard = () => {
           <button
             onClick={handleSobrietyConfirmation}
             disabled={hasConfirmedSobriety}
-            className={`w-full py-4 rounded-[18px] text-white font-bold text-lg shadow-lg hover-scale ${
+            className={`w-full py-5 rounded-[18px] text-white font-bold text-xl shadow-lg hover-scale ${
               hasConfirmedSobriety 
                 ? 'bg-gradient-to-r from-emerald-600 to-emerald-500' 
                 : 'bg-gradient-to-r from-red-600 to-red-500'
@@ -175,9 +175,9 @@ const Dashboard = () => {
       </motion.div>
 
       {/* Menu Grid */}
-      <div className="px-6 mt-4 flex-1">
+      <div className="px-6 mt-5 flex-1">
         <motion.div 
-          className="grid grid-cols-3 gap-4"
+          className="grid grid-cols-3 gap-5"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -188,10 +188,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/atualizar-humor')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <BarChart3 className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <BarChart3 className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Atualiza Humor</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Atualiza Humor</span>
           </motion.div>
           
           {/* Dias em sobriedade */}
@@ -200,10 +200,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/sobriety')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <Calendar className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <Calendar className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Dias em sobriedade</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Dias em sobriedade</span>
           </motion.div>
           
           {/* Devocional */}
@@ -212,10 +212,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/devotional')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <BookOpen className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <BookOpen className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Devocional</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Devocional</span>
           </motion.div>
           
           {/* Tarefas Diárias */}
@@ -224,10 +224,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/tasks')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <CheckCircle className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <CheckCircle className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Tarefas Diárias</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Tarefas Diárias</span>
           </motion.div>
           
           {/* Reflexão do Dia */}
@@ -236,10 +236,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/reflection')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <MessageSquare className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <MessageSquare className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Reflexão do Dia</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Reflexão do Dia</span>
           </motion.div>
           
           {/* Termômetro da recuperação */}
@@ -248,10 +248,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/recovery')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <Thermometer className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <Thermometer className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Termômetro</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Termômetro</span>
           </motion.div>
           
           {/* Minhas conquistas */}
@@ -260,10 +260,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/achievements')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <Award className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <Award className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Conquistas</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Conquistas</span>
           </motion.div>
           
           {/* Cursos */}
@@ -272,22 +272,22 @@ const Dashboard = () => {
             onClick={() => navigateTo('/courses')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <GraduationCap className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <GraduationCap className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Cursos</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Cursos</span>
           </motion.div>
           
-          {/* Fale comigo */}
+          {/* Gatilhos Diários (renamed from Fale comigo) */}
           <motion.div 
             className="aspect-square glass flex flex-col items-center justify-center cursor-pointer hover-scale"
-            onClick={() => navigateTo('/talk-to-me')}
+            onClick={() => navigateTo('/triggers')}
             variants={itemVariants}
           >
-            <div className="h-12 w-12 flex items-center justify-center mb-2">
-              <MessageCircle className="w-8 h-8 text-white" />
+            <div className="h-14 w-14 flex items-center justify-center mb-2">
+              <AlertTriangle className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium">Fale comigo</span>
+            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Gatilhos Diários</span>
           </motion.div>
         </motion.div>
       </div>

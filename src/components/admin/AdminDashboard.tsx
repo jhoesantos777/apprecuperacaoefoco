@@ -58,18 +58,18 @@ export const AdminDashboard = () => {
       <h1 className="text-3xl font-bold text-black">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-white/40 backdrop-blur-lg">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="bg-white shadow-md border-blue-100 hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Total Usuários</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-5 w-5 text-blue-600" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             {stats.loading ? (
               <div className="text-2xl font-bold text-black">Carregando...</div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-black">{stats.totalUsers}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-3xl font-bold text-black">{stats.totalUsers}</div>
+                <p className="text-sm text-gray-600 mt-1">
                   Usuários cadastrados no sistema
                 </p>
               </>
@@ -77,18 +77,18 @@ export const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white/40 backdrop-blur-lg">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="bg-white shadow-md border-green-100 hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-green-50 to-green-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Usuários Ativos</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="h-5 w-5 text-green-600" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             {stats.loading ? (
               <div className="text-2xl font-bold text-black">Carregando...</div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-black">{stats.activeUsers}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-3xl font-bold text-black">{stats.activeUsers}</div>
+                <p className="text-sm text-gray-600 mt-1">
                   {Math.round((stats.activeUsers / stats.totalUsers) * 100) || 0}% do total
                 </p>
               </>
@@ -96,18 +96,18 @@ export const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white/40 backdrop-blur-lg">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="bg-white shadow-md border-yellow-100 hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Contas Premium</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="h-5 w-5 text-yellow-600" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             {stats.loading ? (
               <div className="text-2xl font-bold text-black">Carregando...</div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-black">{stats.premiumUsers}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-3xl font-bold text-black">{stats.premiumUsers}</div>
+                <p className="text-sm text-gray-600 mt-1">
                   {Math.round((stats.premiumUsers / stats.totalUsers) * 100) || 0}% do total
                 </p>
               </>
@@ -115,18 +115,18 @@ export const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-white/40 backdrop-blur-lg">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <Card className="bg-white shadow-md border-purple-100 hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 bg-gradient-to-r from-purple-50 to-purple-100 rounded-t-xl">
             <CardTitle className="text-sm font-medium text-black">Logins Diários</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="h-5 w-5 text-purple-600" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             {stats.loading ? (
               <div className="text-2xl font-bold text-black">Carregando...</div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-black">{stats.dailyLogins}</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-3xl font-bold text-black">{stats.dailyLogins}</div>
+                <p className="text-sm text-gray-600 mt-1">
                   {Math.round((stats.dailyLogins / stats.totalUsers) * 100) || 0}% do total
                 </p>
               </>
@@ -136,7 +136,7 @@ export const AdminDashboard = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="bg-white/40 backdrop-blur-lg">
+        <Card className="bg-white shadow-md border-gray-100 hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="text-black">Estatísticas de Uso</CardTitle>
             <CardDescription>
@@ -144,13 +144,13 @@ export const AdminDashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+            <div className="h-[200px] flex items-center justify-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
               Gráfico de estatísticas (implementação futura)
             </div>
           </CardContent>
         </Card>
         
-        <Card className="bg-white/40 backdrop-blur-lg">
+        <Card className="bg-white shadow-md border-gray-100 hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="text-black">Atividade Recente</CardTitle>
             <CardDescription>
@@ -159,25 +159,25 @@ export const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <ul className="space-y-4">
-              <li className="flex items-center">
-                <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+              <li className="flex items-center p-2 rounded-lg bg-white shadow-sm border border-gray-100">
+                <div className="w-3 h-3 rounded-full bg-green-500 mr-3 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-black">Novo usuário registrado</p>
-                  <p className="text-xs text-muted-foreground">Há 2 horas</p>
+                  <p className="text-sm text-black font-medium">Novo usuário registrado</p>
+                  <p className="text-xs text-gray-600">Há 2 horas</p>
                 </div>
               </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 rounded-full bg-blue-500 mr-2" />
+              <li className="flex items-center p-2 rounded-lg bg-white shadow-sm border border-gray-100">
+                <div className="w-3 h-3 rounded-full bg-blue-500 mr-3 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-black">Conta premium ativada</p>
-                  <p className="text-xs text-muted-foreground">Há 5 horas</p>
+                  <p className="text-sm text-black font-medium">Conta premium ativada</p>
+                  <p className="text-xs text-gray-600">Há 5 horas</p>
                 </div>
               </li>
-              <li className="flex items-center">
-                <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2" />
+              <li className="flex items-center p-2 rounded-lg bg-white shadow-sm border border-gray-100">
+                <div className="w-3 h-3 rounded-full bg-yellow-500 mr-3 flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm text-black">Novo conteúdo publicado</p>
-                  <p className="text-xs text-muted-foreground">Ontem</p>
+                  <p className="text-sm text-black font-medium">Novo conteúdo publicado</p>
+                  <p className="text-xs text-gray-600">Ontem</p>
                 </div>
               </li>
             </ul>

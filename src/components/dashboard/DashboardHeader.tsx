@@ -48,24 +48,26 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
           size="lg"
         />
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-white bg-black/40 px-3 py-1 rounded-lg backdrop-blur-sm">
             {userRole === 'admin' 
               ? 'Painel Administrativo' 
               : userRole === 'family' 
                 ? 'Painel Familiar' 
                 : 'Bem vindo'}
           </h1>
-          <p className="text-white/90">{profile?.nome || 'Usuário'}</p>
+          <p className="text-white font-medium text-lg px-3 py-1 bg-black/30 rounded-lg mt-1">
+            {profile?.nome || 'Usuário'}
+          </p>
           {userRole === 'admin' && (
-            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full mt-1 inline-block ml-3 font-bold">
               Administrador
             </span>
           )}
         </div>
       </div>
       <Button 
-        variant="ghost" 
-        className="text-white hover:bg-white/20"
+        variant="secondary" 
+        className="text-black bg-white/80 hover:bg-white shadow-md font-medium"
         onClick={handleLogout}
       >
         <LogOut className="mr-2 h-5 w-5" /> Sair
