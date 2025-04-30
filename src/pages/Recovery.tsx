@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { format, startOfDay, subDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import TermometroDaRecuperacao from '@/components/recovery/TermometroDaRecuperacao';
 import DailyMotivation from '@/components/DailyMotivation';
@@ -14,20 +14,17 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 const Recovery = () => {
-  const today = startOfDay(new Date());
-  const oneWeekAgo = subDays(today, 7);
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { data: recoveryScore, isLoading, error } = useQuery({
-    queryKey: ['recovery-score'],
+  // Check if user has already confirmed sobriety today
+  useQuery({
+    queryKey: ['sobriety-check'],
     queryFn: async () => {
       try {
         const userId = (await supabase.auth.getUser()).data.user?.id;
-        if (!userId) throw new Error('User not authenticated');
-
-        console.log('Fetching activities for user:', userId);
+        if (!userId) return { hasConfirmed: false };
 
         // Check if user has confirmed sobriety today
         const { data: sobrietyDeclarations } = await supabase
@@ -36,114 +33,14 @@ const Recovery = () => {
           .eq('user_id', userId)
           .gte('declared_at', new Date().toISOString().split('T')[0]);
 
-        if (sobrietyDeclarations && sobrietyDeclarations.length > 0) {
-          setHasConfirmedSobriety(true);
-        }
-
-        const { data: activities, error } = await supabase
-          .from('atividades_usuario')
-          .select('*')
-          .gte('data_registro', oneWeekAgo.toISOString())
-          .eq('user_id', userId);
-
-        if (error) {
-          console.error('Error fetching activities:', error);
-          throw error;
-        }
-
-        console.log('Activities fetched:', activities);
-
-        if (!activities || activities.length === 0) {
-          return {
-            score: 0,
-            hasMultipleTriggers: false,
-            details: {
-              taskPoints: 0,
-              moodPoints: 0,
-              devotionalPoints: 0,
-              sobrietyPoints: 0,
-              reflectionPoints: 0
-            }
-          };
-        }
-
-        // NOVO ALGORITMO: 
-        // 1. Agrupar atividades por dia
-        const activitiesByDate = activities.reduce((acc, activity) => {
-          const date = new Date(activity.data_registro).toISOString().split('T')[0];
-          if (!acc[date]) {
-            acc[date] = [];
-          }
-          acc[date].push(activity);
-          return acc;
-        }, {} as Record<string, typeof activities>);
-        
-        // 2. Calcular dias únicos com registros
-        const diasComRegistros = Object.keys(activitiesByDate).length;
-        
-        // 3. Somar todos os pontos (positivos e negativos)
-        const pontuacaoTotalSemana = activities.reduce((acc, activity) => acc + activity.pontos, 0);
-        
-        // 4. Calcular a pontuação máxima possível (42 pontos por dia com registro)
-        const pontuacaoMaximaSemana = diasComRegistros * 42;
-        
-        // 5. Calcular o termômetro normalizado (escala 0-10)
-        let termometroFinal = (pontuacaoTotalSemana / pontuacaoMaximaSemana) * 10;
-        
-        // Garantir que o valor está entre 0 e 10
-        termometroFinal = Math.max(0, Math.min(10, termometroFinal));
-        
-        // Calcular detalhes para diferentes tipos de atividade (para exibição)
-        const taskPoints = activities.filter(a => a.tipo_atividade === 'Tarefas').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const moodPoints = activities.filter(a => a.tipo_atividade === 'Humor').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const devotionalPoints = activities.filter(a => a.tipo_atividade === 'Devocional').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const sobrietyPoints = activities.filter(a => a.tipo_atividade === 'HojeNãoVouUsar').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        const reflectionPoints = activities.filter(a => a.tipo_atividade === 'Reflexão').reduce((acc, a) => acc + a.pontos, 0) || 0;
-        
-        // Verificar múltiplos gatilhos como fator de risco
-        const hasMultipleTriggers = activities.filter(
-          a => a.tipo_atividade === 'Gatilho'
-        ).length > 1;
-
-        console.log('Novo cálculo do termômetro:', {
-          score: parseFloat(termometroFinal.toFixed(1)),
-          pontuacaoTotalSemana,
-          diasComRegistros,
-          pontuacaoMaximaSemana,
-          hasMultipleTriggers,
-          details: {
-            taskPoints,
-            moodPoints,
-            devotionalPoints,
-            sobrietyPoints,
-            reflectionPoints
-          }
-        });
-
-        return {
-          score: 0,
-          hasMultipleTriggers: false,
-          details: {
-            taskPoints: 0,
-            moodPoints: 0,
-            devotionalPoints: 0,
-            sobrietyPoints: 0,
-            reflectionPoints: 0
-          }
-        };
+        setHasConfirmedSobriety(sobrietyDeclarations && sobrietyDeclarations.length > 0);
+        return { hasConfirmed: sobrietyDeclarations && sobrietyDeclarations.length > 0 };
       } catch (error) {
-        console.error('Error calculating recovery score:', error);
-        toast("Erro ao carregar o termômetro de recuperação");
-        throw error;
+        console.error('Error checking sobriety status:', error);
+        return { hasConfirmed: false };
       }
-    }
+    },
   });
-
-  useEffect(() => {
-    if (recoveryScore) {
-      console.log('Recovery score updated:', recoveryScore);
-    }
-  }, [recoveryScore]);
 
   // Handle sobriety declaration
   const handleSobrietyDeclaration = async () => {
@@ -169,7 +66,8 @@ const Recovery = () => {
       await registerActivity('HojeNãoVouUsar', 5, 'Declaração de sobriedade');
       
       // Update queries
-      queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
+      queryClient.invalidateQueries({ queryKey: ['recovery-thermometer'] });
+      queryClient.invalidateQueries({ queryKey: ['sobriety-check'] });
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['sobriety-medals'] });
       
@@ -185,14 +83,6 @@ const Recovery = () => {
       });
     }
   };
-
-  if (isLoading) {
-    console.log('Loading recovery score...');
-  }
-  
-  if (error) {
-    console.error('Recovery score error:', error);
-  }
 
   const handleGoToTriggers = () => {
     navigate('/triggers');
@@ -224,7 +114,6 @@ const Recovery = () => {
               : "HOJE EU NAO VOU USAR!"}
           </Button>
 
-          {/* Only show the new TermometroDaRecuperacao component */}
           <div>
             <TermometroDaRecuperacao />
           </div>
