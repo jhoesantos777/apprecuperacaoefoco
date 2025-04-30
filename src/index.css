@@ -93,17 +93,16 @@
   }
 
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-black font-inter;
     font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-    background-image: url("/bg-pattern-modern.svg");
+    background-image: url("/bg-gradient-teal.svg");
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
-    background-blend-mode: soft-light;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-montserrat font-bold tracking-tight;
+    @apply font-montserrat font-bold tracking-tight text-black;
   }
 
   button, a {
@@ -113,15 +112,15 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg rounded-[20px];
+    @apply bg-white/40 backdrop-blur-lg border border-white/40 shadow-lg rounded-[20px];
   }
   
   .card-gradient {
-    @apply bg-gradient-to-br from-blue-600/30 to-emerald-600/30 backdrop-blur-md border border-white/20 rounded-[20px];
+    @apply bg-white/40 backdrop-blur-md border border-white/40 rounded-[20px];
   }
   
   .btn-gradient {
-    @apply bg-gradient-to-r from-blue-600 to-emerald-500 hover:from-blue-700 hover:to-emerald-600 rounded-[18px];
+    @apply bg-gradient-to-r from-teal-600 to-green-500 hover:from-teal-700 hover:to-green-600 rounded-[18px];
   }
 }
 

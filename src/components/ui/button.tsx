@@ -10,16 +10,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-blue-600 to-emerald-500 text-primary-foreground hover:from-blue-700 hover:to-emerald-600 shadow-md",
+        default: "bg-gradient-to-r from-teal-600 to-green-500 text-black hover:from-teal-700 hover:to-green-600 shadow-md",
         destructive:
-          "bg-gradient-to-r from-red-600 to-red-500 text-destructive-foreground hover:from-red-700 hover:to-red-600 shadow-md",
+          "bg-gradient-to-r from-red-600 to-red-500 text-black hover:from-red-700 hover:to-red-600 shadow-md",
         outline:
-          "border border-white/30 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 shadow-sm",
+          "border border-black/30 bg-white/40 backdrop-blur-md text-black hover:bg-white/60 shadow-sm",
         secondary:
-          "bg-gradient-to-r from-indigo-600 to-blue-500 text-secondary-foreground hover:from-indigo-700 hover:to-blue-600 shadow-md",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-sm",
+          "bg-gradient-to-r from-teal-600 to-blue-500 text-black hover:from-teal-700 hover:to-blue-600 shadow-md",
+        ghost: "hover:bg-accent hover:text-accent-foreground text-black",
+        link: "text-black underline-offset-4 hover:underline",
+        glass: "bg-white/40 backdrop-blur-md border border-white/40 text-black hover:bg-white/60 shadow-sm",
       },
       size: {
         default: "h-10 px-4 py-2",

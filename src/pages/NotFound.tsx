@@ -19,10 +19,9 @@ const NotFound = () => {
     <div 
       className="min-h-screen flex flex-col p-6"
       style={{
-        backgroundImage: 'url("/bg-pattern-modern.svg")',
+        backgroundImage: 'url("/bg-gradient-teal.svg")',
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundBlendMode: 'soft-light'
+        backgroundPosition: 'center'
       }}
     >
       <BackButton />
@@ -35,7 +34,7 @@ const NotFound = () => {
           transition={{ duration: 0.5 }}
         >
           <motion.h1 
-            className="text-6xl font-bold mb-4 text-white"
+            className="text-6xl font-bold mb-4 text-black"
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
@@ -43,7 +42,7 @@ const NotFound = () => {
             404
           </motion.h1>
           <motion.p 
-            className="text-xl text-white/80 mb-6"
+            className="text-xl text-black/80 mb-6"
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
