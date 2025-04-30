@@ -1,17 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Award, Share2, Trophy, Medal, Crown, Shield } from "lucide-react";
+import { Award, Share2, Trophy, Medal, Calendar, Activity } from "lucide-react";
 import { BackButton } from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from "@/hooks/use-toast";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Achievements = () => {
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("sobriety");
+  
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -55,45 +59,138 @@ const Achievements = () => {
     });
   };
 
-  // Define medal tiers based on sobriety days
-  const medalTiers = [
-    { days: 1, title: "Medalha do Primeiro Passo", icon: "🏅", description: "Você deu o primeiro e mais importante passo!", reward: "Parabéns animado + desbloqueio de frase especial" },
-    { days: 7, title: "Medalha dos 7 Leões", icon: "🦁", description: "Uma semana de força e coragem!", reward: "Imagem personalizada para compartilhar" },
-    { days: 30, title: "Medalha da Muralha", icon: "🧱", description: "Um mês de resistência inabalável!", reward: "Fundo de tela exclusivo no app" },
-    { days: 90, title: "Medalha do Despertar", icon: "🌅", description: "Três meses de clareza e renovação!", reward: "Vídeo de homenagem surpresa" },
-    { days: 180, title: "Medalha do Guerreiro Fiel", icon: "⚔️", description: "Seis meses de batalha constante!", reward: "Desconto ou sessão bônus (premium)" },
-    { days: 365, title: "Patente: Sentinela", icon: "🏆", description: "Um ano de vigilância e superação!", reward: "Brasão dourado no perfil + certificado em PDF" },
-    { days: 730, title: "Patente: Guardião", icon: "🛡️", description: "Dois anos protegendo sua sobriedade!", reward: "Vídeo personalizado" },
-    { days: 1095, title: "Patente: Lenda Viva", icon: "⚔️", description: "Três anos de história inspiradora!", reward: "Acesso a um curso bônus ou devocional premium" },
-    { days: 1460, title: "Patente: Vencedor Supremo", icon: "👑", description: "Quatro anos de vitória contínua!", reward: "Emblema animado no app" },
-    { days: 1825, title: "Patente: Mestre do Tempo", icon: "🐉", description: "Cinco anos dominando o tempo!", reward: "Mensagem surpresa + camiseta" },
-    { days: 3650, title: "Patente: Dinossauro da Sobriedade", icon: "🦕", description: "Dez anos de resistência lendária!", reward: "Hall da Fama + recompensa especial" },
+  // Sobriety medals tier
+  const sobrietyMedalTiers = [
+    { days: 1, title: "🥇 Primeira Luz", icon: "🥇", description: "Seu primeiro dia de sobriedade!", reward: "Parabéns animado + desbloqueio de frase especial" },
+    { days: 7, title: "🧭 Novo Caminho", icon: "🧭", description: "7 dias de caminhada na sobriedade", reward: "Imagem personalizada para compartilhar" },
+    { days: 15, title: "🌱 Raízes Fortes", icon: "🌱", description: "15 dias construindo sua base", reward: "Desbloqueio de reflexão especial" },
+    { days: 30, title: "🧱 Muralha de Vontade", icon: "🧱", description: "1 mês de resistência inabalável!", reward: "Fundo de tela exclusivo no app" },
+    { days: 90, title: "☀️ Clareza da Alma", icon: "☀️", description: "3 meses de clareza e renovação!", reward: "Vídeo de homenagem surpresa" },
+    { days: 180, title: "⚔️ Guerreiro da Esperança", icon: "⚔️", description: "6 meses de batalha constante!", reward: "Desconto ou sessão bônus (premium)" },
+    { days: 270, title: "🕊️ Liberdade Interior", icon: "🕊️", description: "9 meses de caminhada consistente", reward: "Acesso a módulo premium" },
+    { days: 365, title: "🏆 Sentinela da Vida", icon: "🏆", description: "Um ano de vigilância e superação!", reward: "Brasão dourado no perfil + certificado em PDF" },
+    { days: 730, title: "🎖️ Guardião da Esperança", icon: "🎖️", description: "Dois anos protegendo sua sobriedade!", reward: "Vídeo personalizado" },
+    { days: 1095, title: "🧠 Mestre da Consciência", icon: "🧠", description: "Três anos de sabedoria e autoconsciência!", reward: "Acesso a um curso bônus ou devocional premium" },
+    { days: 1825, title: "🔥 Fênix Renascida", icon: "🔥", description: "Cinco anos de transformação contínua!", reward: "Emblema animado no app" },
+    { days: 2920, title: "🌟 Estrela Guia", icon: "🌟", description: "Oito anos iluminando o caminho!", reward: "Mensagem surpresa + camiseta" },
+    { days: 3650, title: "👑 Lenda Viva", icon: "👑", description: "Dez anos de história inspiradora!", reward: "Hall da Fama + recompensa especial" },
+    { days: 4380, title: "📜 Sábio da Jornada", icon: "📜", description: "Doze anos de sabedoria acumulada", reward: "Livro personalizado com sua jornada" },
+    { days: 5475, title: "🧙 Mestre da Superação", icon: "🧙", description: "Quinze anos de maestria na recuperação", reward: "Reconhecimento especial" },
+    { days: 6570, title: "🏛️ Patriarca da Recuperação", icon: "🏛️", description: "Dezoito anos de liderança e exemplo", reward: "Mentorias especiais desbloqueadas" },
+    { days: 7300, title: "🦕 DINOSSAURO da Recuperação", icon: "🦕", description: "Vinte anos ou mais de resistência lendária!", reward: "Legado permanente no app" },
   ];
 
+  // App usage medals tier
+  const appUsageMedalTiers = [
+    { days: 1, title: "🚪 Primeiro Contato", icon: "🚪", description: "Seu primeiro dia no app!", reward: "Boas-vindas especial" },
+    { days: 3, title: "🔍 Despertar da Curiosidade", icon: "🔍", description: "3 dias explorando o app", reward: "Desbloqueio de tema" },
+    { days: 7, title: "🔗 Laço Inicial", icon: "🔗", description: "Uma semana de conexão", reward: "Acesso a reflexão especial" },
+    { days: 12, title: "🧩 Conectado ao Propósito", icon: "🧩", description: "12 dias de propósito", reward: "Novas ferramentas desbloqueadas" },
+    { days: 15, title: "🧗 Ritual de Subida", icon: "🧗", description: "15 dias de escalada constante", reward: "Avatar exclusivo" },
+    { days: 30, title: "📆 Aliado da Rotina", icon: "📆", description: "Um mês de compromisso", reward: "Notas de gratidão especiais" },
+    { days: 45, title: "🛡️ Guardião da Constância", icon: "🛡️", description: "45 dias de constância", reward: "Meditação guiada exclusiva" },
+    { days: 60, title: "🔥 Chama Acesa", icon: "🔥", description: "60 dias de dedicação", reward: "Coleção de citações inspiradoras" },
+    { days: 75, title: "🌿 Crescimento Silencioso", icon: "🌿", description: "75 dias de cultivo interno", reward: "Guia de autoavaliação" },
+    { days: 84, title: "🧠 Mente Disciplinada", icon: "🧠", description: "84 dias de consistência mental", reward: "Exercícios de mindfulness" },
+    { days: 90, title: "✨ Consistência Iluminada", icon: "✨", description: "90 dias de prática iluminada", reward: "Histórias de superação" },
+    { days: 111, title: "🚀 Ascensão Interna", icon: "🚀", description: "111 dias de evolução", reward: "Acesso a módulo premium" },
+    { days: 120, title: "🧲 Força Magnética", icon: "🧲", description: "120 dias de atração positiva", reward: "Desafio exclusivo" },
+    { days: 150, title: "🎯 Comprometido com a Jornada", icon: "🎯", description: "150 dias de compromisso", reward: "Ferramenta de planejamento" },
+    { days: 180, title: "🛤️ Trilho Sólido", icon: "🛤️", description: "180 dias nos trilhos", reward: "Workshop exclusivo" },
+    { days: 210, title: "🧬 Identidade Transformada", icon: "🧬", description: "210 dias de transformação", reward: "Análise de progresso personalizada" },
+    { days: 240, title: "🌊 Fluxo Equilibrado", icon: "🌊", description: "240 dias em harmonia", reward: "Ritual de celebração" },
+    { days: 270, title: "🧘 Mestre do Hábito", icon: "🧘", description: "270 dias de maestria", reward: "Áudio guiado especial" },
+    { days: 300, title: "🎉 Celebração da Perseverança", icon: "🎉", description: "300 dias de persistência", reward: "Cerimônia virtual" },
+    { days: 330, title: "⏳ Tempo como Aliado", icon: "⏳", description: "330 dias com o tempo a favor", reward: "Reconhecimento na comunidade" },
+    { days: 360, title: "🐉 Dragão da Disciplina", icon: "🐉", description: "Um ano de disciplina inabalável", reward: "Badge exclusivo para perfil" },
+  ];
+
+  // Get current data based on active tab
+  const currentMedalTiers = activeTab === "sobriety" ? sobrietyMedalTiers : appUsageMedalTiers;
+  const dias = activeTab === "sobriety" ? (profile?.dias_sobriedade || 0) : (profile?.mood_points || 0); // Usando mood_points como proxy para acessos ao app
+
   // Find next medal to achieve
-  const dias = profile?.dias_sobriedade || 0;
-  const nextMedal = medalTiers.find(medal => medal.days > dias);
+  const nextMedal = currentMedalTiers.find(medal => medal.days > dias);
 
   // Calculate time until next medal
   const daysUntilNextMedal = nextMedal ? nextMedal.days - dias : 0;
   
-  // Get achievements that should be unlocked based on sobriety days
-  const unlockedMedals = medalTiers.filter(medal => dias >= medal.days);
+  // Get achievements that should be unlocked based on days
+  const unlockedMedals = currentMedalTiers.filter(medal => dias >= medal.days);
   
   // Get achievements that are still locked
-  const lockedMedals = medalTiers.filter(medal => dias < medal.days);
+  const lockedMedals = currentMedalTiers.filter(medal => dias < medal.days);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-600 to-indigo-900 p-6">
       <BackButton />
       
       <div className="max-w-2xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-6">
           <Trophy className="h-12 w-12 text-yellow-300" />
           <div>
-            <h1 className="text-3xl font-bold text-white">Minha Jornada</h1>
-            <p className="text-white/70">Cada dia vencido é uma medalha que ninguém pode te tirar</p>
+            <h1 className="text-3xl font-bold text-white">Minhas Conquistas</h1>
+            <p className="text-white/70">Suas vitórias reconhecidas</p>
           </div>
+        </div>
+
+        {/* Toggle between achievement types */}
+        <div className="mb-8">
+          <Tabs 
+            defaultValue="sobriety" 
+            value={activeTab} 
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2 bg-purple-900/50 mb-4">
+              <TabsTrigger value="sobriety" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>Minha jornada de sobriedade</span>
+              </TabsTrigger>
+              <TabsTrigger value="app" className="flex items-center gap-2">
+                <Activity className="h-4 w-4" />
+                <span>Minha jornada no App</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="sobriety">
+              <Card className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 border-none text-white mb-6">
+                <CardHeader>
+                  <CardTitle className="text-xl">
+                    {activeTab === "sobriety" ? 
+                      "Sua jornada de sobriedade" : 
+                      "Sua jornada no aplicativo"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-white/80">
+                    {activeTab === "sobriety" ? 
+                      `Você tem ${dias} dias de sobriedade` : 
+                      `Você tem ${dias} pontos de acesso ao aplicativo`}
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="app">
+              <Card className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 border-none text-white mb-6">
+                <CardHeader>
+                  <CardTitle className="text-xl">
+                    {activeTab === "sobriety" ? 
+                      "Sua jornada de sobriedade" : 
+                      "Sua jornada no aplicativo"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-white/80">
+                    {activeTab === "sobriety" ? 
+                      `Você tem ${dias} dias de sobriedade` : 
+                      `Você tem ${dias} pontos de acesso ao aplicativo`}
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Next Medal Progress */}
@@ -158,7 +255,8 @@ const Achievements = () => {
                           </Badge>
                         </div>
                         <p className="text-sm text-yellow-300 mt-2">
-                          Conquista aos {medal.days} dia{medal.days > 1 ? 's' : ''} de sobriedade
+                          Conquista aos {medal.days} dia{medal.days > 1 ? 's' : ''} 
+                          {activeTab === "sobriety" ? " de sobriedade" : " de uso do app"}
                         </p>
                       </div>
                     </div>
@@ -180,7 +278,7 @@ const Achievements = () => {
         {/* Locked Medals */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <Crown className="h-6 w-6 text-gray-400" />
+            <Award className="h-6 w-6 text-gray-400" />
             Próximas Conquistas
           </h2>
           
@@ -194,7 +292,8 @@ const Achievements = () => {
                       <h3 className="text-xl font-semibold">{medal.title}</h3>
                       <p className="text-white/50">{medal.description}</p>
                       <p className="text-sm text-gray-400 mt-1">
-                        Desbloqueie aos {medal.days} dia{medal.days > 1 ? 's' : ''} de sobriedade
+                        Desbloqueie aos {medal.days} dia{medal.days > 1 ? 's' : ''} 
+                        {activeTab === "sobriety" ? " de sobriedade" : " de uso do app"}
                       </p>
                     </div>
                   </div>
@@ -214,7 +313,7 @@ const Achievements = () => {
         {medals && medals.length > 0 && (
           <div className="mt-8">
             <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <Shield className="h-6 w-6 text-blue-300" />
+              <Trophy className="h-6 w-6 text-blue-300" />
               Medalhas do Sistema
             </h2>
             
