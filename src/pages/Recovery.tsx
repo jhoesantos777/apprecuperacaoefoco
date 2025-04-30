@@ -1,8 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfDay, subDays } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import RecoveryThermometer from '@/components/RecoveryThermometer';
+import TermometroDaRecuperacao from '@/components/recovery/TermometroDaRecuperacao'; // Import new component
 import DailyMotivation from '@/components/DailyMotivation';
 import { Card } from '@/components/ui/card';
 import { BackButton } from '@/components/BackButton';
@@ -226,11 +228,18 @@ const Recovery = () => {
               : "HOJE EU NAO VOU USAR!"}
           </Button>
 
+          {/* The existing RecoveryThermometer */}
           <RecoveryThermometer 
             score={recoveryScore?.score || 0}
             hasMultipleTriggers={recoveryScore?.hasMultipleTriggers || false}
             details={recoveryScore?.details}
           />
+          
+          {/* Adding new component */}
+          <div className="mt-6">
+            <TermometroDaRecuperacao />
+          </div>
+          
           <div className="mt-4">
             <ResetButton />
           </div>
