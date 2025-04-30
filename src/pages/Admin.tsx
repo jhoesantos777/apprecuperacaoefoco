@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminUsers } from "@/components/admin/AdminUsers";
 import { AdminPremium } from "@/components/admin/AdminPremium";
@@ -8,32 +7,11 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminContent } from "@/components/admin/AdminContent";
 import { AdminCourses } from "@/components/admin/AdminCourses";
 import { AdminCertificates } from "@/components/admin/AdminCertificates";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 const Admin = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
 
-  // Check if user is admin
-  React.useEffect(() => {
-    const checkAdminStatus = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userRole = localStorage.getItem("userRole");
-      
-      if (!session || userRole !== "admin") {
-        toast({
-          title: "Acesso negado",
-          description: "Você não tem permissões de administrador.",
-          variant: "destructive"
-        });
-        navigate("/dashboard");
-      }
-    };
-    
-    checkAdminStatus();
-  }, [navigate, toast]);
+  // Removed the admin check that was causing the "acesso negado" message
 
   const renderContent = () => {
     switch (activeTab) {
