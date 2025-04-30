@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { 
-  Smile, CalendarDays, ListTodo, Thermometer, Star, 
+  SmilePlus, CalendarDays, CheckSquare, Thermometer, Star, 
   Award, BookOpen, Brain, Book, UserCircle, Settings
 } from "lucide-react";
 
@@ -20,7 +21,7 @@ const getDashboardCategories = (userRole: string): Category[] => {
       id: 'mood',
       title: 'Atualizar Humor',
       description: 'Como você está se sentindo hoje?',
-      icon: Smile,
+      icon: SmilePlus,
       path: '/atualizar-humor'
     }
   ];
@@ -63,7 +64,7 @@ const getDashboardCategories = (userRole: string): Category[] => {
       id: 'tasks',
       title: 'Tarefas Diárias',
       description: 'Complete suas atividades do dia',
-      icon: ListTodo,
+      icon: CheckSquare,
       path: '/tasks'
     },
     {
@@ -123,10 +124,12 @@ export const DashboardCategories = ({ userRole }: DashboardCategoriesProps) => {
         {categories.map((category) => (
           <Card 
             key={category.id}
-            className="p-4 flex flex-col items-center text-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className="p-4 flex flex-col items-center text-center cursor-pointer hover:bg-gray-50 transition-colors hover:scale-105 duration-200"
             onClick={() => navigate(category.path)}
           >
-            <category.icon className="h-8 w-8 text-blue-600 mb-2" />
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-3 shadow-md">
+              <category.icon className="h-8 w-8 text-white" />
+            </div>
             <h3 className="text-sm font-medium">{category.title}</h3>
             <p className="text-xs text-gray-500">{category.description}</p>
           </Card>

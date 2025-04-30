@@ -4,7 +4,19 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { ProfilePicture } from '@/components/ProfilePicture';
-import { Crown, Siren, BarChart3, Calendar, BookOpen, CheckCircle, MessageSquare, Award, GraduationCap, AlertTriangle, Thermometer } from 'lucide-react';
+import { 
+  Crown, 
+  Siren, 
+  SmilePlus, 
+  Calendar, 
+  BookOpen, 
+  CheckSquare, 
+  MessageSquare, 
+  Award, 
+  GraduationCap, 
+  AlertTriangle, 
+  Thermometer 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/sonner';
@@ -125,6 +137,9 @@ const Dashboard = () => {
     visible: { opacity: 1, y: 0 }
   };
 
+  // Create a style for rounded icon containers
+  const iconContainerStyle = "h-16 w-16 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-purple-600 mb-2 shadow-lg";
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -136,11 +151,11 @@ const Dashboard = () => {
       >
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-lg mb-1 text-white bg-black/40 px-3 py-1 rounded-lg font-semibold">Seja bem vindo</h2>
-            <h1 className="text-2xl font-bold text-white bg-black/30 px-3 py-1 rounded-lg">{profile?.nome || 'Usuário'}</h1>
+            <h2 className="text-lg mb-1 text-white bg-black/60 px-3 py-1 rounded-lg font-semibold">Seja bem vindo</h2>
+            <h1 className="text-2xl font-bold text-white bg-black/50 px-3 py-1 rounded-lg">{profile?.nome || 'Usuário'}</h1>
             <div className="flex items-center mt-2">
-              <Crown className="h-4 w-4 text-yellow-300" />
-              <span className="text-white text-sm ml-1 font-medium bg-black/30 px-2 py-0.5 rounded">Versão beta</span>
+              <Crown className="h-5 w-5 text-yellow-300" />
+              <span className="text-white text-sm ml-1 font-medium bg-black/50 px-2 py-0.5 rounded">Versão beta</span>
             </div>
           </div>
           <div>
@@ -188,10 +203,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/atualizar-humor')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
-              <BarChart3 className="w-10 h-10 text-white" />
+            <div className={iconContainerStyle}>
+              <SmilePlus className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Atualiza Humor</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Atualiza Humor</span>
           </motion.div>
           
           {/* Dias em sobriedade */}
@@ -200,10 +215,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/sobriety')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <Calendar className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Dias em sobriedade</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Dias em sobriedade</span>
           </motion.div>
           
           {/* Devocional */}
@@ -212,10 +227,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/devotional')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <BookOpen className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Devocional</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Devocional</span>
           </motion.div>
           
           {/* Tarefas Diárias */}
@@ -224,10 +239,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/tasks')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
-              <CheckCircle className="w-10 h-10 text-white" />
+            <div className={iconContainerStyle}>
+              <CheckSquare className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Tarefas Diárias</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Tarefas Diárias</span>
           </motion.div>
           
           {/* Reflexão do Dia */}
@@ -236,10 +251,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/reflection')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <MessageSquare className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Reflexão do Dia</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Reflexão do Dia</span>
           </motion.div>
           
           {/* Termômetro da recuperação */}
@@ -248,10 +263,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/recovery')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <Thermometer className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Termômetro</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Termômetro</span>
           </motion.div>
           
           {/* Minhas conquistas */}
@@ -260,10 +275,10 @@ const Dashboard = () => {
             onClick={() => navigateTo('/achievements')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <Award className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Conquistas</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Conquistas</span>
           </motion.div>
           
           {/* Cursos */}
@@ -272,22 +287,22 @@ const Dashboard = () => {
             onClick={() => navigateTo('/courses')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <GraduationCap className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Cursos</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Cursos</span>
           </motion.div>
           
-          {/* Gatilhos Diários (renamed from Fale comigo) */}
+          {/* Gatilhos Diários */}
           <motion.div 
             className="aspect-square glass flex flex-col items-center justify-center cursor-pointer hover-scale"
             onClick={() => navigateTo('/triggers')}
             variants={itemVariants}
           >
-            <div className="h-14 w-14 flex items-center justify-center mb-2">
+            <div className={iconContainerStyle}>
               <AlertTriangle className="w-10 h-10 text-white" />
             </div>
-            <span className="text-white text-sm text-center font-medium bg-black/40 px-2 py-1 rounded-lg w-full">Gatilhos Diários</span>
+            <span className="text-white text-sm text-center font-medium bg-black/60 px-2 py-1 rounded-lg w-full">Gatilhos Diários</span>
           </motion.div>
         </motion.div>
       </div>

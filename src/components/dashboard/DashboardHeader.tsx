@@ -48,15 +48,15 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
           size="lg"
         />
         <div>
-          <h1 className="text-2xl font-bold text-white bg-black/40 px-3 py-1 rounded-lg backdrop-blur-sm">
+          <h1 className="text-2xl font-bold text-white bg-black/60 px-3 py-1 rounded-lg backdrop-blur-sm">
+            {profile?.nome || 'Usuário'}
+          </h1>
+          <p className="text-white font-medium text-lg px-3 py-1 bg-black/50 rounded-lg mt-1">
             {userRole === 'admin' 
               ? 'Painel Administrativo' 
               : userRole === 'family' 
                 ? 'Painel Familiar' 
                 : 'Bem vindo'}
-          </h1>
-          <p className="text-white font-medium text-lg px-3 py-1 bg-black/30 rounded-lg mt-1">
-            {profile?.nome || 'Usuário'}
           </p>
           {userRole === 'admin' && (
             <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full mt-1 inline-block ml-3 font-bold">
