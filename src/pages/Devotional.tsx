@@ -15,7 +15,7 @@ const getTodaysVerse = () => {
   // Calculate day of year (0-364)
   const now = new Date();
   const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now - start.getTime();
+  const diff = Number(now) - Number(start);
   const oneDay = 1000 * 60 * 60 * 24;
   const dayOfYear = Math.floor(diff / oneDay) - 1;
   
