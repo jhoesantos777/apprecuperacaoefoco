@@ -10,6 +10,7 @@ import { setupMockApi } from "./utils/mockApi";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import SignUp from "./pages/SignUp";
+import CadastroSimplificado from "./pages/CadastroSimplificado";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -48,6 +49,7 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/cadastro-simplificado" element={<CadastroSimplificado />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />

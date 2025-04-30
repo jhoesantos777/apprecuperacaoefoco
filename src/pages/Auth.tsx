@@ -45,7 +45,8 @@ const Auth = () => {
     
     try {
       if (isSignUp) {
-        navigate("/signup");
+        // Redireciona para o formulário simplificado de cadastro
+        navigate("/cadastro-simplificado");
         return;
       } else {
         // Special case for admin login
