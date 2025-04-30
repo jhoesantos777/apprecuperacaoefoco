@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { ReflectionForm } from '@/components/ReflectionForm';
-import DailyMotivation from '@/components/DailyMotivation';
 import { BackButton } from '@/components/BackButton';
 
 const Reflection = () => {
@@ -13,7 +12,6 @@ const Reflection = () => {
         <h1 className="text-3xl font-serif text-gray-800 mb-6 text-center">
           Diário de Reflexão
         </h1>
-        <DailyMotivation />
         <ReflectionForm />
       </div>
     </div>
