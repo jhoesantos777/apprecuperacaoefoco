@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -49,6 +50,17 @@ interface User {
   is_active: boolean;
 }
 
+// Define the shape of auth users from Supabase Admin API
+interface AuthUser {
+  id: string;
+  email?: string;
+  created_at?: string;
+  user_metadata?: {
+    nome?: string;
+  };
+  last_sign_in_at?: string;
+}
+
 export const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,12 +97,14 @@ export const AdminUsers = () => {
       if (profilesData) {
         allUsers = profilesData.map((profile: any) => {
           // Find matching auth user if available
-          const authUser = authData?.users?.find(u => u.id === profile.id);
+          const authUser = authData?.users ? 
+            authData.users.find((u: AuthUser) => u.id === profile.id) : 
+            undefined;
           
           // Determine user role from metadata or email pattern
           let userRole: UserType = "dependent";
           
-          if (profile.email === "admin@admin" || authUser?.email === "admin@admin") {
+          if (profile.email === "admin@admin" || (authUser?.email === "admin@admin")) {
             userRole = "admin";
           } else if (
             (profile.email && profile.email.includes("family")) || 
@@ -100,7 +114,7 @@ export const AdminUsers = () => {
           }
           
           // Get the most accurate last login time
-          let lastLogin = profile.last_login || authUser?.last_sign_in_at || null;
+          let lastLogin = profile.last_login || (authUser?.last_sign_in_at) || null;
           
           return {
             id: profile.id,
@@ -206,6 +220,10 @@ export const AdminUsers = () => {
     user.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <div className="space-y-6">
