@@ -4,9 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useUserProfile = (userRole: string) => {
   return useQuery({
-    queryKey: ['profile'],
+    queryKey: ['profile', userRole],
     queryFn: async () => {
       try {
+        // Special handling for admin user
+        if (userRole === 'admin') {
+          return {
+            nome: 'Administrador',
+            tipoUsuario: 'admin',
+            id: 'admin-id',
+            avatar_url: null
+          };
+        }
+        
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
@@ -46,5 +56,6 @@ export const useUserProfile = (userRole: string) => {
         };
       }
     },
+    enabled: !!userRole // Only run query when userRole is available
   });
 };

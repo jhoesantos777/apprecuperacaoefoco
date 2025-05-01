@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -63,41 +62,79 @@ export const AdminUsers = () => {
     try {
       setLoading(true);
       
-      // Fetch all users from the profiles table without exceptions
-      const { data, error, count } = await supabase
+      // First, fetch all authenticated users from auth.users via profiles table
+      const { data: profilesData, error: profilesError, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' });
         
-      if (error) {
-        throw error;
+      if (profilesError) {
+        throw profilesError;
       }
       
-      setTotalUsers(count || 0);
+      // Get all auth users
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
       
-      // Transform the database results to include the required User interface properties
-      const formattedUsers: User[] = data.map((user: any) => {
-        // Determine user role - preferably from database but fallback to admin@admin check
-        let userRole: UserType = "dependent";
-        
-        if (user.email === "admin@admin") {
-          userRole = "admin";
-        } else if (user.email?.includes("family")) {
-          userRole = "family";
-        }
-        
-        return {
-          id: user.id,
-          nome: user.nome || "Usuário sem nome",
-          email: user.email || "Email não cadastrado",
-          tipoUsuario: userRole,
-          created_at: user.created_at || new Date().toISOString(),
-          last_login: user.last_login || "Nunca",
-          is_active: user.is_active !== false // Default to true if not set
-        };
-      });
+      if (authError) {
+        console.error('Error fetching auth users:', authError);
+        // Continue with profiles data if auth fetch fails
+      }
       
-      setUsers(formattedUsers);
-      console.log("Fetched users:", formattedUsers.length);
+      // Combine data from both sources
+      let allUsers: User[] = [];
+      
+      if (profilesData) {
+        allUsers = profilesData.map((profile: any) => {
+          // Find matching auth user if available
+          const authUser = authData?.users?.find(u => u.id === profile.id);
+          
+          // Determine user role from metadata or email pattern
+          let userRole: UserType = "dependent";
+          
+          if (profile.email === "admin@admin" || authUser?.email === "admin@admin") {
+            userRole = "admin";
+          } else if (
+            (profile.email && profile.email.includes("family")) || 
+            (authUser?.email && authUser.email.includes("family"))
+          ) {
+            userRole = "family";
+          }
+          
+          // Get the most accurate last login time
+          let lastLogin = profile.last_login || authUser?.last_sign_in_at || null;
+          
+          return {
+            id: profile.id,
+            nome: profile.nome || authUser?.user_metadata?.nome || "Usuário sem nome",
+            email: profile.email || authUser?.email || "Email não cadastrado",
+            tipoUsuario: userRole,
+            created_at: profile.created_at || authUser?.created_at || new Date().toISOString(),
+            last_login: lastLogin,
+            is_active: profile.is_active !== false // Default to true if not set
+          };
+        });
+        
+        setTotalUsers(count || allUsers.length);
+      }
+      
+      // Add special handling for admin user if not in the database yet
+      const adminExists = allUsers.some(user => 
+        user.email === "admin@admin" || user.tipoUsuario === "admin"
+      );
+      
+      if (!adminExists) {
+        allUsers.push({
+          id: "admin-special-id",
+          nome: "Administrador",
+          email: "admin@admin",
+          tipoUsuario: "admin",
+          created_at: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+          is_active: true
+        });
+      }
+      
+      console.log("Fetched users:", allUsers.length);
+      setUsers(allUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error("Falha ao carregar dados dos usuários");
@@ -191,7 +228,7 @@ export const AdminUsers = () => {
       <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
         <div className="text-lg font-medium mb-2">Total de usuários registrados: {totalUsers}</div>
         <p className="text-sm text-gray-600">
-          Todos os usuários do sistema são exibidos aqui sem exceções
+          Todos os usuários do sistema são exibidos aqui, incluindo aqueles cadastrados pela página "Cadastre-se"
         </p>
       </div>
 

@@ -33,7 +33,13 @@ const Auth = () => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        navigate("/dashboard");
+        // Check user role for redirection
+        const userRole = localStorage.getItem("userRole");
+        if (userRole === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     };
     
