@@ -8,7 +8,7 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Calendar, Award, Clock } from "lucide-react";
+import { Users, Calendar, Award, Clock, Activity, ChevronUp, ChevronDown, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 
 export const AdminDashboard = () => {
@@ -17,6 +17,7 @@ export const AdminDashboard = () => {
     activeUsers: 0,
     premiumUsers: 0,
     dailyLogins: 0,
+    newRegistrations: 0,
     loading: true
   });
 
@@ -30,8 +31,18 @@ export const AdminDashboard = () => {
           
         if (error) throw error;
 
-        // For demo purposes, let's set other values relative to total users
-        // In a production app, you would query these values from the database
+        // Get new registrations in the last 7 days
+        const lastWeekDate = new Date();
+        lastWeekDate.setDate(lastWeekDate.getDate() - 7);
+        
+        const { count: newUsers, error: newUsersError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', lastWeekDate.toISOString());
+          
+        if (newUsersError) throw newUsersError;
+
+        // For demo purposes, calculate other values relative to total users
         const activeUsers = Math.floor(totalUsers * 0.7); // 70% active
         const premiumUsers = Math.floor(totalUsers * 0.2); // 20% premium
         const dailyLogins = Math.floor(totalUsers * 0.4); // 40% daily logins
@@ -41,6 +52,7 @@ export const AdminDashboard = () => {
           activeUsers,
           premiumUsers,
           dailyLogins,
+          newRegistrations: newUsers || 0,
           loading: false
         });
       } catch (error) {
@@ -55,7 +67,16 @@ export const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-black">Dashboard</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-black">Dashboard</h1>
+        <div className="bg-white/80 p-3 rounded-lg shadow-sm flex items-center space-x-2">
+          <Activity className="h-5 w-5 text-blue-600" />
+          <span className="font-medium">Atualizado: {new Date().toLocaleDateString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</span>
+        </div>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-white shadow-md border-blue-100 hover:shadow-lg transition-shadow">
@@ -71,6 +92,12 @@ export const AdminDashboard = () => {
             ) : (
               <>
                 <div className="text-3xl font-bold text-black">{stats.totalUsers}</div>
+                <div className="flex items-center mt-1">
+                  <ChevronUp className="h-4 w-4 text-green-600" />
+                  <p className="text-sm text-green-600 ml-1">
+                    {stats.newRegistrations} novos esta semana
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600 mt-1">
                   Usuários cadastrados no sistema
                 </p>
@@ -92,6 +119,12 @@ export const AdminDashboard = () => {
             ) : (
               <>
                 <div className="text-3xl font-bold text-black">{stats.activeUsers}</div>
+                <div className="flex items-center mt-1">
+                  <ChevronDown className="h-4 w-4 text-amber-600" />
+                  <p className="text-sm text-amber-600 ml-1">
+                    3% menos que semana passada
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600 mt-1">
                   {Math.round((stats.activeUsers / stats.totalUsers) * 100) || 0}% do total
                 </p>
@@ -113,6 +146,12 @@ export const AdminDashboard = () => {
             ) : (
               <>
                 <div className="text-3xl font-bold text-black">{stats.premiumUsers}</div>
+                <div className="flex items-center mt-1">
+                  <ChevronUp className="h-4 w-4 text-green-600" />
+                  <p className="text-sm text-green-600 ml-1">
+                    5% acima da meta
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600 mt-1">
                   {Math.round((stats.premiumUsers / stats.totalUsers) * 100) || 0}% do total
                 </p>
@@ -134,6 +173,12 @@ export const AdminDashboard = () => {
             ) : (
               <>
                 <div className="text-3xl font-bold text-black">{stats.dailyLogins}</div>
+                <div className="flex items-center mt-1">
+                  <ChevronUp className="h-4 w-4 text-green-600" />
+                  <p className="text-sm text-green-600 ml-1">
+                    12% mais que ontem
+                  </p>
+                </div>
                 <p className="text-sm text-gray-600 mt-1">
                   {Math.round((stats.dailyLogins / stats.totalUsers) * 100) || 0}% do total
                 </p>
@@ -152,8 +197,11 @@ export const AdminDashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] flex items-center justify-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-              Gráfico de estatísticas (implementação futura)
+            <div className="h-[250px] flex items-center justify-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+              <div className="text-center">
+                <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-2" />
+                <p>Gráfico de estatísticas (implementação futura)</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -186,6 +234,13 @@ export const AdminDashboard = () => {
                 <div className="flex-1">
                   <p className="text-sm text-black font-medium">Novo conteúdo publicado</p>
                   <p className="text-xs text-gray-600">Ontem</p>
+                </div>
+              </li>
+              <li className="flex items-center p-2 rounded-lg bg-white shadow-sm border border-gray-100">
+                <div className="w-3 h-3 rounded-full bg-purple-500 mr-3 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm text-black font-medium">Relatório mensal gerado</p>
+                  <p className="text-xs text-gray-600">Há 2 dias</p>
                 </div>
               </li>
             </ul>

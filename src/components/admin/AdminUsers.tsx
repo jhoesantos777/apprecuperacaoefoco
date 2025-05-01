@@ -35,6 +35,7 @@ import {
   Mail,
   Shield,
   ShieldX,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserType } from "@/types/signup";
@@ -49,33 +50,6 @@ interface User {
   is_active: boolean;
 }
 
-// Extended profile type to include our custom fields that may not be in the database yet
-interface ProfileWithExtendedFields {
-  id: string;
-  nome: string | null;
-  email: string | null;
-  created_at: string;
-  updated_at: string | null;
-  avatar_url: string | null;
-  cidade: string | null;
-  estado: string | null;
-  data_nascimento: string | null;
-  dias_sobriedade: number | null;
-  drogas_uso: string[] | null;
-  historico_familiar_uso: boolean | null;
-  idade: number | null;
-  mood_points: number | null;
-  motivation_note: string | null;
-  sobriety_start_date: string | null;
-  telefone: string | null;
-  tempo_uso: string | null;
-  tratamentos_concluidos: number | null;
-  tratamentos_tentados: number | null;
-  // Custom fields that may not be in the database yet
-  last_login?: string | null;
-  is_active?: boolean;
-}
-
 export const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,46 +57,47 @@ export const AdminUsers = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [confirmAction, setConfirmAction] = useState<"block" | "unblock">("block");
+  const [totalUsers, setTotalUsers] = useState(0);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
+      // Fetch all users from the profiles table without exceptions
+      const { data, error, count } = await supabase
         .from('profiles')
-        .select('*');
+        .select('*', { count: 'exact' });
         
       if (error) {
         throw error;
       }
       
+      setTotalUsers(count || 0);
+      
       // Transform the database results to include the required User interface properties
-      const formattedUsers: User[] = data.map((user: ProfileWithExtendedFields) => {
-        // Get user role from localStorage for this demo
-        // In a real app, this would come from a user_roles table or similar
+      const formattedUsers: User[] = data.map((user: any) => {
+        // Determine user role - preferably from database but fallback to admin@admin check
         let userRole: UserType = "dependent";
         
         if (user.email === "admin@admin") {
           userRole = "admin";
-        } else {
-          // Try to get from localStorage, but this is just a fallback
-          // since localStorage is browser-specific and won't work across users
-          const savedRole = localStorage.getItem("userRole");
-          userRole = (savedRole as UserType) || "dependent";
+        } else if (user.email?.includes("family")) {
+          userRole = "family";
         }
         
         return {
           id: user.id,
-          nome: user.nome,
-          email: user.email,
+          nome: user.nome || "Usuário sem nome",
+          email: user.email || "Email não cadastrado",
           tipoUsuario: userRole,
-          created_at: user.created_at,
+          created_at: user.created_at || new Date().toISOString(),
           last_login: user.last_login || "Nunca",
           is_active: user.is_active !== false // Default to true if not set
         };
       });
       
       setUsers(formattedUsers);
+      console.log("Fetched users:", formattedUsers.length);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error("Falha ao carregar dados dos usuários");
@@ -160,10 +135,12 @@ export const AdminUsers = () => {
       const newStatus = !selectedUser.is_active;
       
       // We're updating a column that may not exist yet in the database
-      // So we need to handle this carefully
       const { error } = await supabase
         .from('profiles')
-        .update({ updated_at: new Date().toISOString() })
+        .update({ 
+          is_active: newStatus,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', selectedUser.id);
 
       if (error) throw error;
@@ -178,9 +155,6 @@ export const AdminUsers = () => {
           ? `Usuário ${selectedUser.nome || selectedUser.email} desbloqueado com sucesso.` 
           : `Usuário ${selectedUser.nome || selectedUser.email} bloqueado com sucesso.`
       );
-      
-      // In a real application, you would need to add is_active to your profiles table
-      console.log(`User ${selectedUser.id} is_active status set to ${newStatus}. Database update would happen here.`);
       
     } catch (error) {
       console.error('Error toggling user status:', error);
@@ -214,6 +188,13 @@ export const AdminUsers = () => {
         </div>
       </div>
 
+      <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+        <div className="text-lg font-medium mb-2">Total de usuários registrados: {totalUsers}</div>
+        <p className="text-sm text-gray-600">
+          Todos os usuários do sistema são exibidos aqui sem exceções
+        </p>
+      </div>
+
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -243,7 +224,10 @@ export const AdminUsers = () => {
             {loading ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-10 text-black">
-                  Carregando usuários...
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                    Carregando usuários...
+                  </div>
                 </TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
@@ -265,17 +249,20 @@ export const AdminUsers = () => {
                           ? "bg-blue-100 text-blue-800" 
                           : "bg-green-100 text-green-800"
                     }`}>
-                      {user.tipoUsuario || "dependent"}
+                      {user.tipoUsuario === "admin" ? "Administrador" : 
+                       user.tipoUsuario === "family" ? "Familiar" : "Dependente"}
                     </span>
                   </TableCell>
                   <TableCell className="text-black">
                     {new Date(user.created_at).toLocaleDateString('pt-BR')}
                   </TableCell>
                   <TableCell className="text-black">
-                    {user.last_login ? new Date(user.last_login).toLocaleDateString('pt-BR', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    }) : "Nunca"}
+                    {user.last_login && user.last_login !== "Nunca" 
+                      ? new Date(user.last_login).toLocaleDateString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) 
+                      : "Nunca"}
                   </TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded text-xs ${

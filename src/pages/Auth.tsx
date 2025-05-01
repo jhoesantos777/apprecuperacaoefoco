@@ -61,7 +61,8 @@ const Auth = () => {
           console.log("Admin login detected");
           localStorage.setItem("userRole", "admin");
           toast.success("Login administrador realizado com sucesso!");
-          navigate("/dashboard");
+          // Redirect admin directly to the admin panel
+          navigate("/admin");
           return;
         }
         

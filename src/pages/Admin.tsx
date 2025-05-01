@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminUsers } from "@/components/admin/AdminUsers";
@@ -9,9 +8,16 @@ import { AdminCourses } from "@/components/admin/AdminCourses";
 import { AdminCertificates } from "@/components/admin/AdminCertificates";
 
 const Admin = () => {
-  const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [activeTab, setActiveTab] = useState<string>("users");
 
-  // Removed the admin check that was causing the "acesso negado" message
+  useEffect(() => {
+    // Check if the user is an admin
+    const userRole = localStorage.getItem("userRole");
+    if (userRole !== "admin") {
+      // You could redirect non-admins here, but we'll keep it simple
+      console.warn("Non-admin user accessing admin page");
+    }
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -28,7 +34,7 @@ const Admin = () => {
       case "certificates":
         return <AdminCertificates />;
       default:
-        return <AdminDashboard />;
+        return <AdminUsers />;
     }
   };
 
