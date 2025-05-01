@@ -13,7 +13,7 @@ import { registerActivity } from '@/utils/activityPoints';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Brain, AlertTriangle } from 'lucide-react';
+import { Brain, AlertTriangle, Thermometer } from 'lucide-react';
 
 const Recovery = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
@@ -62,12 +62,13 @@ const Recovery = () => {
 
         if (error) throw error;
 
-        // Calculate points for each category
-        const taskPoints = Math.min(30, activities
+        // Enhanced calculation with therapeutic focus
+        // Calculate points for each category with improved weighting
+        const taskPoints = Math.min(25, activities
           ?.filter(a => a.tipo_atividade === 'Tarefas')
           .reduce((sum, a) => sum + a.pontos, 0) || 0);
 
-        const moodPoints = Math.min(20, activities
+        const moodPoints = Math.min(15, activities
           ?.filter(a => a.tipo_atividade === 'Humor')
           .reduce((sum, a) => sum + a.pontos, 0) || 0);
 
@@ -75,20 +76,24 @@ const Recovery = () => {
           ?.filter(a => a.tipo_atividade === 'Devocional')
           .reduce((sum, a) => sum + a.pontos, 0) || 0);
 
-        const sobrietyPoints = Math.min(20, activities
+        const sobrietyPoints = Math.min(25, activities
           ?.filter(a => a.tipo_atividade === 'HojeNãoVouUsar')
           .reduce((sum, a) => sum + a.pontos, 0) || 0);
 
-        const reflectionPoints = Math.min(10, activities
+        const reflectionPoints = Math.min(15, activities
           ?.filter(a => a.tipo_atividade === 'Reflexão')
           .reduce((sum, a) => sum + a.pontos, 0) || 0);
 
-        // Calculate trigger penalties
-        const triggerPoints = activities
-          ?.filter(a => a.tipo_atividade === 'Gatilho')
-          .length * 2 || 0;
+        // Progressive penalty for triggers - increasing impact
+        const gatilhosList = activities
+          ?.filter(a => a.tipo_atividade === 'Gatilho') || [];
+          
+        const triggerPoints = gatilhosList.reduce((sum, _, index) => {
+          // Each subsequent trigger has more impact
+          return sum + (index + 1) * 3;
+        }, 0);
 
-        // Calculate total score
+        // Calculate total score with holistic approach
         const totalScore = Math.max(0, 
           taskPoints + 
           moodPoints + 
@@ -99,12 +104,10 @@ const Recovery = () => {
         );
 
         // Check if there are multiple triggers
-        const hasMultipleTriggers = (activities
-          ?.filter(a => a.tipo_atividade === 'Gatilho')
-          .length || 0) > 1;
+        const hasMultipleTriggers = gatilhosList.length > 1;
 
         return {
-          score: totalScore,
+          score: Math.min(totalScore, 100),
           hasMultipleTriggers,
           details: {
             taskPoints,
@@ -161,13 +164,13 @@ const Recovery = () => {
       queryClient.invalidateQueries({ queryKey: ['sobriety-medals'] });
       
       setHasConfirmedSobriety(true);
-      toast("Parabéns!", {
-        description: "Sua determinação é inspiradora. Continue firme!"
+      toast("Parabéns pela sua determinação!", {
+        description: "Cada decisão consciente fortalece seu caminho na recuperação. Continue cultivando este compromisso diário consigo mesmo."
       });
     } catch (error) {
       console.error('Error registering sobriety declaration:', error);
-      toast("Erro", {
-        description: "Não foi possível registrar sua declaração.",
+      toast("Encontramos um obstáculo", {
+        description: "Não foi possível registrar sua declaração no momento. Vamos tentar novamente?",
         style: { backgroundColor: 'hsl(var(--destructive))' }
       });
     }
@@ -198,7 +201,7 @@ const Recovery = () => {
           transition={{ delay: 0.1, duration: 0.5 }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <Brain className="h-8 w-8 text-blue-300" />
+            <Thermometer className="h-8 w-8 text-blue-300" />
             <h1 className="text-3xl font-bold text-white">
               Termômetro da Recuperação
             </h1>
