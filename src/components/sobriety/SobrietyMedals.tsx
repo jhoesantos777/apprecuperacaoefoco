@@ -26,7 +26,7 @@ export const SobrietyMedals = ({ medals }: SobrietyMedalsProps) => {
       <h2 className="text-xl font-semibold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
         Suas Conquistas
       </h2>
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
         {medals.map((medal) => (
           <div 
             key={medal.id} 

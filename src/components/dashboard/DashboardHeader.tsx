@@ -39,8 +39,8 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
   };
 
   return (
-    <div className="p-6 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
+    <div className="p-4 sm:p-6 flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         <ProfilePicture
           avatarUrl={profile?.avatar_url}
           userId={profile?.id || ''}
@@ -48,10 +48,10 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
           size="lg"
         />
         <div>
-          <h1 className="text-2xl font-bold text-white bg-black/70 px-3 py-1 rounded-lg backdrop-blur-sm">
+          <h1 className="text-xl sm:text-2xl font-bold text-white bg-black/70 px-3 py-1 rounded-lg backdrop-blur-sm">
             {profile?.nome || 'Usuário'}
           </h1>
-          <p className="text-white font-medium text-lg px-3 py-1 bg-black/60 rounded-lg mt-1">
+          <p className="text-white font-medium text-base sm:text-lg px-3 py-1 bg-black/60 rounded-lg mt-1">
             {userRole === 'admin' 
               ? 'Painel Administrativo' 
               : userRole === 'family' 

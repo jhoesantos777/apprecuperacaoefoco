@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -9,7 +8,6 @@ import { BackButton } from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from "@/hooks/use-toast";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Achievements = () => {
@@ -52,7 +50,6 @@ const Achievements = () => {
   });
 
   const handleShare = () => {
-    // In a real app, this would share via social media or messaging
     toast({
       title: "Compartilhado!",
       description: "Sua conquista foi compartilhada com seu grupo de apoio.",
@@ -107,7 +104,7 @@ const Achievements = () => {
 
   // Get current data based on active tab
   const currentMedalTiers = activeTab === "sobriety" ? sobrietyMedalTiers : appUsageMedalTiers;
-  const dias = activeTab === "sobriety" ? (profile?.dias_sobriedade || 0) : (profile?.mood_points || 0); // Usando mood_points como proxy para acessos ao app
+  const dias = activeTab === "sobriety" ? (profile?.dias_sobriedade || 0) : (profile?.mood_points || 0);
 
   // Find next medal to achieve
   const nextMedal = currentMedalTiers.find(medal => medal.days > dias);
@@ -122,20 +119,24 @@ const Achievements = () => {
   const lockedMedals = currentMedalTiers.filter(medal => dias < medal.days);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-600 to-indigo-900 p-6">
-      <BackButton />
+    <div className="min-h-screen bg-gradient-to-b from-purple-600 to-indigo-900 p-4 sm:p-6">
+      <div className="pb-4">
+        <BackButton />
+      </div>
       
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
-          <Trophy className="h-12 w-12 text-yellow-300" />
+          <div className="bg-yellow-500 p-2 rounded-full flex items-center justify-center shadow-lg">
+            <Trophy className="h-8 w-8 text-white" />
+          </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">Minhas Conquistas</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Minhas Conquistas</h1>
             <p className="text-white/70">Suas vitórias reconhecidas</p>
           </div>
         </div>
 
         {/* Toggle between achievement types */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Tabs 
             defaultValue="sobriety" 
             value={activeTab} 
@@ -143,30 +144,26 @@ const Achievements = () => {
             className="w-full"
           >
             <TabsList className="grid w-full grid-cols-2 bg-purple-900/50 mb-4">
-              <TabsTrigger value="sobriety" className="flex items-center gap-2">
+              <TabsTrigger value="sobriety" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-base px-1 py-2">
                 <Calendar className="h-4 w-4" />
-                <span>Minha jornada de sobriedade</span>
+                <span className="truncate">Jornada de sobriedade</span>
               </TabsTrigger>
-              <TabsTrigger value="app" className="flex items-center gap-2">
+              <TabsTrigger value="app" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-base px-1 py-2">
                 <Activity className="h-4 w-4" />
-                <span>Minha jornada no App</span>
+                <span className="truncate">Jornada no App</span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="sobriety">
               <Card className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 border-none text-white mb-6">
-                <CardHeader>
-                  <CardTitle className="text-xl">
-                    {activeTab === "sobriety" ? 
-                      "Sua jornada de sobriedade" : 
-                      "Sua jornada no aplicativo"}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg sm:text-xl">
+                    Sua jornada de sobriedade
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-white/80">
-                    {activeTab === "sobriety" ? 
-                      `Você tem ${dias} dias de sobriedade` : 
-                      `Você tem ${dias} pontos de acesso ao aplicativo`}
+                  <p className="text-white/80 text-base sm:text-lg font-medium">
+                    Você tem {dias} dias de sobriedade
                   </p>
                 </CardContent>
               </Card>
@@ -174,18 +171,14 @@ const Achievements = () => {
 
             <TabsContent value="app">
               <Card className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 border-none text-white mb-6">
-                <CardHeader>
-                  <CardTitle className="text-xl">
-                    {activeTab === "sobriety" ? 
-                      "Sua jornada de sobriedade" : 
-                      "Sua jornada no aplicativo"}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg sm:text-xl">
+                    Sua jornada no aplicativo
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-white/80">
-                    {activeTab === "sobriety" ? 
-                      `Você tem ${dias} dias de sobriedade` : 
-                      `Você tem ${dias} pontos de acesso ao aplicativo`}
+                  <p className="text-white/80 text-base sm:text-lg font-medium">
+                    Você tem {dias} pontos de acesso ao aplicativo
                   </p>
                 </CardContent>
               </Card>
@@ -195,23 +188,23 @@ const Achievements = () => {
 
         {/* Next Medal Progress */}
         {nextMedal && (
-          <Card className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 border-none text-white mb-8">
-            <CardHeader>
-              <CardTitle className="text-xl">Próxima Conquista</CardTitle>
+          <Card className="bg-gradient-to-r from-purple-800/40 to-indigo-800/40 border-none text-white mb-6 sm:mb-8">
+            <CardHeader className="pb-2 sm:pb-4">
+              <CardTitle className="text-lg sm:text-xl">Próxima Conquista</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="text-4xl">{nextMedal.icon}</div>
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="text-3xl sm:text-4xl">{nextMedal.icon}</div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold">{nextMedal.title}</h3>
-                  <p className="text-white/70 mb-2">{nextMedal.description}</p>
+                  <h3 className="text-base sm:text-xl font-semibold">{nextMedal.title}</h3>
+                  <p className="text-white/70 mb-2 text-sm sm:text-base">{nextMedal.description}</p>
                   <div className="w-full bg-white/10 rounded-full h-3">
                     <div 
                       className="bg-gradient-to-r from-yellow-400 to-yellow-300 h-3 rounded-full" 
                       style={{ width: `${Math.min(100, (dias / nextMedal.days) * 100)}%` }}
                     ></div>
                   </div>
-                  <p className="text-sm mt-1 text-white/80">
+                  <p className="text-xs sm:text-sm mt-1 text-white/80">
                     Faltam <span className="text-yellow-300 font-bold">{daysUntilNextMedal} dias</span> para desbloquear!
                   </p>
                 </div>
@@ -221,40 +214,40 @@ const Achievements = () => {
         )}
         
         {/* Unlocked Medals */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <Medal className="h-6 w-6 text-yellow-300" />
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+            <Medal className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-300" />
             Conquistas Desbloqueadas
           </h2>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {unlockedMedals.length > 0 ? (
               unlockedMedals.map((medal, index) => (
                 <Card key={index} className="bg-white/10 border-none text-white overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="text-4xl">{medal.icon}</div>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="text-3xl sm:text-4xl">{medal.icon}</div>
                       <div className="flex-1">
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start flex-col sm:flex-row gap-2 sm:gap-0">
                           <div>
-                            <h3 className="text-xl font-semibold">{medal.title}</h3>
-                            <p className="text-white/70">{medal.description}</p>
+                            <h3 className="text-base sm:text-xl font-semibold">{medal.title}</h3>
+                            <p className="text-white/70 text-sm sm:text-base">{medal.description}</p>
                           </div>
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="text-yellow-300 hover:text-yellow-100 hover:bg-yellow-500/20"
+                            className="text-yellow-300 hover:text-yellow-100 hover:bg-yellow-500/20 mt-1 sm:mt-0"
                             onClick={handleShare}
                           >
                             <Share2 className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="mt-2">
-                          <Badge className="bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30">
+                          <Badge className="bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 text-xs">
                             Recompensa: {medal.reward}
                           </Badge>
                         </div>
-                        <p className="text-sm text-yellow-300 mt-2">
+                        <p className="text-xs sm:text-sm text-yellow-300 mt-2">
                           Conquista aos {medal.days} dia{medal.days > 1 ? 's' : ''} 
                           {activeTab === "sobriety" ? " de sobriedade" : " de uso do app"}
                         </p>
@@ -265,7 +258,7 @@ const Achievements = () => {
               ))
             ) : (
               <Card className="bg-white/10 border-none text-white">
-                <CardContent className="p-6 text-center">
+                <CardContent className="p-4 sm:p-6 text-center">
                   <p className="text-white/70">
                     Continue sua jornada para conquistar suas primeiras medalhas!
                   </p>
@@ -277,21 +270,21 @@ const Achievements = () => {
         
         {/* Locked Medals */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <Award className="h-6 w-6 text-gray-400" />
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+            <Award className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
             Próximas Conquistas
           </h2>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {lockedMedals.slice(0, 3).map((medal, index) => (
               <Card key={index} className="bg-white/5 border-none text-white/50">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className="text-4xl opacity-50">{medal.icon}</div>
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="text-3xl sm:text-4xl opacity-50">{medal.icon}</div>
                     <div>
-                      <h3 className="text-xl font-semibold">{medal.title}</h3>
-                      <p className="text-white/50">{medal.description}</p>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <h3 className="text-base sm:text-xl font-semibold">{medal.title}</h3>
+                      <p className="text-white/50 text-sm sm:text-base">{medal.description}</p>
+                      <p className="text-xs sm:text-sm text-gray-400 mt-1">
                         Desbloqueie aos {medal.days} dia{medal.days > 1 ? 's' : ''} 
                         {activeTab === "sobriety" ? " de sobriedade" : " de uso do app"}
                       </p>
@@ -302,7 +295,7 @@ const Achievements = () => {
             ))}
             
             {lockedMedals.length > 3 && (
-              <p className="text-center text-white/50 text-sm">
+              <p className="text-center text-white/50 text-xs sm:text-sm mt-3">
                 +{lockedMedals.length - 3} mais conquistas para desbloquear na sua jornada
               </p>
             )}
@@ -311,21 +304,21 @@ const Achievements = () => {
         
         {/* Previous Earned Medals from Database */}
         {medals && medals.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <Trophy className="h-6 w-6 text-blue-300" />
+          <div className="mt-6 sm:mt-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 flex items-center gap-2">
+              <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-blue-300" />
               Medalhas do Sistema
             </h2>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {medals.map((medal) => (
                 <Card key={medal.id} className="bg-indigo-800/30 border-none text-white">
-                  <CardContent className="p-6 flex items-center gap-4">
-                    <div className="text-4xl">{medal.medal.icon}</div>
+                  <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
+                    <div className="text-3xl sm:text-4xl">{medal.medal.icon}</div>
                     <div>
-                      <h3 className="text-xl font-semibold">{medal.medal.title}</h3>
-                      <p className="text-white/70">{medal.medal.description}</p>
-                      <p className="text-sm text-blue-300 mt-1">
+                      <h3 className="text-base sm:text-xl font-semibold">{medal.medal.title}</h3>
+                      <p className="text-white/70 text-sm sm:text-base">{medal.medal.description}</p>
+                      <p className="text-xs sm:text-sm text-blue-300 mt-1">
                         Conquistada em {format(new Date(medal.earned_at), 'dd/MM/yyyy')}
                       </p>
                     </div>

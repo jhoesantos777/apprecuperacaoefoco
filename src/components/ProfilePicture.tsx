@@ -38,6 +38,11 @@ export const ProfilePicture = ({
     
     setIsUploading(true);
     try {
+      // Create profiles-pictures bucket if it doesn't exist (safety measure)
+      const { error: bucketError } = await supabase.storage
+        .createBucket('profile-pictures', { public: true })
+        .catch(() => ({ error: null })); // Ignore if bucket already exists
+      
       // Upload file to Supabase storage
       const fileExt = file.name.split('.').pop();
       const fileName = `${userId}-${Math.random()}.${fileExt}`;
@@ -81,7 +86,7 @@ export const ProfilePicture = ({
   return (
     <div className="relative inline-block">
       <Avatar className={`border-2 border-white ${sizeClasses[size]}`}>
-        <AvatarImage src={avatarUrl || ''} />
+        <AvatarImage src={avatarUrl || ''} alt={userName || 'Profile'} />
         <AvatarFallback>
           {userName?.[0]?.toUpperCase() || 'U'}
         </AvatarFallback>
