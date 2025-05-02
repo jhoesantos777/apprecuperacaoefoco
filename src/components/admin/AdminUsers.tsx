@@ -35,7 +35,9 @@ import {
   Mail,
   Shield,
   ShieldX,
-  Loader2
+  Loader2,
+  UserCheck,
+  BadgeCheck
 } from "lucide-react";
 import { toast } from "sonner";
 import { UserType } from "@/types/signup";
@@ -61,6 +63,15 @@ interface AuthUser {
   last_sign_in_at?: string;
 }
 
+// Define the shape of profile users from public.profiles table
+interface ProfileUser {
+  id: string;
+  email: string | null;
+  nome: string | null;
+  created_at: string;
+  is_active: boolean;
+}
+
 export const AdminUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,12 +80,37 @@ export const AdminUsers = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [confirmAction, setConfirmAction] = useState<"block" | "unblock">("block");
   const [totalUsers, setTotalUsers] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check if current user has admin role
+  const checkAdminStatus = async () => {
+    try {
+      const { data, error } = await supabase.rpc('check_is_admin');
+      
+      if (error) {
+        throw error;
+      }
+      
+      setIsAdmin(data);
+      
+      // If not admin, show error
+      if (!data) {
+        toast.error("Acesso restrito. Somente administradores podem acessar esta página.");
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
       
-      // First, fetch all authenticated users from auth.users via profiles table
+      // First, check if user is admin
+      await checkAdminStatus();
+      
+      // Get profiles from the public.profiles table
       const { data: profilesData, error: profilesError, count } = await supabase
         .from('profiles')
         .select('*', { count: 'exact' });
@@ -83,68 +119,75 @@ export const AdminUsers = () => {
         throw profilesError;
       }
       
-      // Get all auth users
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        console.error('Error fetching auth users:', authError);
-        // Continue with profiles data if auth fetch fails
+      // Get user roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('user_id, role');
+        
+      if (rolesError) {
+        console.error('Error fetching user roles:', rolesError);
       }
       
-      // Combine data from both sources
+      // Map roles to user IDs
+      const userRoles = new Map();
+      if (rolesData) {
+        rolesData.forEach(role => {
+          userRoles.set(role.user_id, role.role);
+        });
+      }
+      
+      // Transform profiles data to User format
       let allUsers: User[] = [];
       
       if (profilesData) {
-        allUsers = profilesData.map((profile: any) => {
-          // Find matching auth user if available
-          const authUser = authData?.users ? 
-            authData.users.find((u: AuthUser) => u.id === profile.id) : 
-            undefined;
-          
-          // Determine user role from metadata or email pattern
+        allUsers = profilesData.map((profile: ProfileUser) => {
+          // Determine user role
           let userRole: UserType = "dependent";
           
-          if (profile.email === "admin@admin" || (authUser?.email === "admin@admin")) {
+          if (profile.email === "admin@admin" || userRoles.get(profile.id) === "admin") {
             userRole = "admin";
           } else if (
-            (profile.email && profile.email.includes("family")) || 
-            (authUser?.email && authUser.email.includes("family"))
+            (profile.email && profile.email.includes("family"))
           ) {
             userRole = "family";
           }
           
-          // Get the most accurate last login time
-          let lastLogin = profile.last_login || (authUser?.last_sign_in_at) || null;
-          
           return {
             id: profile.id,
-            nome: profile.nome || authUser?.user_metadata?.nome || "Usuário sem nome",
-            email: profile.email || authUser?.email || "Email não cadastrado",
+            nome: profile.nome || "Usuário sem nome",
+            email: profile.email || "Email não cadastrado",
             tipoUsuario: userRole,
-            created_at: profile.created_at || authUser?.created_at || new Date().toISOString(),
-            last_login: lastLogin,
-            is_active: profile.is_active !== false // Default to true if not set
+            created_at: profile.created_at,
+            last_login: null, // Will be updated with auth data if available
+            is_active: profile.is_active
           };
         });
         
         setTotalUsers(count || allUsers.length);
       }
       
-      // Add special handling for admin user if not in the database yet
-      const adminExists = allUsers.some(user => 
-        user.email === "admin@admin" || user.tipoUsuario === "admin"
-      );
-      
-      if (!adminExists) {
-        allUsers.push({
-          id: "admin-special-id",
-          nome: "Administrador",
-          email: "admin@admin",
-          tipoUsuario: "admin",
-          created_at: new Date().toISOString(),
-          last_login: new Date().toISOString(),
-          is_active: true
-        });
+      // Try to enhance user data with auth information if admin has access
+      try {
+        const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
+        
+        if (!authError && authData?.users) {
+          // Enhance user data with auth info
+          allUsers = allUsers.map(user => {
+            const authUser = authData.users.find((u: AuthUser) => u.id === user.id);
+            
+            if (authUser) {
+              return {
+                ...user,
+                last_login: authUser.last_sign_in_at || null
+              };
+            }
+            
+            return user;
+          });
+        }
+      } catch (error) {
+        console.log('No admin access to auth.users, using only profiles data');
+        // Continue without auth data, it's optional
       }
       
       console.log("Fetched users:", allUsers.length);
@@ -216,14 +259,66 @@ export const AdminUsers = () => {
     }
   };
 
+  const setUserAsAdmin = async (userId: string) => {
+    try {
+      // Check if user already has admin role
+      const { data: existingRole, error: checkError } = await supabase
+        .from('user_roles')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .single();
+        
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "not found" error
+        throw checkError;
+      }
+      
+      if (existingRole) {
+        toast.info("Este usuário já é administrador");
+        return;
+      }
+      
+      // Insert admin role
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({ 
+          user_id: userId,
+          role: 'admin'
+        });
+
+      if (error) throw error;
+      
+      // Update local state
+      setUsers(users.map(user => 
+        user.id === userId ? {...user, tipoUsuario: "admin"} : user
+      ));
+      
+      toast.success("Usuário promovido a administrador com sucesso");
+      
+    } catch (error) {
+      console.error('Error setting user as admin:', error);
+      toast.error("Falha ao promover usuário a administrador");
+    }
+  };
+
   const filteredUsers = users.filter(user => 
     user.nome?.toLowerCase().includes(searchTerm.toLowerCase()) || 
     user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // If user is not an admin, show access denied message
+  if (!isAdmin && !loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] space-y-4">
+        <ShieldX className="h-12 w-12 text-red-500" />
+        <h2 className="text-2xl font-bold text-center">Acesso Restrito</h2>
+        <p className="text-center max-w-md">
+          Somente administradores podem acessar esta página. 
+          Se você deveria ter acesso, entre em contato com o administrador do sistema.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -347,6 +442,12 @@ export const AdminUsers = () => {
                           <Mail className="h-4 w-4 mr-2" />
                           Enviar reset de senha
                         </DropdownMenuItem>
+                        {user.tipoUsuario !== "admin" && (
+                          <DropdownMenuItem onClick={() => setUserAsAdmin(user.id)}>
+                            <BadgeCheck className="h-4 w-4 mr-2" />
+                            Tornar administrador
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => openBlockConfirmDialog(user)}>
                           {user.is_active ? (
                             <>

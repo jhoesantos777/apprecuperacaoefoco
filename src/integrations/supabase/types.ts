@@ -9,6 +9,24 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admins: {
+        Row: {
+          created_at: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_date: string
@@ -491,6 +509,7 @@ export type Database = {
           historico_familiar_uso: boolean | null
           id: string
           idade: number | null
+          is_active: boolean
           mood_points: number | null
           motivation_note: string | null
           nome: string | null
@@ -513,6 +532,7 @@ export type Database = {
           historico_familiar_uso?: boolean | null
           id: string
           idade?: number | null
+          is_active?: boolean
           mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
@@ -535,6 +555,7 @@ export type Database = {
           historico_familiar_uso?: boolean | null
           id?: string
           idade?: number | null
+          is_active?: boolean
           mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
@@ -735,6 +756,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_task_completions: {
         Row: {
           completed_at: string
@@ -769,6 +811,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       get_therapeutic_activities: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -782,7 +828,15 @@ export type Database = {
           active: boolean
         }[]
       }
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
       set_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      sync_users_to_profiles: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
