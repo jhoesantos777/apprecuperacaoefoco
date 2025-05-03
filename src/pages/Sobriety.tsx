@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,24 +89,32 @@ const Sobriety = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
-      <div className="max-w-md mx-auto space-y-8">
-        <SobrietyCounter daysCount={profile?.dias_sobriedade || 0} />
-        
-        <SobrietyDatePicker 
-          startDate={profile?.sobriety_start_date ? new Date(profile.sobriety_start_date) : null}
-          onDateSelect={handleDateSelect}
-        />
+    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
+          Diário da Sobriedade
+        </h1>
 
-        {medals && <SobrietyMedals medals={medals} />}
+        <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
+          <div className="space-y-8">
+            <SobrietyCounter daysCount={profile?.dias_sobriedade || 0} />
+            
+            <SobrietyDatePicker 
+              startDate={profile?.sobriety_start_date ? new Date(profile.sobriety_start_date) : null}
+              onDateSelect={handleDateSelect}
+            />
 
-        <MotivationNote 
-          isEditing={isEditingNote}
-          note={motivationNote}
-          onNoteChange={setMotivationNote}
-          onEditToggle={() => setIsEditingNote(true)}
-          onSave={handleSaveNote}
-        />
+            {medals && <SobrietyMedals medals={medals} />}
+
+            <MotivationNote 
+              isEditing={isEditingNote}
+              note={motivationNote}
+              onNoteChange={setMotivationNote}
+              onEditToggle={() => setIsEditingNote(true)}
+              onSave={handleSaveNote}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

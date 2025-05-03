@@ -1,4 +1,3 @@
-
 import { ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -26,16 +25,9 @@ const Index = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <div className="w-24 h-24 rounded-full glass border-2 border-yellow-300 flex items-center justify-center mb-4">
-            <div className="text-green-400 text-4xl">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-12 h-12">
-                <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4" />
-                <path d="M8 12L11 15L16 9" />
-              </svg>
-            </div>
+          <div className="w-40 h-40 flex items-center justify-center mb-4">
+            <img src="/logo-philos.png" alt="Philos Logo" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2 font-montserrat">RECUPERAÇÃO</h1>
-          <h2 className="text-2xl font-medium text-white/90 mb-8 font-montserrat">EM FOCO</h2>
         </motion.div>
 
         <motion.p 

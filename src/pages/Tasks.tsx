@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Check, CalendarDays, Smile, Brain, HandHeart, Dumbbell, MessageCircle, Wrench, Star } from 'lucide-react';
@@ -17,6 +17,7 @@ interface Task {
   name: string;
   description: string;
   points: number;
+  completed: boolean;
 }
 
 interface TaskCompletion {
@@ -27,39 +28,45 @@ interface TaskCompletion {
 const TaskCategories = [
   { 
     id: 'mental', 
-    title: '🧠 Cuidado Mental', 
+    title: 'Cuidado Mental',
+    emoji: '🧠',
     icon: Brain,
-    color: 'text-blue-500'
+    color: 'text-white font-bold'
   },
   { 
     id: 'spirituality', 
-    title: '🙏 Espiritualidade', 
+    title: 'Espiritualidade',
+    emoji: '🙏',
     icon: HandHeart,
-    color: 'text-purple-500'
+    color: 'text-white font-bold'
   },
   { 
     id: 'health', 
-    title: '🧘 Corpo e Saúde', 
+    title: 'Corpo e Saúde',
+    emoji: '🧘',
     icon: Dumbbell,
-    color: 'text-green-500'
+    color: 'text-white font-bold'
   },
   { 
     id: 'relationships', 
-    title: '💬 Relacionamentos e Conexão', 
+    title: 'Relacionamentos e Conexão',
+    emoji: '💬',
     icon: MessageCircle,
-    color: 'text-pink-500'
+    color: 'text-white font-bold'
   },
   { 
     id: 'recovery', 
-    title: '🛠️ Recuperação Ativa', 
+    title: 'Recuperação Ativa',
+    emoji: '🛠️',
     icon: Wrench,
-    color: 'text-orange-500'
+    color: 'text-white font-bold'
   },
   { 
     id: 'extras', 
-    title: '🧩 Extras Opcionais', 
+    title: 'Emocionais',
+    emoji: '💝',
     icon: Star,
-    color: 'text-yellow-500'
+    color: 'text-white font-bold'
   }
 ];
 
@@ -67,6 +74,7 @@ const Tasks = () => {
   const queryClient = useQueryClient();
   const [showCelebration, setShowCelebration] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['daily-tasks'],
@@ -105,54 +113,70 @@ const Tasks = () => {
 
   const completeTask = useMutation({
     mutationFn: async (taskId: string) => {
-      try {
-        const userId = (await supabase.auth.getUser()).data.user?.id;
-        if (!userId) throw new Error("User not authenticated");
-        
-        // Encontrar a tarefa para obter os pontos
-        const task = tasks?.find(t => t.id === taskId);
-        if (!task) throw new Error("Task not found");
-        
-        // Registrar na tabela de completions (manter a funcionalidade original)
         const { error } = await supabase
           .from('user_task_completions')
-          .insert({ 
-            task_id: taskId, 
-            user_id: userId
-          });
-        
-        if (error) throw error;
-        
-        // Registrar também como atividade para o termômetro
-        await registerActivity(
-          'Tarefas', 
-          task.points, 
-          `Tarefa: ${task.name}`
-        );
-        
-        // Invalidar consultas
-        await queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
-        
-        return { success: true };
-      } catch (error) {
-        console.error("Error completing task:", error);
-        throw error;
-      }
+        .insert({ task_id: taskId, user_id: (await supabase.auth.getUser()).data.user?.id, completed_at: new Date().toISOString() });
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-completions'] });
-      checkAllTasksCompleted();
+      toast.success('Tarefa completada com sucesso!');
     },
     onError: (error) => {
-      console.error("Error completing task:", error);
-      toast("Você já completou esta tarefa hoje!", {
-        description: "Volte amanhã para completá-la novamente."
-      });
+      toast.error('Erro ao completar tarefa');
+      console.error('Erro ao completar tarefa:', error);
     }
   });
 
+  const uncompleteTask = useMutation({
+    mutationFn: async (taskId: string) => {
+      const { error } = await supabase
+        .from('user_task_completions')
+        .delete()
+        .eq('task_id', taskId)
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id);
+        if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task-completions'] });
+      toast.success('Tarefa descompletada com sucesso!');
+    },
+    onError: (error) => {
+      toast.error('Erro ao descompletar tarefa');
+      console.error('Erro ao descompletar tarefa:', error);
+    }
+  });
+
+  const handleTaskComplete = (taskId: string) => {
+    completeTask.mutate(taskId);
+  };
+
+  const handleTaskUncomplete = (taskId: string) => {
+    uncompleteTask.mutate(taskId);
+  };
+
   const isTaskCompleted = (taskId: string) => {
-    return completions?.some(completion => completion.task_id === taskId);
+    return completions?.some(completion => completion.task_id === taskId) || false;
+  };
+
+  const getTaskPoints = (taskId: string) => {
+    const task = tasks?.find(t => t.id === taskId);
+    return task?.points || 0;
+  };
+
+  const getCategoryPoints = (categoryId: string) => {
+    const categoryTasks = tasks?.filter(task => task.category_id === categoryId) || [];
+    return categoryTasks.reduce((acc, task) => {
+      if (isTaskCompleted(task.id)) {
+        return acc + getTaskPoints(task.id);
+      }
+      return acc;
+    }, 0);
+  };
+
+  const getCategoryMaxPoints = (categoryId: string) => {
+    const categoryTasks = tasks?.filter(task => task.category_id === categoryId) || [];
+    return categoryTasks.reduce((acc, task) => acc + getTaskPoints(task.id), 0);
   };
 
   const checkAllTasksCompleted = () => {
@@ -175,6 +199,33 @@ const Tasks = () => {
     );
   };
 
+  const getProgressColor = (points: number, maxPoints: number) => {
+    const percentage = (points / maxPoints) * 100;
+    if (percentage >= 80) return 'text-emerald-500';
+    if (percentage >= 60) return 'text-blue-500';
+    if (percentage >= 40) return 'text-yellow-500';
+    if (percentage >= 20) return 'text-orange-500';
+    return 'text-red-500';
+  };
+
+  const getBarColor = (points: number, maxPoints: number) => {
+    const percentage = (points / maxPoints) * 100;
+    if (percentage >= 80) return 'bg-emerald-500';
+    if (percentage >= 60) return 'bg-blue-500';
+    if (percentage >= 40) return 'bg-yellow-500';
+    if (percentage >= 20) return 'bg-orange-500';
+    return 'bg-red-500';
+  };
+
+  useEffect(() => {
+    // Simula o carregamento inicial
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500); // Aumentei o tempo para dar mais destaque à animação
+
+    return () => clearTimeout(timer);
+  }, []);
+
   if (tasksLoading || completionsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-6">
@@ -188,10 +239,14 @@ const Tasks = () => {
 
   if (!tasks) return null;
 
-  const totalPoints = completions?.reduce((acc, completion) => {
-    const task = tasks.find(t => t.id === completion.task_id);
-    return acc + (task?.points || 0);
-  }, 0) || 0;
+  const totalPoints = tasks.reduce((acc, task) => {
+    if (task.completed) {
+      return acc + (task.points || 0);
+    }
+    return acc;
+  }, 0);
+
+  const maxPoints = 30; // Pontuação máxima possível
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-6">
@@ -217,29 +272,94 @@ const Tasks = () => {
             </div>
           </div>
           
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-2xl font-bold text-white">Minha Pontuação</h2>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <span className={`text-lg font-bold ${getProgressColor(totalPoints, maxPoints)}`}>
+                {totalPoints}/{maxPoints} pontos
+              </span>
+              <div className="w-full sm:w-48 h-3 bg-slate-700 rounded-full overflow-hidden relative">
+                <motion.div 
+                  className={`h-full transition-all duration-500 ${
+                    isLoading ? 'bg-emerald-500 animate-pulse' : getBarColor(totalPoints, maxPoints)
+                  }`}
+                  initial={{ width: 0 }}
+                  animate={{ 
+                    width: isLoading ? '100%' : `${(totalPoints / maxPoints) * 100}%`
+                  }}
+                  transition={{ 
+                    duration: isLoading ? 1.2 : 0.5,
+                    ease: "easeInOut"
+                  }}
+                />
+                {isLoading && (
           <motion.div 
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="bg-gradient-to-r from-blue-600/30 to-indigo-600/30 rounded-xl p-4 flex justify-between items-center border border-slate-700 shadow-lg"
-          >
-            <span className="text-lg font-medium text-slate-200">Pontos de hoje</span>
-            <span className="text-2xl font-bold bg-slate-800/80 px-4 py-1 rounded-lg text-blue-400">{totalPoints}</span>
-          </motion.div>
+                    className="absolute inset-0 bg-emerald-400 opacity-50"
+                    animate={{
+                      x: ['-100%', '100%'],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         <AnimatePresence>
           {TaskCategories.map((category, index) => {
             const categoryTasks = tasks.filter(task => {
               const categoryTitles = {
-                'mental': ['Escrevi no diário', 'Meditação guiada', 'Vídeo motivacional', 'Gratidão', 'Leitura inspiradora'],
-                'spirituality': ['Oração/Devocional', 'Leitura espiritual', 'Gratidão pela sobriedade', 'Compartilhar fé'],
-                'health': ['Autocuidado', 'Alimentação', 'Hidratação', 'Exercício', 'Sono adequado'],
-                'relationships': ['Grupo de apoio', 'Reconhecimento', 'Paciência', 'Conexão familiar'],
-                'recovery': ['Reunião', 'Análise de gatilho', 'Ficha limpa', 'Compromisso diário', 'Planejamento'],
-                'extras': ['Ajuda', 'Orgulho', 'Alegria', 'Motivação']
+                'mental': [
+                  { name: 'Escrevi no diário', points: 3 },
+                  { name: 'Meditação guiada', points: 3 },
+                  { name: 'Vídeo motivacional', points: 2 },
+                  { name: 'Gratidão', points: 2 },
+                  { name: 'Leitura inspiradora', points: 2 }
+                ],
+                'spirituality': [
+                  { name: 'Oração/Devocional', points: 3 },
+                  { name: 'Leitura espiritual', points: 2 },
+                  { name: 'Gratidão pela sobriedade', points: 2 },
+                  { name: 'Compartilhar fé', points: 1 }
+                ],
+                'health': [
+                  { name: 'Autocuidado', points: 2 },
+                  { name: 'Alimentação', points: 2 },
+                  { name: 'Hidratação', points: 1 },
+                  { name: 'Exercício', points: 2 },
+                  { name: 'Sono adequado', points: 1 }
+                ],
+                'relationships': [
+                  { name: 'Grupo de apoio', points: 2 },
+                  { name: 'Reconhecimento', points: 1 },
+                  { name: 'Paciência', points: 1 },
+                  { name: 'Conexão familiar', points: 2 }
+                ],
+                'recovery': [
+                  { name: 'Reunião', points: 3 },
+                  { name: 'Análise de gatilho', points: 2 },
+                  { name: 'Ficha limpa', points: 1 },
+                  { name: 'Compromisso diário', points: 2 },
+                  { name: 'Planejamento', points: 1 }
+                ],
+                'extras': [
+                  { name: 'Ajuda', points: 1 },
+                  { name: 'Orgulho', points: 1 },
+                  { name: 'Alegria', points: 1 },
+                  { name: 'Motivação', points: 1 }
+                ]
               };
-              return categoryTitles[category.id].includes(task.name);
+              const taskInfo = categoryTitles[category.id].find(t => t.name === task.name);
+              if (taskInfo) {
+                task.points = taskInfo.points;
+                return true;
+              }
+              return false;
             });
 
             const categoryCompleted = categoryTasks.every(task => isTaskCompleted(task.id));
@@ -254,8 +374,8 @@ const Tasks = () => {
                 <Card 
                   className={`p-4 space-y-2 backdrop-blur-sm border border-slate-700 ${
                     categoryCompleted 
-                      ? 'bg-gradient-to-r from-emerald-600/20 to-green-600/20' 
-                      : 'bg-gradient-to-r from-slate-800/80 to-slate-700/80'
+                      ? 'bg-gradient-to-r from-emerald-600/30 to-green-600/30' 
+                      : 'bg-gradient-to-r from-slate-800/90 to-slate-700/90'
                   }`}
                 >
                   <motion.div 
@@ -265,24 +385,38 @@ const Tasks = () => {
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${category.color} bg-slate-800/50`}>
-                        <category.icon className="w-6 h-6" />
-                      </div>
-                      <h2 className="font-semibold text-slate-100 text-lg">{category.title}</h2>
+                      <motion.span
+                        className="text-3xl"
+                        animate={{ 
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatType: "reverse"
+                        }}
+                      >
+                        {category.emoji}
+                      </motion.span>
+                      <motion.h2 
+                        className="font-bold text-white text-xl"
+                      >
+                        {category.title}
+                      </motion.h2>
                       {categoryCompleted && (
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ type: "spring", stiffness: 200, damping: 10 }}
                         >
-                          <Smile className="w-6 h-6 text-emerald-400" />
+                          <Smile className="w-7 h-7 text-emerald-400" />
                         </motion.div>
                       )}
                     </div>
                     <motion.div
                       animate={{ rotate: expandedCategories.includes(category.id) ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className="text-slate-400"
+                      className="text-white text-xl"
                     >
                       ▼
                     </motion.div>
@@ -295,41 +429,61 @@ const Tasks = () => {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="space-y-2 overflow-hidden"
+                        className="space-y-3 overflow-hidden"
                       >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-3xl animate-pulse">{category.emoji}</span>
+                            <h3 className="text-xl font-bold text-white">{category.title}</h3>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-white/60">
+                              {getCategoryPoints(category.id)}/{getCategoryMaxPoints(category.id)} pontos
+                            </span>
+                            <div className="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-blue-500 transition-all duration-500"
+                                style={{ width: `${(getCategoryPoints(category.id) / getCategoryMaxPoints(category.id)) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="space-y-3 overflow-hidden">
                         {categoryTasks.map((task) => {
                           const completed = isTaskCompleted(task.id);
                           return (
                             <motion.div 
                               key={task.id}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              exit={{ opacity: 0, x: 20 }}
-                              className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg hover:bg-slate-700/50 transition-colors"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className="flex items-start gap-3 p-4 bg-slate-800/70 rounded-lg hover:bg-slate-700/70 transition-colors"
                             >
+                                <div className="flex-1">
+                                  <h3 className="text-lg font-bold text-white">{task.name}</h3>
+                                  <p className="text-base text-white/80">{task.description}</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium text-white/60">
+                                    {task.points} {task.points === 1 ? 'ponto' : 'pontos'}
+                                  </span>
                               <Checkbox
                                 checked={completed}
-                                onCheckedChange={() => !completed && completeTask.mutate(task.id)}
-                                className="mt-1"
-                              />
-                              <div className="flex-1">
-                                <h3 className={`text-base font-medium ${completed ? 'line-through text-slate-500' : 'text-slate-100'}`}>
-                                  {task.name}
-                                </h3>
-                                <p className="text-sm text-slate-400">{task.description}</p>
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        handleTaskComplete(task.id);
+                                      } else {
+                                        handleTaskUncomplete(task.id);
+                                      }
+                                    }}
+                                    className="h-5 w-5 border-2 border-slate-400 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                                  />
                               </div>
-                              {completed && (
-                                <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                                >
-                                  <Check className="w-5 h-5 text-emerald-400" />
-                                </motion.div>
-                              )}
                             </motion.div>
                           );
                         })}
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +16,8 @@ const AtualizarHumor = () => {
   const [selectedMood, setSelectedMood] = useState('');
   const [motivationalMessage, setMotivationalMessage] = useState('');
   const [showMotivation, setShowMotivation] = useState(false);
+  const [note, setNote] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleMoodChange = (mood: string) => {
     setSelectedMood(mood);
@@ -47,7 +48,7 @@ const AtualizarHumor = () => {
     return moodData[mood as keyof typeof moodData] || { emocao: 'Indefinido', pontos: 0 };
   };
 
-  const handleConfirm = async () => {
+  const handleSubmit = async () => {
     if (!selectedMood) {
       toast("Aviso", {
         description: "Por favor, selecione como você está se sentindo hoje.",
@@ -70,7 +71,8 @@ const AtualizarHumor = () => {
       const { error: humorError } = await supabase.from('humores').insert({
         user_id: user.id,
         emocao: moodData.emocao,
-        pontos: moodData.pontos
+        pontos: moodData.pontos,
+        note: note
       });
 
       if (humorError) throw humorError;
@@ -92,6 +94,8 @@ const AtualizarHumor = () => {
         description: "Não foi possível registrar seu humor. Tente novamente.",
         style: { backgroundColor: 'hsl(var(--destructive))' }
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -115,110 +119,133 @@ const AtualizarHumor = () => {
   };
 
   return (
-    <motion.div 
-      initial="hidden" 
-      animate="visible" 
-      variants={containerVariants}
-      className="min-h-screen bg-gradient-to-b from-blue-700 to-indigo-900 flex flex-col p-6"
-      style={{
-        backgroundImage: 'url("/bg-pattern-blue.svg")',
-        backgroundSize: 'cover',
-        backgroundBlendMode: 'soft-light'
-      }}
-    >
-      <motion.div variants={itemVariants} className="mb-6">
-        <BackButton text="Voltar" className="text-white hover-scale" />
-      </motion.div>
-      
-      <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full">
-        <motion.div variants={itemVariants} className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Smile className="w-8 h-8 text-blue-300" />
-            <h1 className="text-3xl font-bold text-white">Atualizar Humor</h1>
-          </div>
-          <p className="text-white/80 text-sm">aperte o botão da emoção</p>
-        </motion.div>
+    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
+          Como você está se sentindo?
+        </h1>
 
-        {!showMotivation ? (
-          <div className="w-full space-y-4">
-            <motion.div variants={itemVariants}>
-              <Button 
+        <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
+          <div className="space-y-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <button
+                key="otimo"
                 onClick={() => handleMoodChange('otimo')}
-                className={`w-full py-4 text-xl font-medium bg-gradient-to-r from-teal-500 to-green-500 hover:brightness-110 hover-scale rounded-xl ${selectedMood === 'otimo' ? 'ring-2 ring-white' : ''}`}
+                className={`p-4 rounded-xl border transition-all transform hover:scale-105 ${
+                  selectedMood === 'otimo'
+                    ? 'border-[#a259ec] bg-[#4b206b]/30'
+                    : 'border-[#4b206b] hover:border-[#a259ec]'
+                }`}
               >
-                ÓTIMO 😄
-              </Button>
-            </motion.div>
-            
-            <motion.div variants={itemVariants}>
-              <Button 
+                <div className="text-4xl mb-2">😄</div>
+                <div className="text-white text-sm font-medium">ÓTIMO</div>
+              </button>
+              
+              <button
+                key="bem"
                 onClick={() => handleMoodChange('bem')}
-                className={`w-full py-4 text-xl font-medium bg-gradient-to-r from-blue-600 to-blue-500 hover:brightness-110 hover-scale rounded-xl ${selectedMood === 'bem' ? 'ring-2 ring-white' : ''}`}
+                className={`p-4 rounded-xl border transition-all transform hover:scale-105 ${
+                  selectedMood === 'bem'
+                    ? 'border-[#a259ec] bg-[#4b206b]/30'
+                    : 'border-[#4b206b] hover:border-[#a259ec]'
+                }`}
               >
-                BEM 🙂
-              </Button>
-            </motion.div>
-            
-            <motion.div variants={itemVariants}>
-              <Button 
+                <div className="text-4xl mb-2">🙂</div>
+                <div className="text-white text-sm font-medium">BEM</div>
+              </button>
+              
+              <button
+                key="desmotivado"
                 onClick={() => handleMoodChange('desmotivado')}
-                className={`w-full py-4 text-xl font-medium bg-gradient-to-r from-yellow-500 to-yellow-400 hover:brightness-110 hover-scale rounded-xl ${selectedMood === 'desmotivado' ? 'ring-2 ring-white' : ''}`}
+                className={`p-4 rounded-xl border transition-all transform hover:scale-105 ${
+                  selectedMood === 'desmotivado'
+                    ? 'border-[#a259ec] bg-[#4b206b]/30'
+                    : 'border-[#4b206b] hover:border-[#a259ec]'
+                }`}
               >
-                DESMOTIVADO 😐
-              </Button>
-            </motion.div>
-            
-            <motion.div variants={itemVariants}>
-              <Button 
+                <div className="text-4xl mb-2">😐</div>
+                <div className="text-white text-sm font-medium">DESMOTIVADO</div>
+              </button>
+              
+              <button
+                key="triste"
                 onClick={() => handleMoodChange('triste')}
-                className={`w-full py-4 text-xl font-medium bg-gradient-to-r from-amber-700 to-amber-500 hover:brightness-110 hover-scale rounded-xl ${selectedMood === 'triste' ? 'ring-2 ring-white' : ''}`}
+                className={`p-4 rounded-xl border transition-all transform hover:scale-105 ${
+                  selectedMood === 'triste'
+                    ? 'border-[#a259ec] bg-[#4b206b]/30'
+                    : 'border-[#4b206b] hover:border-[#a259ec]'
+                }`}
               >
-                TRISTE 😔
-              </Button>
-            </motion.div>
-            
-            <motion.div variants={itemVariants}>
-              <Button 
+                <div className="text-4xl mb-2">😔</div>
+                <div className="text-white text-sm font-medium">TRISTE</div>
+              </button>
+              
+              <button
+                key="irritado"
                 onClick={() => handleMoodChange('irritado')}
-                className={`w-full py-4 text-xl font-medium bg-gradient-to-r from-red-700 to-red-500 hover:brightness-110 hover-scale rounded-xl ${selectedMood === 'irritado' ? 'ring-2 ring-white' : ''}`}
+                className={`p-4 rounded-xl border transition-all transform hover:scale-105 ${
+                  selectedMood === 'irritado'
+                    ? 'border-[#a259ec] bg-[#4b206b]/30'
+                    : 'border-[#4b206b] hover:border-[#a259ec]'
+                }`}
               >
-                IRRITADO 😠
-              </Button>
-            </motion.div>
-            
-            <motion.div variants={itemVariants} className="pt-4">
-              <Button 
-                onClick={handleConfirm}
-                className="w-full py-4 mt-8 text-xl font-medium bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl shadow-lg hover-scale"
-              >
-                CONFIRMAR
-              </Button>
-            </motion.div>
+                <div className="text-4xl mb-2">😠</div>
+                <div className="text-white text-sm font-medium">IRRITADO</div>
+              </button>
+            </div>
+
+            {selectedMood && (
+              <div className="space-y-6">
+                <div className="text-white text-lg">
+                  <p className="mb-2">Por que você está se sentindo {selectedMood.toLowerCase()}?</p>
+                  <textarea
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    placeholder="Descreva seus sentimentos..."
+                    className="w-full h-32 p-4 rounded-xl bg-white/5 border border-[#4b206b] text-white placeholder-gray-400 focus:outline-none focus:border-[#a259ec] transition-all"
+                  />
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="px-8 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Registrando...' : 'Registrar Humor'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="w-full"
-          >
-            <Card className="p-6 text-center space-y-6 glass rounded-xl">
-              <Brain className="w-12 h-12 text-blue-500 mx-auto" />
-              <h2 className="text-xl font-semibold text-blue-600">Mensagem para você:</h2>
-              <p className="text-lg text-gray-700 py-6 px-4 bg-blue-50/80 rounded-lg border border-blue-100">
-                {motivationalMessage}
-              </p>
-              <Button 
-                onClick={() => navigate('/dashboard')}
-                className="w-full py-4 text-xl font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-lg hover-scale"
+        </div>
+
+        <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
+          <h2 className="text-2xl font-bold text-white mb-4">Seu Histórico de Humor</h2>
+          <div className="space-y-4">
+            {/* moodHistory.map((entry, index) => (
+              <div
+                key={index}
+                className="p-4 rounded-xl border border-[#4b206b] bg-white/5"
               >
-                Voltar ao Painel
-              </Button>
-            </Card>
-          </motion.div>
-        )}
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{entry.mood.emoji}</span>
+                  <div>
+                    <div className="text-white font-medium">{entry.mood.label}</div>
+                    <div className="text-gray-400 text-sm">
+                      {new Date(entry.timestamp).toLocaleString()}
+                    </div>
+                    {entry.note && (
+                      <div className="text-gray-300 mt-2 text-sm">{entry.note}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )) */}
+          </div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

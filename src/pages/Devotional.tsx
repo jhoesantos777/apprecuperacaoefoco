@@ -1,85 +1,113 @@
-import React from 'react';
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Book as BibleIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { BackButton } from '@/components/BackButton';
-import { DevotionalNotes } from '@/components/devotional/DevotionalNotes';
-import { supabase } from "@/integrations/supabase/client";
-import dailyVerses from '../data/dailyVerses';
+import React, { useState, useEffect } from 'react';
+import { devotionalService } from '@/services/devotionalService';
+import { toast } from '@/components/ui/sonner';
+import { Loader2 } from 'lucide-react';
 
-// Helper to get today's verse
-const getTodaysVerse = () => {
-  // Calculate day of year (0-364)
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = Number(now) - Number(start);
-  const oneDay = 1000 * 60 * 60 * 24;
-  const dayOfYear = Math.floor(diff / oneDay);
-  
-  // Get verse for today (mod 365 to ensure it wraps around)
-  return dailyVerses[dayOfYear % 365];
-};
+interface Devotional {
+  title: string;
+  verse: string;
+  reference: string;
+  message: string;
+  date: string;
+}
 
 const Devotional = () => {
-  const currentDate = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: ptBR });
-  const todaysVerse = getTodaysVerse();
+  const [devotional, setDevotional] = useState<Devotional | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: notes } = useQuery({
-    queryKey: ['devotional-notes', new Date().toISOString().split('T')[0]],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+  useEffect(() => {
+    loadDevotional();
+  }, []);
 
-      const { data } = await supabase
-        .from('devotional_notes')
-        .select('notes')
-        .eq('user_id', user.id)
-        .eq('verse_date', new Date().toISOString().split('T')[0])
-        .single();
+  const loadDevotional = async () => {
+    try {
+      const data = await devotionalService.getDailyDevotional();
+      setDevotional(data);
+    } catch (error) {
+      console.error('Erro ao carregar devocional:', error);
+      toast("Erro", {
+        description: "Não foi possível carregar o devocional do dia.",
+        style: { backgroundColor: 'hsl(var(--destructive))' }
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      return data?.notes;
-    },
-  });
+  const generateNewDevotional = async () => {
+    try {
+      setIsLoading(true);
+      const data = await devotionalService.generateNewDevotional();
+      setDevotional(data);
+      toast("Sucesso", {
+        description: "Novo devocional gerado com sucesso!",
+        style: { backgroundColor: 'hsl(var(--success))' }
+      });
+    } catch (error) {
+      console.error('Erro ao gerar devocional:', error);
+      toast("Erro", {
+        description: "Não foi possível gerar o devocional. Tente novamente.",
+        style: { backgroundColor: 'hsl(var(--destructive))' }
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#2d0036] to-black py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative">
+        <img
+          src="/philos-logo.png"
+          alt="Logo Philos"
+          className="fixed top-4 right-4 w-20 h-20 z-50"
+        />
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 text-purple-500 animate-spin mx-auto mb-4" />
+          <p className="text-white">Carregando devocional...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 p-6">
-      <BackButton />
-      
-      <div className="max-w-2xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-serif text-blue-900 font-bold">Devocional Diário</h1>
-          <p className="text-gray-700 font-medium">{currentDate}</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#2d0036] to-black py-12 px-4 sm:px-6 lg:px-8 relative">
+      <img
+        src="/philos-logo.png"
+        alt="Logo Philos"
+        className="fixed top-4 right-4 w-20 h-20 z-50"
+      />
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
+          <div className="space-y-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-white mb-4">{devotional?.title}</h1>
+              <div className="bg-purple-900/30 p-6 rounded-xl mb-4">
+                <p className="text-xl text-white italic mb-2">{devotional?.verse}</p>
+                <p className="text-red-500 font-medium">{devotional?.reference}</p>
+              </div>
+            </div>
+
+            <div className="border-t border-[#4b206b] pt-6">
+              <h2 className="text-xl font-semibold text-white mb-4">Reflexão</h2>
+              <p className="text-gray-300 leading-relaxed whitespace-pre-line">{devotional?.message}</p>
+            </div>
+
+            <div className="text-center text-sm text-gray-400">
+              <p>Este devocional é atualizado automaticamente a cada 24 horas.</p>
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                onClick={generateNewDevotional}
+                disabled={isLoading}
+                className="px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Gerando...' : 'Gerar Novo Devocional'}
+              </button>
+            </div>
+          </div>
         </div>
-
-        {/* Verse Card */}
-        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-purple-200 shadow-md">
-          <div className="flex items-start gap-4">
-            <BibleIcon className="text-purple-700 w-6 h-6 flex-shrink-0" />
-            <div className="space-y-2">
-              <p className="text-lg font-serif text-gray-900 italic font-medium">"{todaysVerse.verse}"</p>
-              <p className="text-purple-800 text-sm font-semibold">{todaysVerse.reference}</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Reflection Card */}
-        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-blue-200 shadow-md">
-          <div className="flex items-start gap-4">
-            <BibleIcon className="text-blue-700 w-6 h-6 flex-shrink-0" />
-            <div className="space-y-2">
-              <h2 className="text-xl font-serif text-blue-900 font-bold">Reflexão do Dia</h2>
-              <p className="text-gray-800 leading-relaxed font-medium">{todaysVerse.reflection}</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Notes Section */}
-        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-purple-200 shadow-md">
-          <DevotionalNotes currentNotes={notes} />
-        </Card>
       </div>
     </div>
   );

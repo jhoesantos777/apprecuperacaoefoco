@@ -1,41 +1,33 @@
-
 import React from 'react';
 import { BackButton } from '@/components/BackButton';
 import TriggerForm from '@/components/TriggerForm';
 import { Card } from '@/components/ui/card';
 import DailyMotivation from '@/components/DailyMotivation';
 import { AlertTriangle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Triggers = () => {
-  return (
-    <div 
-      className="min-h-screen p-6 flex flex-col"
-      style={{
-        backgroundImage: `url('/lovable-uploads/c1c41f57-900c-4aa4-87b3-f966e634743d.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
-    >
-      <div className="bg-white/80 rounded-lg p-4 backdrop-blur-sm self-start shadow-lg">
-        <BackButton />
-      </div>
-      
-      <div className="max-w-lg mx-auto space-y-6 mt-4 z-10">
-        <div className="bg-black/60 p-6 rounded-xl backdrop-blur-sm flex items-center gap-3">
-          <div className="bg-yellow-500 p-3 rounded-full flex items-center justify-center shadow-lg">
-            <AlertTriangle size={42} className="text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">
-            Gatilhos Diários
-          </h1>
-        </div>
-        
-        <DailyMotivation />
+  const navigate = useNavigate();
 
-        <Card className="p-6 bg-white/90 backdrop-blur-sm shadow-xl rounded-xl">
-          <h2 className="text-xl font-bold text-black mb-4 border-b pb-2">Registre seus Gatilhos</h2>
-          <TriggerForm />
-        </Card>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
+          Meus Gatilhos
+        </h1>
+        <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
+          <div className="space-y-6">
+            <div className="text-white text-lg mb-6">
+              Identifique e gerencie seus gatilhos para manter sua sobriedade.
+            </div>
+            <button
+              onClick={() => navigate('/triggers/novo')}
+              className="w-full px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105"
+            >
+              Adicionar Novo Gatilho
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

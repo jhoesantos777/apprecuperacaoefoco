@@ -119,20 +119,11 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
-      <Card className="bg-gradient-to-br from-blue-900/90 to-purple-900/90 text-white shadow-lg border border-white/10">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Thermometer className="w-6 h-6 text-blue-300" />
-            <span className="font-bold">Termômetro da Recuperação</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-blue-900/80 to-purple-900/80 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-xl">
-              <div className="space-y-6">
-                <div className="flex items-center justify-between bg-white/10 p-4 rounded-lg border border-white/10">
+          <div className="flex items-center justify-between">
                   <span className="text-lg font-medium text-white">Avaliação:</span>
-                  <span className={`text-3xl font-bold ${status.textColor} bg-clip-text text-transparent`}>
+            <span className={`text-3xl font-bold ${status.textColor}`}>
                     {score}/100
                   </span>
                 </div>
@@ -142,7 +133,7 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
                     style={{ width: `${score}%` }}
                   />
                 </div>
-                <div className="text-base text-white/90 bg-white/5 p-4 rounded-lg border border-white/10">
+          <div className="text-base text-white/90">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">{status.emoji}</span>
                     <span className="font-semibold text-white">{status.level}</span>
@@ -151,26 +142,23 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
                 </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {(score < 31 || hasMultipleTriggers) && (
-        <Alert variant="destructive" className="mt-4 border border-red-300/50 bg-gradient-to-r from-red-900/40 to-rose-900/40 backdrop-blur-sm">
-          <AlertCircle className="h-4 w-4" />
-          <div className="ml-2">
-            <p className="font-medium text-white">Momento de Vulnerabilidade Identificado</p>
-            <p className="text-gray-200">O processo terapêutico inclui momentos desafiadores. É recomendável intensificar seu suporte neste momento.</p>
-            <Button 
-              className="w-full mt-2 bg-gradient-to-r from-red-600/90 to-rose-600/90 hover:from-red-700 hover:to-rose-700 transition-all shadow-md border border-red-400/30"
+        <div className="bg-gradient-to-br from-red-900/40 to-rose-900/40 border border-red-300/50 rounded-2xl p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-red-400 mt-1" />
+            <div>
+              <p className="font-medium text-white mb-2">Momento de Vulnerabilidade Identificado</p>
+              <p className="text-gray-200 mb-4">O processo terapêutico inclui momentos desafiadores. É recomendável intensificar seu suporte neste momento.</p>
+              <button 
+                className="w-full px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105"
               onClick={() => window.location.href = '/support'}
             >
-              <span className="text-sm sm:text-base whitespace-normal text-center px-2">
                 Um dia de cada vez
-              </span>
-            </Button>
+              </button>
+            </div>
           </div>
-        </Alert>
+        </div>
       )}
     </motion.div>
   );
