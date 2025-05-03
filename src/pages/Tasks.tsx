@@ -18,6 +18,7 @@ interface Task {
   description: string;
   points: number;
   completed: boolean;
+  category_id: string;
 }
 
 interface TaskCompletion {
@@ -236,10 +237,9 @@ const Tasks = () => {
   };
 
   useEffect(() => {
-    // Simula o carregamento inicial
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1500); // Aumentei o tempo para dar mais destaque à animação
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -269,8 +269,7 @@ const Tasks = () => {
     return acc;
   }, 0);
 
-  const maxPoints = 30; // Pontuação máxima possível
-
+  const maxPoints = 30;
   const totalTasks = tasks.length;
   const completedTasks = completions?.length || 0;
   const completionPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
@@ -320,7 +319,7 @@ const Tasks = () => {
                   }}
                 />
                 {isLoading && (
-          <motion.div 
+                  <motion.div 
                     className="absolute inset-0 bg-emerald-400 opacity-50"
                     animate={{
                       x: ['-100%', '100%'],
@@ -336,242 +335,9 @@ const Tasks = () => {
             </div>
           </div>
         </motion.div>
-
-        <AnimatePresence>
-          {TaskCategories.map((category, index) => {
-            const categoryTasks = tasks.filter(task => {
-              const categoryTitles = {
-                'mental': [
-                  { name: 'Escrevi no diário', points: 3 },
-                  { name: 'Meditação guiada', points: 3 },
-                  { name: 'Vídeo motivacional', points: 2 },
-                  { name: 'Gratidão', points: 2 },
-                  { name: 'Leitura inspiradora', points: 2 }
-                ],
-                'spirituality': [
-                  { name: 'Oração/Devocional', points: 3 },
-                  { name: 'Leitura espiritual', points: 2 },
-                  { name: 'Gratidão pela sobriedade', points: 2 },
-                  { name: 'Compartilhar fé', points: 1 }
-                ],
-                'health': [
-                  { name: 'Autocuidado', points: 2 },
-                  { name: 'Alimentação', points: 2 },
-                  { name: 'Hidratação', points: 1 },
-                  { name: 'Exercício', points: 2 },
-                  { name: 'Sono adequado', points: 1 }
-                ],
-                'relationships': [
-                  { name: 'Grupo de apoio', points: 2 },
-                  { name: 'Reconhecimento', points: 1 },
-                  { name: 'Paciência', points: 1 },
-                  { name: 'Conexão familiar', points: 2 }
-                ],
-                'recovery': [
-                  { name: 'Reunião', points: 3 },
-                  { name: 'Análise de gatilho', points: 2 },
-                  { name: 'Ficha limpa', points: 1 },
-                  { name: 'Compromisso diário', points: 2 },
-                  { name: 'Planejamento', points: 1 }
-                ],
-                'extras': [
-                  { name: 'Ajuda', points: 1 },
-                  { name: 'Orgulho', points: 1 },
-                  { name: 'Alegria', points: 1 },
-                  { name: 'Motivação', points: 1 }
-                ]
-              };
-              const taskInfo = categoryTitles[category.id].find(t => t.name === task.name);
-              if (taskInfo) {
-                task.points = taskInfo.points;
-                return true;
-              }
-              return false;
-            });
-
-            const categoryCompleted = categoryTasks.every(task => isTaskCompleted(task.id));
-            const categoryProgress = categoryTasks.length > 0
-              ? (categoryTasks.filter(task => isTaskCompleted(task.id)).length / categoryTasks.length) * 100
-              : 0;
-
-            return (
-              <motion.div
-                key={category.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <Card 
-                  className={`p-4 space-y-3 backdrop-blur-md border ${category.borderColor} shadow-lg ${
-                    categoryCompleted 
-                      ? 'bg-gradient-to-r from-emerald-600/30 to-green-600/30' 
-                      : 'bg-gradient-to-r from-slate-800/90 to-slate-700/90'
-                  }`}
-                >
-                  <motion.div 
-                    className="flex justify-between items-center cursor-pointer"
-                    onClick={() => toggleCategoryExpansion(category.id)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <motion.span
-                        className="text-3xl"
-                        animate={{ 
-                          scale: [1, 1.1, 1],
-                        }}
-                        transition={{ 
-                          duration: 2,
-                          repeat: Infinity,
-                          repeatType: "reverse"
-                        }}
-                      >
-                        {category.emoji}
-                      </motion.span>
-                      <motion.h2 
-                        className="font-bold text-white text-xl"
-                      >
-                        {category.title}
-                      </motion.h2>
-                      {categoryCompleted && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                        >
-                          <Smile className="w-7 h-7 text-emerald-400" />
-                        </motion.div>
-                      )}
-                    </div>
-                    <motion.div
-                      animate={{ rotate: expandedCategories.includes(category.id) ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="text-white text-xl"
-                    >
-                      <ArrowDown className="w-4 h-4 text-white/90" />
-                    </motion.div>
-                  </motion.div>
-                  
-                  {/* Progress bar */}
-                  <div className="w-full bg-white/20 rounded-full h-1.5">
-                    <div 
-                      className={`h-1.5 rounded-full transition-all duration-500 ease-out ${
-                        categoryCompleted ? 'bg-emerald-500' : 'bg-blue-500'
-                      }`}
-                      style={{ width: `${categoryProgress}%` }}
-                    ></div>
-                  </div>
-
-                  <AnimatePresence>
-                    {expandedCategories.includes(category.id) && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-3 overflow-hidden"
-                      >
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-3xl animate-pulse">{category.emoji}</span>
-                            <h3 className="text-xl font-bold text-white">{category.title}</h3>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-white/60">
-                              {getCategoryPoints(category.id)}/{getCategoryMaxPoints(category.id)} pontos
-                            </span>
-                            <div className="w-24 h-2 bg-slate-700 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-blue-500 transition-all duration-500"
-                                style={{ width: `${(getCategoryPoints(category.id) / getCategoryMaxPoints(category.id)) * 100}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="space-y-3 overflow-hidden">
-                        {categoryTasks.map((task) => {
-                          const completed = isTaskCompleted(task.id);
-                          return (
-                            <motion.div 
-                              key={task.id}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -20 }}
-                              transition={{ duration: 0.3 }}
-                              className="flex items-start gap-3 p-4 bg-slate-800/70 rounded-lg hover:bg-slate-700/70 transition-colors"
-                            >
-                                <div className="flex-1">
-                                  <h3 className="text-lg font-bold text-white">{task.name}</h3>
-                                  <p className="text-base text-white/80">{task.description}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-sm font-medium text-white/60">
-                                    {task.points} {task.points === 1 ? 'ponto' : 'pontos'}
-                                  </span>
-                              <Checkbox
-                                checked={completed}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    handleTaskComplete(task.id);
-                                  } else {
-                                    handleTaskUncomplete(task.id);
-                                  }
-                                }}
-                                className="h-5 w-5 border-2 border-slate-400 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
-                              />
-                            </div>
-                          );
-                        })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-
-        {showCelebration && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm z-50"
-            onClick={() => setShowCelebration(false)}
-          >
-            <motion.div 
-              className="bg-gradient-to-br from-indigo-800/90 to-purple-900/90 rounded-2xl p-8 text-center space-y-6 max-w-sm mx-4 text-white shadow-2xl border border-white/20"
-              initial={{ y: 50 }}
-              animate={{ y: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-            >
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 10, -10, 0]
-                }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 1 }}
-                className="bg-gradient-to-br from-emerald-400/30 to-emerald-600/30 p-4 rounded-full w-24 h-24 mx-auto border border-emerald-400/30"
-              >
-                <Smile className="w-16 h-16 mx-auto text-emerald-300" />
-              </motion.div>
-              <h2 className="text-3xl font-bold text-white font-montserrat">Parabéns! 🎉</h2>
-              <p className="text-lg text-white/90">
-                Você completou todas as tarefas de hoje! Continue assim, você está fazendo um ótimo trabalho no seu processo de recuperação.
-              </p>
-              <Button 
-                onClick={() => setShowCelebration(false)}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:opacity-90 border-none px-8 py-6 text-lg font-semibold rounded-xl w-full"
-              >
-                Continuar
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
       </motion.div>
     </div>
   );
 };
 
-export default Tasks;
+export default Tasks; 

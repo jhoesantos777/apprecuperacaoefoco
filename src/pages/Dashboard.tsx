@@ -181,7 +181,7 @@ const Dashboard = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <h1 className="text-5xl md:text-5xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 uppercase">
-            Recuperação em Foco
+            φίλος
           </h1>
         </motion.div>
 
