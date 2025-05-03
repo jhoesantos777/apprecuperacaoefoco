@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -8,8 +7,146 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { format, startOfDay, subDays } from 'date-fns';
 import { toast } from '@/components/ui/sonner';
-import { Thermometer, AlertCircle, Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Thermometer, AlertCircle, Heart, BookOpen, Users, Calendar, HelpCircle, Cross } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const atividadesRecuperacao = [
+  {
+    categoria: "Diário",
+    atividades: [
+      { titulo: "Escrevi no diário", descricao: "Registrei meus pensamentos no diário de recuperação" },
+      { titulo: "Meditação guiada", descricao: "Fiz uma sessão de meditação guiada" },
+      { titulo: "Vídeo motivacional", descricao: "Assisti a um vídeo motivacional" },
+      { titulo: "Gratidão", descricao: "Pratiquei a gratidão listando 3 coisas boas do dia" },
+      { titulo: "Leitura inspiradora", descricao: "Li um trecho de um livro inspirador" }
+    ]
+  },
+  {
+    categoria: "Oração/Devocional",
+    atividades: [
+      { titulo: "Oração/Devocional", descricao: "Fiz minha oração ou devocional diário" },
+      { titulo: "Leitura espiritual", descricao: "Li um trecho da Bíblia ou texto espiritual" },
+      { titulo: "Gratidão pela sobriedade", descricao: "Agradeci a Deus por mais um dia sóbrio" },
+      { titulo: "Compartilhar fé", descricao: "Compartilhei uma palavra de fé com alguém" }
+    ]
+  },
+  {
+    categoria: "Autocuidado",
+    atividades: [
+      { titulo: "Autocuidado", descricao: "Tomei banho e cuidei da minha aparência" },
+      { titulo: "Alimentação", descricao: "Me alimentei bem nas principais refeições" },
+      { titulo: "Hidratação", descricao: "Bebi pelo menos 2L de água" },
+      { titulo: "Exercício", descricao: "Fiz uma caminhada ou alongamento" },
+      { titulo: "Sono adequado", descricao: "Dormi pelo menos 7 horas" }
+    ]
+  },
+  {
+    categoria: "Grupo de apoio",
+    atividades: [
+      { titulo: "Grupo de apoio", descricao: "Conversei com alguém do meu grupo de apoio" },
+      { titulo: "Reconhecimento", descricao: "Agradeci ou pedi desculpas a alguém" },
+      { titulo: "Paciência", descricao: "Evitei discussões e pratiquei a paciência" },
+      { titulo: "Conexão familiar", descricao: "Abracei ou falei com alguém da família" }
+    ]
+  },
+  {
+    categoria: "Reunião",
+    atividades: [
+      { titulo: "Reunião", descricao: "Participei de um grupo de apoio ou reunião" },
+      { titulo: "Análise de gatilho", descricao: "Escrevi sobre um gatilho e como lidei com ele" },
+      { titulo: "Ficha limpa", descricao: "Marquei minha 'ficha limpa' de hoje" },
+      { titulo: "Compromisso diário", descricao: "Lembrei que 'hoje eu não vou usar'" },
+      { titulo: "Planejamento", descricao: "Planejei meu dia de amanhã" }
+    ]
+  },
+  {
+    categoria: "Ajuda",
+    atividades: [
+      { titulo: "Ajuda", descricao: "Ajudei alguém hoje" },
+      { titulo: "Orgulho", descricao: "Fiz algo que me deu orgulho" },
+      { titulo: "Alegria", descricao: "Ri de algo hoje" },
+      { titulo: "Motivação", descricao: "Relembrei por que estou lutando" }
+    ]
+  }
+];
+
+const AtividadesRecuperacao = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const categoryIcons = {
+    "Diário": BookOpen,
+    "Oração/Devocional": Cross,
+    "Autocuidado": Heart,
+    "Grupo de apoio": Users,
+    "Reunião": Calendar,
+    "Ajuda": HelpCircle
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 p-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-6xl mx-auto"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {atividadesRecuperacao.map((categoria, index) => {
+            const Icon = categoryIcons[categoria.categoria as keyof typeof categoryIcons];
+            return (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedCategory(selectedCategory === categoria.categoria ? null : categoria.categoria)}
+                className="cursor-pointer"
+              >
+                <Card className="p-6 bg-white/10 backdrop-blur-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-full bg-white/20">
+                      <Icon className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">{categoria.categoria}</h3>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <AnimatePresence>
+          {selectedCategory && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"
+            >
+              <h2 className="text-3xl font-bold text-white mb-6">
+                {selectedCategory}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {atividadesRecuperacao
+                  .find(cat => cat.categoria === selectedCategory)
+                  ?.atividades.map((atividade, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="bg-white/5 p-4 rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-300"
+                    >
+                      <h4 className="text-xl font-bold text-white mb-2">{atividade.titulo}</h4>
+                      <p className="text-white/90">{atividade.descricao}</p>
+                    </motion.div>
+                  ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </div>
+  );
+};
 
 const TermometroDaRecuperacao = () => {
   const queryClient = useQueryClient();
@@ -171,17 +308,27 @@ const TermometroDaRecuperacao = () => {
   };
 
   return (
-    <Card className="max-w-md mx-auto p-6 space-y-6 bg-gradient-to-br from-indigo-900/60 to-purple-900/60 backdrop-blur-sm border border-white/10">
-      <div className="text-center">
-        <h2 className="text-xl font-semibold text-white">🧘 A SOBRIEDADE É UMA CONQUISTA DIÁRIA</h2>
-        <p className="text-gray-200">Seu Termômetro de Recuperação</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="max-w-4xl mx-auto p-6"
+      >
+        <Card className="p-8 bg-white/10 backdrop-blur-lg border border-white/20">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-center mb-8"
+          >
+            <h2 className="text-3xl font-bold text-white mb-2">🧘 A SOBRIEDADE É UMA CONQUISTA DIÁRIA</h2>
+            <p className="text-xl text-white/90">Seu Termômetro de Recuperação</p>
+          </motion.div>
 
       <motion.div 
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-52 h-52 mx-auto"
+            transition={{ delay: 0.2 }}
+            className="w-64 h-64 mx-auto mb-8"
       >
         <CircularProgressbar
           value={pontuacao}
@@ -190,76 +337,80 @@ const TermometroDaRecuperacao = () => {
           styles={buildStyles({
             rotation: 1 / 2 + 1 / 8,
             strokeLinecap: 'round',
-            textSize: '16px',
+                textSize: '24px',
             pathTransitionDuration: 1,
             pathColor: getCor(pontuacao),
             textColor: '#ffffff',
             trailColor: 'rgba(255, 255, 255, 0.2)',
-            backgroundColor: '#3e98c7',
           })}
         />
       </motion.div>
 
-      <div className="text-center p-4 rounded-xl bg-white/10 backdrop-blur-sm">
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-center p-6 rounded-xl bg-white/10 backdrop-blur-sm mb-8"
+          >
         {pontuacao < 40 && (
-          <div className="flex items-center justify-center gap-2 text-red-300">
-            <AlertCircle className="h-5 w-5" />
-            <p>Atenção especial necessária</p>
+              <div className="flex items-center justify-center gap-3 text-white">
+                <AlertCircle className="h-8 w-8" />
+                <p className="text-2xl font-bold">Atenção especial necessária</p>
           </div>
         )}
         {pontuacao >= 40 && pontuacao < 70 && (
-          <div className="flex items-center justify-center gap-2 text-yellow-200">
-            <Thermometer className="h-5 w-5" />
-            <p>Progresso em desenvolvimento</p>
+              <div className="flex items-center justify-center gap-3 text-white">
+                <Thermometer className="h-8 w-8" />
+                <p className="text-2xl font-bold">Progresso em desenvolvimento</p>
           </div>
         )}
         {pontuacao >= 70 && (
-          <div className="flex items-center justify-center gap-2 text-green-300">
-            <Heart className="h-5 w-5" />
-            <p>Excelente progresso na jornada</p>
+              <div className="flex items-center justify-center gap-3 text-white">
+                <Heart className="h-8 w-8" />
+                <p className="text-2xl font-bold">Excelente progresso na jornada</p>
           </div>
         )}
-        <p className="mt-3 text-white italic">{getTerapeuticMessage(pontuacao)}</p>
-      </div>
+            <p className="mt-4 text-xl text-white font-medium italic">{getTerapeuticMessage(pontuacao)}</p>
+          </motion.div>
 
-      <div className="space-y-3 bg-white/5 backdrop-blur-sm rounded-xl p-4">
-        <h3 className="text-lg font-medium text-white text-center mb-3">Detalhes da sua Pontuação</h3>
-        <div className="flex justify-between items-center text-white">
-          <p>✅ Tarefas Diárias:</p>
-          <p className="font-semibold">+{detalhes.tarefasDiarias} pts</p>
-        </div>
-        <div className="flex justify-between items-center text-white">
-          <p>😊 Humor do Dia:</p>
-          <p className="font-semibold">+{detalhes.humorDoDia} pts</p>
-        </div>
-        <div className="flex justify-between items-center text-white">
-          <p>🙏 Devocional:</p>
-          <p className="font-semibold">+{detalhes.fezDevocional} pts</p>
-        </div>
-        <div className="flex justify-between items-center text-white">
-          <p>🚨 Hoje Eu Não Vou Usar:</p>
-          <p className="font-semibold">+{detalhes.hojeNaoVouUsar} pts</p>
-        </div>
-        <div className="flex justify-between items-center text-white">
-          <p>📝 Reflexão do Dia:</p>
-          <p className="font-semibold">+{detalhes.fezReflexao} pts</p>
-        </div>
-        <div className="flex justify-between items-center text-white">
-          <p>🔻 Gatilhos:</p>
-          <p className="font-semibold">-{detalhes.gatilhosSelecionados} pts</p>
-        </div>
-      </div>
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/5 backdrop-blur-sm rounded-xl p-6 mb-8"
+          >
+            <h3 className="text-2xl font-bold text-white text-center md:col-span-2 mb-4">Detalhes da sua Pontuação</h3>
+            {Object.entries(detalhes).map(([key, value], index) => (
+              <motion.div
+                key={key}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.8 + index * 0.1 }}
+                className="flex justify-between items-center text-white p-3 rounded-lg bg-white/5"
+              >
+                <p className="text-lg font-bold">{key}:</p>
+                <p className="text-lg font-bold">{value} pts</p>
+              </motion.div>
+            ))}
+          </motion.div>
 
-      <div className="flex justify-between">
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="flex justify-center"
+          >
         <Button
           onClick={resetarTermometro}
           variant="destructive"
-          className="w-full text-white bg-red-500/70 hover:bg-red-600/70"
+              className="w-full max-w-md text-lg font-bold text-white bg-red-500/70 hover:bg-red-600/70 transition-all duration-300"
         >
           🔄 Resetar Termômetro
         </Button>
+          </motion.div>
+        </Card>
+      </motion.div>
       </div>
-    </Card>
   );
 };
 

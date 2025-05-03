@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -232,7 +231,7 @@ const Recovery = () => {
               disabled={hasConfirmedSobriety}
             >
               {hasConfirmedSobriety 
-                ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
+                ? "SOBRIEDADE CONFIRMADA HOJE ✓" 
                 : "HOJE EU NAO VOU USAR!"}
             </Button>
 

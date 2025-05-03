@@ -1,13 +1,7 @@
-
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
 
 type SobrietyDatePickerProps = {
   startDate?: Date | null;
@@ -15,36 +9,33 @@ type SobrietyDatePickerProps = {
 };
 
 export const SobrietyDatePicker = ({ startDate, onDateSelect }: SobrietyDatePickerProps) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = e.target.value ? new Date(e.target.value) : undefined;
+    onDateSelect(date);
+  };
+
   return (
     <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl p-6 text-white backdrop-blur-sm border border-white/10 shadow-lg">
       <h2 className="text-xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
-        Data de Início
+        Data de Início da Sobriedade
       </h2>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button 
-            variant="outline" 
-            className="w-full justify-between bg-white/5 border-white/10 hover:bg-white/10 hover:text-white text-white"
-          >
-            {startDate ? (
-              format(new Date(startDate), "dd/MM/yyyy")
-            ) : (
-              "Escolher data"
-            )}
-            <CalendarDays className="ml-2 h-4 w-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={startDate || undefined}
-            onSelect={onDateSelect}
-            disabled={(date) => date > new Date()}
-            initialFocus
-            className="pointer-events-auto"
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-5 h-5 text-purple-300" />
+          <Input
+            type="date"
+            value={startDate ? format(startDate, "yyyy-MM-dd") : ""}
+            onChange={handleDateChange}
+            max={format(new Date(), "yyyy-MM-dd")}
+            className="bg-white/5 border-white/10 text-white placeholder:text-white/50"
           />
-        </PopoverContent>
-      </Popover>
+        </div>
+        {startDate && (
+          <p className="text-sm text-white/80">
+            Data selecionada: {format(startDate, "dd/MM/yyyy")}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

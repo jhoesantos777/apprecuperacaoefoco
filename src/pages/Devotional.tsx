@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -17,7 +16,7 @@ const getTodaysVerse = () => {
   const start = new Date(now.getFullYear(), 0, 0);
   const diff = Number(now) - Number(start);
   const oneDay = 1000 * 60 * 60 * 24;
-  const dayOfYear = Math.floor(diff / oneDay) - 1;
+  const dayOfYear = Math.floor(diff / oneDay);
   
   // Get verse for today (mod 365 to ensure it wraps around)
   return dailyVerses[dayOfYear % 365];
@@ -51,34 +50,34 @@ const Devotional = () => {
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-serif text-blue-900">Devocional Diário</h1>
-          <p className="text-gray-600">{currentDate}</p>
+          <h1 className="text-3xl font-serif text-blue-900 font-bold">Devocional Diário</h1>
+          <p className="text-gray-700 font-medium">{currentDate}</p>
         </div>
 
         {/* Verse Card */}
-        <Card className="p-6 bg-white/80 backdrop-blur-sm border border-purple-100 shadow-sm">
+        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-purple-200 shadow-md">
           <div className="flex items-start gap-4">
-            <BibleIcon className="text-purple-600 w-6 h-6 flex-shrink-0" />
+            <BibleIcon className="text-purple-700 w-6 h-6 flex-shrink-0" />
             <div className="space-y-2">
-              <p className="text-lg font-serif text-gray-800 italic">"{todaysVerse.verse}"</p>
-              <p className="text-gray-600 text-sm">{todaysVerse.reference}</p>
+              <p className="text-lg font-serif text-gray-900 italic font-medium">"{todaysVerse.verse}"</p>
+              <p className="text-purple-800 text-sm font-semibold">{todaysVerse.reference}</p>
             </div>
           </div>
         </Card>
 
         {/* Reflection Card */}
-        <Card className="p-6 bg-white/80 backdrop-blur-sm border border-blue-100 shadow-sm">
+        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-blue-200 shadow-md">
           <div className="flex items-start gap-4">
-            <BibleIcon className="text-blue-600 w-6 h-6 flex-shrink-0" />
+            <BibleIcon className="text-blue-700 w-6 h-6 flex-shrink-0" />
             <div className="space-y-2">
-              <h2 className="text-xl font-serif text-blue-900">Reflexão do Dia</h2>
-              <p className="text-gray-700 leading-relaxed">{todaysVerse.reflection}</p>
+              <h2 className="text-xl font-serif text-blue-900 font-bold">Reflexão do Dia</h2>
+              <p className="text-gray-800 leading-relaxed font-medium">{todaysVerse.reflection}</p>
             </div>
           </div>
         </Card>
 
         {/* Notes Section */}
-        <Card className="p-6 bg-white/80 backdrop-blur-sm border border-purple-100 shadow-sm">
+        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-purple-200 shadow-md">
           <DevotionalNotes currentNotes={notes} />
         </Card>
       </div>

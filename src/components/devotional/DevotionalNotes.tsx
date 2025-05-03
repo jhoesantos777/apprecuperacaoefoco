@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -139,21 +138,21 @@ export const DevotionalNotes = ({ currentNotes }: DevotionalNotesProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <Book className="w-5 h-5 text-purple-500" />
-        <h3 className="text-lg font-medium">Minhas Anotações</h3>
+        <Book className="w-5 h-5 text-purple-700" />
+        <h3 className="text-lg font-medium text-gray-900">Minhas Anotações</h3>
       </div>
       
       <Textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Escreva suas reflexões sobre o versículo..."
-        className="min-h-[150px]"
+        className="min-h-[150px] text-gray-900 placeholder-gray-500"
       />
       
       <div className="flex flex-col sm:flex-row gap-4">
         <Button 
           onClick={handleSave}
-          className="w-full bg-purple-600 hover:bg-purple-700"
+          className="w-full bg-purple-700 hover:bg-purple-800 text-white font-medium"
           disabled={saveMutation.isPending}
         >
           Finalizar Devocional
@@ -161,7 +160,7 @@ export const DevotionalNotes = ({ currentNotes }: DevotionalNotesProps) => {
         
         <Button
           onClick={() => setShowHistory(true)}
-          className="w-full bg-blue-600 hover:bg-blue-700"
+          className="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium"
         >
           Ver Minhas Anotações
         </Button>

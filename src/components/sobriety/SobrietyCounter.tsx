@@ -1,5 +1,5 @@
-
 import { CalendarDays } from "lucide-react";
+import { motion } from "framer-motion";
 
 type SobrietyCounterProps = {
   daysCount: number;
@@ -15,17 +15,77 @@ export const SobrietyCounter = ({ daysCount }: SobrietyCounterProps) => {
   const randomPhrase = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
 
   return (
-    <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl p-8 text-center text-white backdrop-blur-sm border border-white/10 shadow-lg">
-      <div className="flex items-center justify-center mb-6">
-        <div className="bg-purple-500/20 p-4 rounded-full">
-          <CalendarDays className="w-10 h-10 text-purple-300" />
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl p-8 text-center text-white backdrop-blur-sm border border-white/10 shadow-lg"
+    >
+      <motion.div 
+        className="flex items-center justify-center mb-6"
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <div className="bg-gradient-to-br from-purple-500/30 to-blue-500/30 p-6 rounded-full shadow-lg border border-white/20">
+          <CalendarDays className="w-12 h-12 text-purple-300" />
         </div>
-      </div>
-      <h1 className="text-6xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
-        {daysCount}
-      </h1>
-      <p className="text-2xl mb-6 font-medium text-white/90">Minha Sobriedade</p>
-      <p className="text-white/80 italic bg-white/5 p-4 rounded-lg">{randomPhrase}</p>
-    </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+        className="relative"
+      >
+        <h1 className="text-7xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300 drop-shadow-lg">
+          {daysCount}
+        </h1>
+        <motion.div
+          className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-purple-300 to-blue-300 rounded-full"
+          initial={{ width: 0 }}
+          animate={{ width: "6rem" }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        />
+      </motion.div>
+
+      <motion.p 
+        className="text-2xl mb-6 font-medium text-white/90 mt-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        Minha Sobriedade
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+        className="bg-white/5 p-4 rounded-lg border border-white/10"
+      >
+        <p className="text-white/80 italic text-lg">{randomPhrase}</p>
+      </motion.div>
+
+      <motion.div
+        className="mt-6 grid grid-cols-3 gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7, duration: 0.5 }}
+      >
+        <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+          <p className="text-sm text-white/60">Dias</p>
+          <p className="text-xl font-bold text-white">{daysCount}</p>
+        </div>
+        <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+          <p className="text-sm text-white/60">Meses</p>
+          <p className="text-xl font-bold text-white">{Math.floor(daysCount / 30)}</p>
+        </div>
+        <div className="bg-white/5 p-3 rounded-lg border border-white/10">
+          <p className="text-sm text-white/60">Anos</p>
+          <p className="text-xl font-bold text-white">{(daysCount / 365).toFixed(1)}</p>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };

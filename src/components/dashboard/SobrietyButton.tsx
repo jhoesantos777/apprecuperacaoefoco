@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -67,7 +66,7 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
         disabled={hasConfirmedSobriety}
       >
         {hasConfirmedSobriety 
-          ? "A SOBRIEDADE É UMA CONQUISTA DIÁRIA ✨" 
+          ? "SOBRIEDADE CONFIRMADA HOJE ✓" 
           : "HOJE EU NAO VOU USAR!"}
       </Button>
     </div>
