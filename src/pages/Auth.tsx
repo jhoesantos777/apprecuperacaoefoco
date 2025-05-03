@@ -63,7 +63,7 @@ const Auth = () => {
         return;
       } else {
         // Special case for admin login
-        if (formData.email.toLowerCase() === "admin@admin" && formData.password === "45452775") {
+        if (formData.email.toLowerCase() === "admin@example.com" && formData.password === "Admin123!") {
           console.log("Admin login detected");
           localStorage.setItem("userRole", "admin");
           toast.success("Login administrador realizado com sucesso!");
