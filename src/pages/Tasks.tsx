@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -31,48 +30,54 @@ const TaskCategories = [
     title: '🧠 Cuidado Mental', 
     icon: Brain,
     color: 'text-blue-500',
-    bgColor: 'from-blue-600/20 to-indigo-600/20',
-    borderColor: 'border-blue-400/20'
+    bgColor: 'from-blue-600/10 to-indigo-600/10',
+    borderColor: 'border-blue-400/20',
+    cardBg: 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20'
   },
   { 
     id: 'spirituality', 
     title: '🙏 Espiritualidade', 
     icon: HandHeart,
     color: 'text-purple-500',
-    bgColor: 'from-purple-600/20 to-indigo-600/20',
-    borderColor: 'border-purple-400/20'
+    bgColor: 'from-purple-600/10 to-indigo-600/10',
+    borderColor: 'border-purple-400/20',
+    cardBg: 'bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20'
   },
   { 
     id: 'health', 
     title: '🧘 Corpo e Saúde', 
     icon: Dumbbell,
     color: 'text-green-500',
-    bgColor: 'from-green-600/20 to-teal-600/20',
-    borderColor: 'border-green-400/20'
+    bgColor: 'from-green-600/10 to-teal-600/10',
+    borderColor: 'border-green-400/20',
+    cardBg: 'bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20'
   },
   { 
     id: 'relationships', 
     title: '💬 Relacionamentos e Conexão', 
     icon: MessageCircle,
     color: 'text-pink-500',
-    bgColor: 'from-pink-600/20 to-rose-600/20',
-    borderColor: 'border-pink-400/20'
+    bgColor: 'from-pink-600/10 to-rose-600/10',
+    borderColor: 'border-pink-400/20',
+    cardBg: 'bg-gradient-to-r from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20'
   },
   { 
     id: 'recovery', 
     title: '🛠️ Recuperação Ativa', 
     icon: Wrench,
     color: 'text-orange-500',
-    bgColor: 'from-orange-600/20 to-amber-600/20',
-    borderColor: 'border-orange-400/20'
+    bgColor: 'from-orange-600/10 to-amber-600/10',
+    borderColor: 'border-orange-400/20',
+    cardBg: 'bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20'
   },
   { 
     id: 'extras', 
     title: '🧩 Extras Opcionais', 
     icon: Star,
     color: 'text-yellow-500',
-    bgColor: 'from-yellow-600/20 to-amber-600/20',
-    borderColor: 'border-yellow-400/20'
+    bgColor: 'from-yellow-600/10 to-amber-600/10',
+    borderColor: 'border-yellow-400/20',
+    cardBg: 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20'
   }
 ];
 
@@ -190,7 +195,7 @@ const Tasks = () => {
 
   if (tasksLoading || completionsLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
         <BackButton />
         <div className="max-w-lg mx-auto">
           <div className="text-center mt-12">
@@ -231,9 +236,9 @@ const Tasks = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-slate-100 space-y-4"
         >
-          <div className="flex items-center justify-between bg-white/10 p-5 rounded-2xl backdrop-blur-md border border-white/20 shadow-lg">
+          <div className="flex items-center justify-between bg-white/15 p-5 rounded-2xl backdrop-blur-md border border-white/20 shadow-lg">
             <h1 className="text-2xl md:text-3xl font-bold text-white font-montserrat">Tarefas Diárias</h1>
-            <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg border border-white/10">
+            <div className="flex items-center gap-2 bg-white/15 px-3 py-2 rounded-lg border border-white/10">
               <CalendarDays className="w-5 h-5 text-blue-300" />
               <span className="text-slate-200 text-sm md:text-base font-medium">{format(new Date(), 'dd/MM/yyyy')}</span>
             </div>
@@ -243,21 +248,21 @@ const Tasks = () => {
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="bg-gradient-to-r from-blue-600/30 to-indigo-600/30 rounded-xl p-5 flex flex-col border border-white/20 shadow-lg"
+            className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-xl p-5 flex flex-col border border-white/20 shadow-lg"
           >
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-medium text-white">Progresso diário</span>
-              <span className="text-xl font-bold bg-white/10 px-4 py-1 rounded-lg text-blue-300">{totalPoints} pts</span>
+              <span className="text-xl font-bold bg-white/15 px-4 py-1 rounded-lg text-blue-300">{totalPoints} pts</span>
             </div>
             
-            <div className="w-full bg-white/10 rounded-full h-3 mb-2">
+            <div className="w-full bg-white/15 rounded-full h-3 mb-2">
               <div 
                 className="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-500 ease-out"
                 style={{ width: `${completionPercentage}%` }}
               ></div>
             </div>
             
-            <div className="flex justify-between text-sm text-white/70">
+            <div className="flex justify-between text-sm text-white/80">
               <span>{completedTasks} de {totalTasks} tarefas</span>
               <span>{Math.round(completionPercentage)}% concluído</span>
             </div>
@@ -304,7 +309,7 @@ const Tasks = () => {
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`p-2.5 rounded-xl ${category.color} bg-white/10 border border-white/10`}>
+                      <div className={`p-2.5 rounded-xl ${category.color} bg-white/20 border border-white/10 shadow-inner`}>
                         <category.icon className="w-5 h-5" />
                       </div>
                       <h2 className="font-semibold text-white text-lg font-montserrat">{category.title}</h2>
@@ -321,14 +326,14 @@ const Tasks = () => {
                     <motion.div
                       animate={{ rotate: expandedCategories.includes(category.id) ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
-                      className="bg-white/10 rounded-full p-1.5"
+                      className="bg-white/20 rounded-full p-1.5"
                     >
-                      <ArrowDown className="w-4 h-4 text-white/80" />
+                      <ArrowDown className="w-4 h-4 text-white/90" />
                     </motion.div>
                   </motion.div>
                   
                   {/* Progress bar */}
-                  <div className="w-full bg-white/10 rounded-full h-1.5">
+                  <div className="w-full bg-white/20 rounded-full h-1.5">
                     <div 
                       className={`h-1.5 rounded-full transition-all duration-500 ease-out ${
                         categoryCompleted ? 'bg-emerald-500' : 'bg-blue-500'
@@ -354,25 +359,27 @@ const Tasks = () => {
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               exit={{ opacity: 0, x: 20 }}
-                              className="flex items-start gap-3 p-3 bg-white/10 rounded-xl hover:bg-white/15 transition-colors border border-white/10"
+                              className={`flex items-start gap-3 p-3 rounded-xl hover:bg-white/20 transition-colors border border-white/20 ${category.cardBg}`}
                             >
                               <Checkbox
                                 checked={completed}
                                 onCheckedChange={() => !completed && completeTask.mutate(task.id)}
-                                className={`mt-1 ${completed ? 'bg-emerald-500 border-emerald-500' : 'border-white/30'}`}
+                                className={`mt-1 ${completed ? 'bg-emerald-500 border-emerald-500' : 'border-white/50'}`}
                               />
                               <div className="flex-1">
-                                <h3 className={`text-base font-medium ${completed ? 'line-through text-white/50' : 'text-white'}`}>
+                                <h3 className={`text-base font-medium ${completed ? 'line-through text-slate-300/70' : 'text-slate-100'} font-montserrat`}>
                                   {task.name}
                                 </h3>
-                                <p className={`text-sm ${completed ? 'text-white/40' : 'text-white/70'}`}>{task.description}</p>
+                                <p className={`text-sm ${completed ? 'text-slate-300/60' : 'text-slate-300/90'} font-inter`}>
+                                  {task.description}
+                                </p>
                               </div>
                               {completed && (
                                 <motion.div
                                   initial={{ scale: 0 }}
                                   animate={{ scale: 1 }}
                                   transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                                  className="bg-emerald-500/20 rounded-full p-1"
+                                  className="bg-emerald-500/30 rounded-full p-1"
                                 >
                                   <Check className="w-4 h-4 text-emerald-300" />
                                 </motion.div>
