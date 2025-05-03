@@ -1,4 +1,4 @@
-https://github.com/jhoesantos777/apprecuperacaoefoco.git
+
 import { ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
