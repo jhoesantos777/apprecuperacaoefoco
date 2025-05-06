@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { devotionalService } from '@/services/devotionalService';
 import { toast } from '@/components/ui/sonner';
 import { Loader2 } from 'lucide-react';
+import { Logo } from '@/components/Logo';
+import { BackButton } from '@/components/BackButton';
 
 interface Devotional {
   title: string;
@@ -57,11 +59,9 @@ const Devotional = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#2d0036] to-black py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center relative">
-        <img
-          src="/philos-logo.png"
-          alt="Logo Philos"
-          className="fixed top-4 right-4 w-20 h-20 z-50"
-        />
+        <div className="absolute top-4 right-4">
+          <Logo size="sm" />
+        </div>
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-purple-500 animate-spin mx-auto mb-4" />
           <p className="text-white">Carregando devocional...</p>
@@ -72,12 +72,12 @@ const Devotional = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#2d0036] to-black py-12 px-4 sm:px-6 lg:px-8 relative">
-      <img
-        src="/philos-logo.png"
-        alt="Logo Philos"
-        className="fixed top-4 right-4 w-20 h-20 z-50"
-      />
-      <div className="max-w-3xl mx-auto">
+      <div className="flex justify-between items-center absolute top-4 left-4 right-4">
+        <BackButton className="text-white/70" />
+        <Logo size="sm" />
+      </div>
+
+      <div className="max-w-3xl mx-auto pt-16">
         <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <div className="space-y-8">
             <div className="text-center">

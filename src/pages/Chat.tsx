@@ -1,9 +1,17 @@
+
 import React from 'react';
 import AIChat from '@/components/AIChat';
+import { Logo } from '@/components/Logo';
+import { BackButton } from '@/components/BackButton';
 
 const Chat = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <BackButton className="text-white/70" />
+        <Logo size="sm" />
+      </div>
+
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
           Assistente Virtual
@@ -23,4 +31,4 @@ const Chat = () => {
   );
 };
 
-export default Chat; 
+export default Chat;

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Brain, AlertTriangle, Thermometer } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 const Recovery = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
@@ -186,6 +188,11 @@ const Recovery = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8"
     >
+      <div className="flex justify-between items-center mb-6">
+        <BackButton className="text-white/70" />
+        <Logo size="sm" />
+      </div>
+
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
           Como você está?

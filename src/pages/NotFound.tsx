@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { BackButton } from '@/components/BackButton';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { Logo } from '@/components/Logo';
 
 const NotFound = () => {
   const location = useLocation();
@@ -24,7 +25,10 @@ const NotFound = () => {
         backgroundPosition: 'center'
       }}
     >
-      <BackButton />
+      <div className="flex justify-between items-center">
+        <BackButton />
+        <Logo size="sm" />
+      </div>
       
       <div className="flex-1 flex items-center justify-center">
         <motion.div 

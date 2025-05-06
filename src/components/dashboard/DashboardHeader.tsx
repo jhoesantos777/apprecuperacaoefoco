@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ProfilePicture } from "@/components/ProfilePicture";
+import { Logo } from '@/components/Logo';
 
 type DashboardHeaderProps = {
   profile: any;
@@ -39,39 +40,44 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
   };
 
   return (
-    <div className="p-4 sm:p-6 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3 sm:gap-4">
-        <ProfilePicture
-          avatarUrl={profile?.avatar_url}
-          userId={profile?.id || ''}
-          userName={profile?.nome}
-          size="lg"
-        />
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white bg-black/70 px-3 py-1 rounded-lg backdrop-blur-sm">
-            {profile?.nome || 'Usuário'}
-          </h1>
-          <p className="text-white font-medium text-base sm:text-lg px-3 py-1 bg-black/60 rounded-lg mt-1">
-            {userRole === 'admin' 
-              ? 'Painel Administrativo' 
-              : userRole === 'family' 
-                ? 'Painel Familiar' 
-                : 'Bem vindo'}
-          </p>
-          {userRole === 'admin' && (
-            <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full mt-1 inline-block ml-3 font-bold">
-              Administrador
-            </span>
-          )}
+    <div className="p-4 sm:p-6">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <ProfilePicture
+            avatarUrl={profile?.avatar_url}
+            userId={profile?.id || ''}
+            userName={profile?.nome}
+            size="lg"
+          />
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-white bg-black/70 px-3 py-1 rounded-lg backdrop-blur-sm">
+              {profile?.nome || 'Usuário'}
+            </h1>
+            <p className="text-white font-medium text-base sm:text-lg px-3 py-1 bg-black/60 rounded-lg mt-1">
+              {userRole === 'admin' 
+                ? 'Painel Administrativo' 
+                : userRole === 'family' 
+                  ? 'Painel Familiar' 
+                  : 'Bem vindo'}
+            </p>
+            {userRole === 'admin' && (
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full mt-1 inline-block ml-3 font-bold">
+                Administrador
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Logo size="sm" />
+          <Button 
+            variant="secondary" 
+            className="text-black bg-white/80 hover:bg-white shadow-md font-medium"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-5 w-5" /> Sair
+          </Button>
         </div>
       </div>
-      <Button 
-        variant="secondary" 
-        className="text-black bg-white/80 hover:bg-white shadow-md font-medium"
-        onClick={handleLogout}
-      >
-        <LogOut className="mr-2 h-5 w-5" /> Sair
-      </Button>
     </div>
   );
 };

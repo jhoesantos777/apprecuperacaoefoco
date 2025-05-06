@@ -3,11 +3,15 @@ import React from 'react';
 import { ReflectionForm } from '@/components/ReflectionForm';
 import { BackButton } from '@/components/BackButton';
 import DailyMotivation from '@/components/DailyMotivation';
+import { Logo } from '@/components/Logo';
 
 const Reflection = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-100 to-teal-50 p-6">
-      <BackButton />
+      <div className="flex justify-between items-center mb-6">
+        <BackButton />
+        <Logo size="sm" />
+      </div>
       
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-3xl font-serif text-gray-800 mb-6 text-center">

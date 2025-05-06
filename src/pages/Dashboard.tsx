@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
@@ -140,32 +141,30 @@ const Dashboard = () => {
   const iconContainerStyle = "h-20 w-20 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500/80 to-purple-600/80 backdrop-blur-lg mb-3 shadow-xl hover:shadow-2xl transition-all duration-300";
 
   // Função para determinar o nível do usuário
-  const getUserLevel = (sobrietyDays: number) => {
-    if (sobrietyDays >= 7300) return { name: "🦕 Dinossauro da Recuperação", color: "from-purple-500 to-pink-500" };
-    if (sobrietyDays >= 3650) return { name: "👑 Lenda Viva", color: "from-yellow-500 to-orange-500" };
-    if (sobrietyDays >= 1825) return { name: "🛡️ Guardião da Sobriedade", color: "from-blue-500 to-indigo-500" };
-    if (sobrietyDays >= 1095) return { name: "🧠 Mestre da Consciência", color: "from-green-500 to-teal-500" };
-    if (sobrietyDays >= 730) return { name: "🎖️ Guardião da Esperança", color: "from-red-500 to-orange-500" };
-    if (sobrietyDays >= 365) return { name: "🏆 Sentinela da Vida", color: "from-yellow-400 to-yellow-600" };
-    if (sobrietyDays >= 270) return { name: "🕊️ Liberdade Interior", color: "from-blue-400 to-blue-600" };
-    if (sobrietyDays >= 180) return { name: "⚔️ Guerreiro da Esperança", color: "from-purple-400 to-purple-600" };
-    if (sobrietyDays >= 90) return { name: "☀️ Clareza da Alma", color: "from-orange-400 to-orange-600" };
-    if (sobrietyDays >= 30) return { name: "🧱 Muralha de Vontade", color: "from-green-400 to-green-600" };
-    if (sobrietyDays >= 15) return { name: "🌱 Raízes Fortes", color: "from-teal-400 to-teal-600" };
-    if (sobrietyDays >= 7) return { name: "🧭 Novo Caminho", color: "from-indigo-400 to-indigo-600" };
+  const getUserLevel = (sobrietyDays: number | null | undefined) => {
+    const days = sobrietyDays || 0;
+    if (days >= 7300) return { name: "🦕 Dinossauro da Recuperação", color: "from-purple-500 to-pink-500" };
+    if (days >= 3650) return { name: "👑 Lenda Viva", color: "from-yellow-500 to-orange-500" };
+    if (days >= 1825) return { name: "🛡️ Guardião da Sobriedade", color: "from-blue-500 to-indigo-500" };
+    if (days >= 1095) return { name: "🧠 Mestre da Consciência", color: "from-green-500 to-teal-500" };
+    if (days >= 730) return { name: "🎖️ Guardião da Esperança", color: "from-red-500 to-orange-500" };
+    if (days >= 365) return { name: "🏆 Sentinela da Vida", color: "from-yellow-400 to-yellow-600" };
+    if (days >= 270) return { name: "🕊️ Liberdade Interior", color: "from-blue-400 to-blue-600" };
+    if (days >= 180) return { name: "⚔️ Guerreiro da Esperança", color: "from-purple-400 to-purple-600" };
+    if (days >= 90) return { name: "☀️ Clareza da Alma", color: "from-orange-400 to-orange-600" };
+    if (days >= 30) return { name: "🧱 Muralha de Vontade", color: "from-green-400 to-green-600" };
+    if (days >= 15) return { name: "🌱 Raízes Fortes", color: "from-teal-400 to-teal-600" };
+    if (days >= 7) return { name: "🧭 Novo Caminho", color: "from-indigo-400 to-indigo-600" };
     return { name: "🥇 Primeira Luz", color: "from-gray-400 to-gray-600" };
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#2d0036] to-black relative overflow-hidden">
-      {/* Logo Philos no topo direito */}
-      <img
-        src="/philos-logo.png"
-        alt="Logo Philos"
-        className="fixed top-4 right-4 w-20 h-20 z-50"
-      />
+      {/* Logo Philos no topo direito - removido para ser substituído pelo logo no header */}
+      
       {/* Textura grain */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-30 mix-blend-soft-light" style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/asfalt-dark.png")'}} />
+      
       {/* Header com efeito de vidro mais pronunciado */}
       <motion.div 
         className="p-6 backdrop-blur-xl bg-white/10 border-b border-white/20"
@@ -173,16 +172,18 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Logo */}
+        {/* Logo - substituído pela imagem */}
         <motion.div
           className="text-center mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <h1 className="text-5xl md:text-5xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 uppercase">
-            φίλος
-          </h1>
+          <img 
+            src="/lovable-uploads/52fdeb8b-77c4-47bf-aba5-a52d936d22c5.png" 
+            alt="Philos Logo" 
+            className="h-20 mx-auto"
+          />
         </motion.div>
 
         {/* Perfil e Saudação */}
@@ -225,6 +226,7 @@ const Dashboard = () => {
               <p className="text-xs sm:text-lg font-nunito font-extrabold italic bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] text-center sm:text-left tracking-wide uppercase">
                 A SUA PRESENÇA É MUITO IMPORTANTE PRA TODOS NÓS
               </p>
+              
               {/* Medalhas ao lado do nome */}
               <div className="flex gap-2 mt-2 sm:mt-0 justify-center sm:justify-start">
                 {/* Medalha de Sobriedade */}
@@ -519,7 +521,7 @@ const Dashboard = () => {
         >
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-white">
-            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 0-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
           </div>
@@ -554,7 +556,7 @@ const Dashboard = () => {
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-white">
             <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
           </svg>
           <span className="text-white text-xs mt-1">Configuração</span>
         </button>

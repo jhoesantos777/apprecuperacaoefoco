@@ -185,6 +185,30 @@ export type Database = {
           },
         ]
       }
+      chat_interactions: {
+        Row: {
+          ai_response: string
+          created_at: string
+          id: string
+          user_id: string | null
+          user_message: string
+        }
+        Insert: {
+          ai_response: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_message: string
+        }
+        Update: {
+          ai_response?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_message?: string
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           created_at: string | null
