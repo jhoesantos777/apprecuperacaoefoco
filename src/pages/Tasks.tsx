@@ -294,7 +294,7 @@ const Tasks = () => {
           {/* Logo Philos */}
           <div className="flex justify-center mb-4">
             <img 
-              src="/lovable-uploads/52fdeb8b-77c4-47bf-aba5-a52d936d22c5.png" 
+              src="/lovable-uploads/2c65cc34-7f0b-418d-a887-bd5a5c877041.png" 
               alt="Philos Logo" 
               className="h-16"
             />
@@ -445,4 +445,4 @@ const Tasks = () => {
   );
 };
 
-export default Tasks; 
+export default Tasks;
