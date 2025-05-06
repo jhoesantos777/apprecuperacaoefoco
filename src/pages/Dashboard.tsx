@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
@@ -140,19 +141,20 @@ const Dashboard = () => {
   const iconContainerStyle = "h-20 w-20 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500/80 to-purple-600/80 backdrop-blur-lg mb-3 shadow-xl hover:shadow-2xl transition-all duration-300";
 
   // Função para determinar o nível do usuário
-  const getUserLevel = (sobrietyDays: number) => {
-    if (sobrietyDays >= 7300) return { name: "🦕 Dinossauro da Recuperação", color: "from-purple-500 to-pink-500" };
-    if (sobrietyDays >= 3650) return { name: "👑 Lenda Viva", color: "from-yellow-500 to-orange-500" };
-    if (sobrietyDays >= 1825) return { name: "🛡️ Guardião da Sobriedade", color: "from-blue-500 to-indigo-500" };
-    if (sobrietyDays >= 1095) return { name: "🧠 Mestre da Consciência", color: "from-green-500 to-teal-500" };
-    if (sobrietyDays >= 730) return { name: "🎖️ Guardião da Esperança", color: "from-red-500 to-orange-500" };
-    if (sobrietyDays >= 365) return { name: "🏆 Sentinela da Vida", color: "from-yellow-400 to-yellow-600" };
-    if (sobrietyDays >= 270) return { name: "🕊️ Liberdade Interior", color: "from-blue-400 to-blue-600" };
-    if (sobrietyDays >= 180) return { name: "⚔️ Guerreiro da Esperança", color: "from-purple-400 to-purple-600" };
-    if (sobrietyDays >= 90) return { name: "☀️ Clareza da Alma", color: "from-orange-400 to-orange-600" };
-    if (sobrietyDays >= 30) return { name: "🧱 Muralha de Vontade", color: "from-green-400 to-green-600" };
-    if (sobrietyDays >= 15) return { name: "🌱 Raízes Fortes", color: "from-teal-400 to-teal-600" };
-    if (sobrietyDays >= 7) return { name: "🧭 Novo Caminho", color: "from-indigo-400 to-indigo-600" };
+  const getUserLevel = (sobrietyDays: number | null | undefined) => {
+    const days = sobrietyDays || 0;
+    if (days >= 7300) return { name: "🦕 Dinossauro da Recuperação", color: "from-purple-500 to-pink-500" };
+    if (days >= 3650) return { name: "👑 Lenda Viva", color: "from-yellow-500 to-orange-500" };
+    if (days >= 1825) return { name: "🛡️ Guardião da Sobriedade", color: "from-blue-500 to-indigo-500" };
+    if (days >= 1095) return { name: "🧠 Mestre da Consciência", color: "from-green-500 to-teal-500" };
+    if (days >= 730) return { name: "🎖️ Guardião da Esperança", color: "from-red-500 to-orange-500" };
+    if (days >= 365) return { name: "🏆 Sentinela da Vida", color: "from-yellow-400 to-yellow-600" };
+    if (days >= 270) return { name: "🕊️ Liberdade Interior", color: "from-blue-400 to-blue-600" };
+    if (days >= 180) return { name: "⚔️ Guerreiro da Esperança", color: "from-purple-400 to-purple-600" };
+    if (days >= 90) return { name: "☀️ Clareza da Alma", color: "from-orange-400 to-orange-600" };
+    if (days >= 30) return { name: "🧱 Muralha de Vontade", color: "from-green-400 to-green-600" };
+    if (days >= 15) return { name: "🌱 Raízes Fortes", color: "from-teal-400 to-teal-600" };
+    if (days >= 7) return { name: "🧭 Novo Caminho", color: "from-indigo-400 to-indigo-600" };
     return { name: "🥇 Primeira Luz", color: "from-gray-400 to-gray-600" };
   };
 
