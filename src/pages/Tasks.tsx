@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -290,6 +291,15 @@ const Tasks = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-slate-100 space-y-4"
         >
+          {/* Logo Philos */}
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/lovable-uploads/52fdeb8b-77c4-47bf-aba5-a52d936d22c5.png" 
+              alt="Philos Logo" 
+              className="h-16"
+            />
+          </div>
+          
           <div className="flex items-center justify-between bg-white/15 p-5 rounded-2xl backdrop-blur-md border border-white/20 shadow-lg">
             <h1 className="text-2xl md:text-3xl font-bold text-white font-montserrat">Tarefas Diárias</h1>
             <div className="flex items-center gap-2 bg-white/15 px-3 py-2 rounded-lg border border-white/10">
@@ -335,6 +345,101 @@ const Tasks = () => {
             </div>
           </div>
         </motion.div>
+      </motion.div>
+
+      {/* Aqui iria o conteúdo das tarefas que não foi implementado anteriormente */}
+      <motion.div 
+        className="max-w-md mx-auto mt-8 space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
+        {TaskCategories.map((category) => (
+          <motion.div 
+            key={category.id}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <motion.div 
+              className={`p-4 rounded-xl backdrop-blur-md border ${category.borderColor} shadow-md cursor-pointer 
+                bg-gradient-to-r ${category.bgColor}`}
+              onClick={() => toggleCategoryExpansion(category.id)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${category.color} bg-white/30`}>
+                    <category.icon size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg text-black dark:text-white">{category.title}</h3>
+                    <div className="flex items-center gap-1 text-sm">
+                      <span className={`${category.color}`}>{getCategoryPoints(category.id)}</span>
+                      <span className="text-gray-600 dark:text-gray-400">/ {getCategoryMaxPoints(category.id)} pts</span>
+                    </div>
+                  </div>
+                </div>
+                <motion.div
+                  animate={{ rotate: expandedCategories.includes(category.id) ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ArrowDown size={20} className="text-gray-600 dark:text-gray-400" />
+                </motion.div>
+              </div>
+            </motion.div>
+            
+            <AnimatePresence>
+              {expandedCategories.includes(category.id) && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className={`mt-2 p-3 rounded-xl ${category.cardBg} backdrop-blur-sm border ${category.borderColor}`}>
+                    {tasks
+                      .filter(task => task.category_id === category.id)
+                      .map(task => (
+                        <div 
+                          key={task.id} 
+                          className="flex items-center justify-between p-3 mb-2 bg-white/60 dark:bg-black/10 rounded-lg border border-gray-200/70 dark:border-gray-700/30"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Checkbox 
+                              id={`task-${task.id}`}
+                              checked={isTaskCompleted(task.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  handleTaskComplete(task.id);
+                                } else {
+                                  handleTaskUncomplete(task.id);
+                                }
+                              }}
+                              className="border-2 border-gray-300 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                            />
+                            <div>
+                              <label 
+                                htmlFor={`task-${task.id}`}
+                                className={`font-medium text-gray-900 dark:text-gray-100 ${isTaskCompleted(task.id) ? 'line-through text-gray-500' : ''}`}
+                              >
+                                {task.name}
+                              </label>
+                              <p className="text-xs text-gray-600 dark:text-gray-400">{task.description}</p>
+                            </div>
+                          </div>
+                          <span className={`text-sm font-semibold ${category.color}`}>+{task.points}pts</span>
+                        </div>
+                      ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        ))}
       </motion.div>
     </div>
   );
