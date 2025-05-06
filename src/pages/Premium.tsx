@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BackButton } from '@/components/BackButton';
 import { useState } from "react";
@@ -5,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { Logo } from '@/components/Logo';
 
 const Premium = () => {
   const navigate = useNavigate();
@@ -14,7 +16,10 @@ const Premium = () => {
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       <div className="p-6">
-        <BackButton />
+        <div className="flex justify-between items-center mb-6">
+          <BackButton />
+          <Logo size="sm" />
+        </div>
         
         <h1 className={`text-3xl font-bold mb-8 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
           Escolha seu plano

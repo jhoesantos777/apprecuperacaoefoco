@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { BackButton } from '@/components/BackButton';
+import { Logo } from '@/components/Logo';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -129,7 +130,10 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 flex flex-col px-6 py-8">
-      <BackButton text="Início" className="text-white/70 hover:text-white" />
+      <div className="flex justify-between items-center">
+        <BackButton text="Início" className="text-white/70 hover:text-white" />
+        <Logo size="sm" className="mr-2" />
+      </div>
 
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full">
         <div className="w-20 h-20 mb-8 mx-auto">

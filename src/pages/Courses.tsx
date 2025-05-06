@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BackButton } from '@/components/BackButton';
+import { Logo } from '@/components/Logo';
 
 const Courses = () => {
   const navigate = useNavigate();
@@ -24,7 +26,10 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 p-6">
-      <BackButton />
+      <div className="flex justify-between items-center mb-6">
+        <BackButton />
+        <Logo size="sm" />
+      </div>
       
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">

@@ -9,6 +9,7 @@ import { AdminContent } from "@/components/admin/AdminContent";
 import { AdminCourses } from "@/components/admin/AdminCourses";
 import { AdminCertificates } from "@/components/admin/AdminCertificates";
 import { toast } from "sonner";
+import { Logo } from '@/components/Logo';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState<string>("users");
@@ -55,6 +56,9 @@ const Admin = () => {
     >
       <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex justify-end mb-4">
+          <Logo size="sm" />
+        </div>
         {renderContent()}
       </div>
     </div>

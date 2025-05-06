@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/sonner";
 import { DrugSelection } from "@/components/DrugSelection";
 import { supabase } from "@/integrations/supabase/client";
+import { Logo } from '@/components/Logo';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -95,7 +97,10 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-teal-900 p-6">
-      <BackButton />
+      <div className="flex justify-between items-center mb-6">
+        <BackButton />
+        <Logo size="sm" />
+      </div>
       
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-3xl font-bold text-white mb-6">

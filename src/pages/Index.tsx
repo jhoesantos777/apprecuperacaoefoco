@@ -1,7 +1,7 @@
-
 import { ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Logo } from '@/components/Logo';
 
 const Index = () => {
   return (
@@ -26,9 +26,7 @@ const Index = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <div className="w-40 h-40 flex items-center justify-center mb-4">
-            <img src="/lovable-uploads/44e2c2dc-d4ed-416e-82cf-44595dade4c7.png" alt="Philos Logo" className="w-full h-full object-contain" />
-          </div>
+          <Logo size="lg" />
         </motion.div>
 
         <motion.p 
