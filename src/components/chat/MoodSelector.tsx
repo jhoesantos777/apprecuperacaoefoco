@@ -12,7 +12,7 @@ interface MoodSelectorProps {
 const MoodSelector = ({ mood, onMoodChange }: MoodSelectorProps) => {
   return (
     <div className="space-y-3">
-      <Label className="text-gray-700">Como você está se sentindo hoje?</Label>
+      <Label className="text-white">Como você está se sentindo hoje?</Label>
       <RadioGroup
         value={mood}
         onValueChange={onMoodChange}

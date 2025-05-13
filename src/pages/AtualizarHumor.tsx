@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { BackButton } from '@/components/BackButton';
 import { registerActivity } from '@/utils/activityPoints';
@@ -50,20 +51,23 @@ const AtualizarHumor = () => {
 
   const handleSubmit = async () => {
     if (!selectedMood) {
-      toast("Aviso", {
+      toast({
+        title: "Aviso",
         description: "Por favor, selecione como você está se sentindo hoje.",
       });
       return;
     }
 
     try {
+      setIsSubmitting(true);
       const moodData = getMoodData(selectedMood);
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast("Erro: Você precisa estar logado para registrar seu humor.", {
-          description: "Faça login e tente novamente.",
-          style: { backgroundColor: 'hsl(var(--destructive))' }
+        toast({
+          title: "Erro",
+          description: "Você precisa estar logado para registrar seu humor.",
+          variant: "destructive"
         });
         return;
       }
@@ -85,14 +89,16 @@ const AtualizarHumor = () => {
       setMotivationalMessage(getMotivationalMessage(selectedMood));
       setShowMotivation(true);
       
-      toast("Sucesso!", {
+      toast({
+        title: "Sucesso!",
         description: "Seu humor foi registrado com sucesso."
       });
     } catch (error) {
       console.error('Erro ao registrar humor:', error);
-      toast("Erro", {
+      toast({
+        title: "Erro",
         description: "Não foi possível registrar seu humor. Tente novamente.",
-        style: { backgroundColor: 'hsl(var(--destructive))' }
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
@@ -121,7 +127,7 @@ const AtualizarHumor = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
+        <h1 className="text-4xl font-extrabold text-center text-white mb-8 tracking-[-0.06em] uppercase drop-shadow">
           Como você está se sentindo?
         </h1>
 
