@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -129,6 +128,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#461475] to-[#300b50] flex flex-col px-6 py-8">
+      {/* Logo centralizada */}
       <div className="flex justify-center items-center">
         <Logo size="lg" className="mb-4" />
       </div>
@@ -209,6 +209,15 @@ const Auth = () => {
               CADASTRE-SE
             </a>
           </p>
+        </div>
+        
+        {/* Imagem adicionada abaixo dos textos */}
+        <div className="mt-8 flex justify-center">
+          <img 
+            src="/lovable-uploads/5a78990e-37e4-4311-b4f8-de3aafc25407.png" 
+            alt="Comunidade Terapêutica - Resgatados por Jesus" 
+            className="max-w-full h-auto max-h-48"
+          />
         </div>
       </div>
     </div>
