@@ -28,22 +28,26 @@ const UserProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, nome, avatar_url, dias_sobriedade, cidade, story')
-        .eq('id', id)
-        .single();
-      
-      if (!error && data) {
-        setUser(data);
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, nome, avatar_url, dias_sobriedade, cidade')
+          .eq('id', id)
+          .single();
         
-        // If not a member, decrement the view count
-        if (!isMember && remainingViews > 0) {
-          decrementViews();
+        if (!error && data) {
+          setUser(data as UserProfile);
+          
+          // If not a member, decrement the view count
+          if (!isMember && remainingViews > 0) {
+            decrementViews();
+          }
         }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
     
     if (id) fetchUser();
@@ -99,7 +103,7 @@ const UserProfilePage: React.FC = () => {
               </Card>
             )}
             
-            {user?.story && !isMember && (
+            {!isMember && (
               <Card className="bg-white/10 w-full mb-6 p-4">
                 <div className="text-center p-4">
                   <MessageSquare className="mx-auto text-gray-400 h-8 w-8 mb-2" />

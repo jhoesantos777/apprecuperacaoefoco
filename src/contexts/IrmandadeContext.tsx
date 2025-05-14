@@ -33,9 +33,9 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         .from('irmandade_members')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) {
+      if (error && !error.message.includes('no rows returned')) {
         console.error("Error checking membership:", error);
         setIsMember(false);
         return false;

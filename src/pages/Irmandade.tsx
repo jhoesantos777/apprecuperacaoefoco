@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
 import { Search, UserPlus, Users, Filter } from 'lucide-react';
+import { Lock } from '@/components/icons/Lock';
 
 interface UserProfile {
   id: string;
@@ -35,7 +36,7 @@ const Irmandade: React.FC = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, nome, avatar_url, dias_sobriedade, cidade, story')
+          .select('id, nome, avatar_url, dias_sobriedade, cidade')
           .eq('is_active', true)
           .order('dias_sobriedade', { ascending: false });
         
