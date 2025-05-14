@@ -1,9 +1,12 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfilePicture } from '@/components/ProfilePicture';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
 import { UserProfile } from '@/types/supabase';
+import { Button } from '@/components/ui/button';
+import { Users as UsersIcon, Grid, Eye } from 'lucide-react';
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -43,9 +46,31 @@ const Users: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
-          Membros da Comunidade
-        </h1>
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
+          <h1 className="text-4xl font-extrabold text-center text-red-600 mb-4 sm:mb-0 tracking-[-0.06em] uppercase drop-shadow">
+            Membros da Comunidade
+          </h1>
+          
+          <div className="flex gap-4">
+            <Button 
+              onClick={() => navigate('/vitrine')}
+              className="bg-purple-700 hover:bg-purple-800 flex items-center gap-2"
+            >
+              <Grid className="h-4 w-4" />
+              Ver Vitrine
+            </Button>
+            
+            <Button 
+              onClick={() => navigate('/irmandade')}
+              variant="outline"
+              className="border-red-600 text-white flex items-center gap-2"
+            >
+              <UsersIcon className="h-4 w-4" />
+              Irmandade
+            </Button>
+          </div>
+        </div>
+        
         {loading ? (
           <div className="flex justify-center items-center min-h-[200px]">
             <div className="text-white text-lg">Carregando...</div>
@@ -84,6 +109,7 @@ const Users: React.FC = () => {
                   className="mt-auto w-full px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all text-sm transform hover:scale-105"
                   onClick={e => { e.stopPropagation(); navigate(`/perfil/${user.id}`); }}
                 >
+                  <Eye className="h-4 w-4 inline-block mr-2" />
                   Ver Perfil
                 </button>
               </div>

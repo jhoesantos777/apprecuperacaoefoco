@@ -5,42 +5,40 @@ import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { setupMockApi } from "./utils/mockApi";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import SignUp from "./pages/SignUp";
-import CadastroSimplificado from "./pages/CadastroSimplificado";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
-import Premium from "./pages/Premium";
-import About from "./pages/About";
-import NotFound from "./pages/NotFound";
-import Sobriety from "./pages/Sobriety";
-import Tasks from "./pages/Tasks";
-import Recovery from "./pages/Recovery";
-import Reflection from "./pages/Reflection";
-import Achievements from "./pages/Achievements";
-import Courses from "./pages/Courses";
-import Schedule from "./pages/Schedule";
-import Devotional from "./pages/Devotional";
-import Treatments from "./pages/Treatments";
-import AtualizarHumor from "./pages/AtualizarHumor";
-import Admin from "./pages/Admin";
-import Triggers from "./pages/Triggers";
-import Users from "./pages/Users";
-import UserProfile from "./pages/UserProfile";
-import Irmandade from "./pages/Irmandade";
+
+import Index from '@/pages/Index';
+import Dashboard from '@/pages/Dashboard';
+import Sobriety from '@/pages/Sobriety';
+import Profile from '@/pages/Profile';
+import Reflection from '@/pages/Reflection';
+import NotFound from '@/pages/NotFound';
+import Triggers from '@/pages/Triggers';
+import About from '@/pages/About';
+import Recovery from '@/pages/Recovery';
+import Devotional from '@/pages/Devotional';
+import Auth from '@/pages/Auth';
+import SignUp from '@/pages/SignUp';
+import CadastroSimplificado from '@/pages/CadastroSimplificado';
+import Settings from '@/pages/Settings';
+import Admin from '@/pages/Admin';
+import Treatments from '@/pages/Treatments';
+import Achievements from '@/pages/Achievements';
+import Schedule from '@/pages/Schedule';
+import AtualizarHumor from '@/pages/AtualizarHumor';
+import Tasks from '@/pages/Tasks';
+import Chat from '@/pages/Chat';
+import Premium from '@/pages/Premium';
+import Courses from '@/pages/Courses';
+import Irmandade from '@/pages/Irmandade';
+import UserProfile from '@/pages/UserProfile';
+import Users from '@/pages/Users';
+import Vitrine from '@/pages/Vitrine';
+
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  useEffect(() => {
-    // Setup mock API
-    setupMockApi();
-  }, []);
-
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -50,33 +48,31 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/cadastro-simplificado" element={<CadastroSimplificado />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/sobriedade" element={<Sobriety />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/premium" element={<Premium />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/sobriety" element={<Sobriety />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="/recovery" element={<Recovery />} />
-              <Route path="/reflection" element={<Reflection />} />
-              <Route path="/achievements" element={<Achievements />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/schedule" element={<Schedule />} />
-              <Route path="/consultations" element={<Navigate to="/schedule" replace />} />
-              <Route path="/devotional" element={<Devotional />} />
-              <Route path="/triggers" element={<Triggers />} />
-              <Route path="/usuarios" element={<Users />} />
-              <Route path="/perfil/:id" element={<UserProfile />} />
-              <Route path="/irmandade" element={<Irmandade />} />
-              <Route path="/talk-to-me" element={<Navigate to="/triggers" replace />} />
-              <Route path="/chat" element={<Navigate to="/triggers" replace />} />
-              <Route path="/treatments" element={<Treatments />} />
-              <Route path="/atualizar-humor" element={<AtualizarHumor />} />
-              <Route path="/support" element={<Navigate to="/triggers" replace />} /> 
+              <Route path="/reflexoes" element={<Reflection />} />
+              <Route path="/gatilhos" element={<Triggers />} />
+              <Route path="/sobre" element={<About />} />
+              <Route path="/recuperacao" element={<Recovery />} />
+              <Route path="/devocional" element={<Devotional />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/cadastro" element={<SignUp />} />
+              <Route path="/cadastro-simplificado" element={<CadastroSimplificado />} />
+              <Route path="/configuracoes" element={<Settings />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/tratamentos" element={<Treatments />} />
+              <Route path="/conquistas" element={<Achievements />} />
+              <Route path="/agendar" element={<Schedule />} />
+              <Route path="/humor" element={<AtualizarHumor />} />
+              <Route path="/tarefas" element={<Tasks />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/premium" element={<Premium />} />
+              <Route path="/cursos" element={<Courses />} />
+              <Route path="/irmandade" element={<Irmandade />} />
+              <Route path="/perfil/:id" element={<UserProfile />} />
+              <Route path="/usuarios" element={<Users />} />
+              <Route path="/vitrine" element={<Vitrine />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
@@ -84,6 +80,6 @@ const App = () => {
       </ThemeProvider>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
