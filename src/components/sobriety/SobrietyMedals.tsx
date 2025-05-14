@@ -1,26 +1,19 @@
 
-import { Trophy, Medal } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 type Medal = {
   id: string;
   days_milestone: number;
 };
 
-export type SobrietyMedalsProps = {
+type SobrietyMedalsProps = {
   medals: Medal[];
+  daysCount: number;
   compact?: boolean;
-  daysCount?: number;
-  variant?: "sobriety" | "app";
 };
 
-export const SobrietyMedals = ({ 
-  medals, 
-  compact = false, 
-  daysCount = 0, 
-  variant = "sobriety" 
-}: SobrietyMedalsProps) => {
+export const SobrietyMedals = ({ medals, daysCount, compact = false }: SobrietyMedalsProps) => {
   const getMedalColor = (days: number) => {
     if (days >= 365) return "text-yellow-400";
     if (days >= 180) return "text-purple-400";
@@ -29,69 +22,50 @@ export const SobrietyMedals = ({
     return "text-gray-400";
   };
 
-  const getMedalIcon = (days: number) => {
-    if (days >= 365) return "🏆";
-    if (days >= 180) return "🥇";
-    if (days >= 90) return "🥈";
-    if (days >= 30) return "🥉";
-    return "🏅";
-  };
-
   const getMedalName = (days: number) => {
-    if (days >= 365) return "Troféu Anual";
-    if (days >= 180) return "Medalha de Ouro";
-    if (days >= 90) return "Medalha de Prata";
-    if (days >= 30) return "Medalha de Bronze";
-    return "Medalha Iniciante";
+    if (days >= 365) return "1 Ano";
+    if (days >= 180) return "6 Meses";
+    if (days >= 90) return "90 Dias";
+    if (days >= 30) return "30 Dias";
+    if (days >= 7) return "1 Semana";
+    return `${days} Dias`;
   };
 
   const getBadgeVariant = (days: number) => {
-    if (variant === "sobriety") {
-      if (days >= 365) return "gold";
-      if (days >= 180) return "purple";
-      if (days >= 90) return "blue";
-      if (days >= 30) return "green";
-      return "default";
-    } else {
-      if (days >= 365) return "diamond";
-      if (days >= 180) return "platinum";
-      if (days >= 90) return "silver";
-      if (days >= 30) return "bronze";
-      return "default";
-    }
+    if (days >= 365) return "gold";
+    if (days >= 180) return "purple";
+    if (days >= 90) return "info";
+    if (days >= 30) return "success";
+    return "default";
   };
 
-  // Get the highest medal based on days count
-  const getHighestMedal = () => {
-    if (daysCount >= 365) return { days: 365, icon: "🏆" };
-    if (daysCount >= 180) return { days: 180, icon: "🥇" };
-    if (daysCount >= 90) return { days: 90, icon: "🥈" };
-    if (daysCount >= 30) return { days: 30, icon: "🥉" };
-    return { days: 0, icon: "🏅" };
-  };
-
-  const highestMedal = getHighestMedal();
-
-  if (compact) {
+  // Sort medals by milestone (highest first)
+  const sortedMedals = [...(medals || [])].sort((a, b) => b.days_milestone - a.days_milestone);
+  
+  // If there are no medals or it's a compact view, show a badge with current days
+  if (!medals || medals.length === 0 || compact) {
     return (
-      <div className="flex items-center">
-        <Badge variant={getBadgeVariant(highestMedal.days)} size="lg" className="gap-1">
-          <span className="text-lg">{highestMedal.icon}</span>
-          <span className="ml-1 font-medium">{daysCount} dias</span>
+      <div className={`flex ${compact ? "items-center" : "flex-col items-start"} gap-1`}>
+        <Badge 
+          variant={getBadgeVariant(daysCount)}
+          size={compact ? "default" : "xl"}
+          className={`flex items-center gap-1.5 ${compact ? "" : "px-4 py-2 text-base"}`}
+        >
+          <Trophy className={`${compact ? "w-3 h-3" : "w-4 h-4"} ${getMedalColor(daysCount)}`} />
+          <span>{daysCount} dias</span>
         </Badge>
       </div>
     );
   }
 
-  if (!medals || medals.length === 0) return null;
-
+  // Regular view with the complete medal display
   return (
     <div className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-xl p-6 text-white backdrop-blur-sm border border-white/10 shadow-lg">
       <h2 className="text-xl font-semibold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300">
         Suas Conquistas
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
-        {medals.map((medal) => (
+        {sortedMedals.map((medal) => (
           <div 
             key={medal.id} 
             className="bg-white/5 p-4 rounded-lg text-center hover:bg-white/10 transition-colors"
