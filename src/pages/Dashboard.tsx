@@ -4,10 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { ProfilePicture } from '@/components/ProfilePicture';
 import { 
-  Crown, 
   Siren, 
+  Crown, 
+  Calendar,
   SmilePlus, 
-  Calendar, 
   BookOpen, 
   CheckSquare, 
   MessageSquare, 
@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/ui/sonner';
 import { Logo } from '@/components/Logo';
+import { SobrietyButton } from '@/components/dashboard/SobrietyButton';
 
 const Dashboard = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
@@ -137,9 +138,6 @@ const Dashboard = () => {
     visible: { opacity: 1, y: 0 }
   };
 
-  // Atualizar o estilo do container dos ícones
-  const iconContainerStyle = "h-20 w-20 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500/80 to-purple-600/80 backdrop-blur-lg mb-3 shadow-xl hover:shadow-2xl transition-all duration-300";
-
   // Função para determinar o nível do usuário
   const getUserLevel = (sobrietyDays: number | null | undefined) => {
     const days = sobrietyDays || 0;
@@ -163,169 +161,176 @@ const Dashboard = () => {
       {/* Textura grain */}
       <div className="pointer-events-none fixed inset-0 z-0 opacity-30 mix-blend-soft-light" style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/asfalt-dark.png")'}} />
       
-      {/* Header com efeito de vidro mais pronunciado */}
+      {/* Logo no topo da página */}
       <motion.div 
-        className="p-6 backdrop-blur-xl bg-white/10 border-b border-white/20"
+        className="w-full pt-6 flex justify-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Logo - substituído pelo componente Logo */}
+        <Logo size="lg" />
+      </motion.div>
+      
+      {/* Header com perfil do usuário */}
+      <motion.div 
+        className="p-6 flex flex-row items-start mt-2"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Foto do Usuário no canto esquerdo */}
         <motion.div
-          className="text-center mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative"
         >
-          <Logo size="lg" />
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-lg opacity-50 animate-pulse"></div>
+          <ProfilePicture
+            avatarUrl={profile?.avatar_url}
+            userId={profile?.id || ''}
+            userName={profile?.nome}
+            size="lg"
+          />
         </motion.div>
 
-        {/* Perfil e Saudação */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
-          {/* Foto do Usuário */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            whileHover={{ scale: 1.05, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative mb-2 sm:mb-0"
+        {/* Informações do usuário ao lado da foto */}
+        <div className="flex-1 ml-5">
+          <motion.div 
+            className="space-y-1"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-lg opacity-50 animate-pulse"></div>
-            <ProfilePicture
-              avatarUrl={profile?.avatar_url}
-              userId={profile?.id || ''}
-              userName={profile?.nome}
-              size="lg"
-            />
+            {/* "Seja bem-vindo(a)" acima do nome */}
+            <p className="text-sm text-white/80">
+              Seja bem-vindo(a)
+            </p>
+            
+            {/* Nome do usuário */}
+            <h2 className="text-2xl font-bold text-white">
+              {profile?.nome || 'Usuário'}
+            </h2>
+            
+            {/* Versão do aplicativo em dourado */}
+            <p className="text-xs font-bold text-amber-400 italic tracking-wide">
+              PHILOS (BETA)
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Medalhas e contadores */}
+      <motion.div 
+        className="px-6 py-4 w-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.5 }}
+      >
+        {/* Container para os dois contadores lado a lado */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Contador de Sobriedade */}
+          <motion.div 
+            className="bg-gradient-to-br from-[#2d0036]/60 to-black/60 p-4 rounded-xl backdrop-blur-sm border border-purple-900/50"
+            whileHover={{ scale: 1.02 }}
+          >
+            <div className="flex items-center mb-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg relative">
+                <Crown className="w-5 h-5 text-white" />
+              </div>
+              <div className="ml-3">
+                <p className="text-xs text-white/80 font-medium">Sobriedade</p>
+                <p className="text-lg text-yellow-400 font-bold">{profile?.dias_sobriedade || 0} dias</p>
+              </div>
+            </div>
+            <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-yellow-400 to-yellow-600"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, (profile?.dias_sobriedade || 0) / 3.65)}%` }}
+                transition={{ delay: 1, duration: 1 }}
+              />
+            </div>
           </motion.div>
 
-          {/* Textos de Boas-vindas e Medalhas */}
-          <div className="flex-1 w-full">
-            <motion.div 
-              className="space-y-2 mb-4"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-            >
-              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-                <h2 className="text-2xl sm:text-3xl font-bold text-white text-center sm:text-left">
-                  Olá, {profile?.nome || 'Usuário'}!
-                </h2>
-              </div>
-              {/* Frases de saudação abaixo do nome */}
-              <p className="text-base sm:text-xl text-white/90 text-center sm:text-left font-nunito font-bold tracking-tight">
-                Que bom te ver aqui!
-              </p>
-              <p className="text-xs sm:text-lg font-nunito font-extrabold italic bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 bg-clip-text text-transparent drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] text-center sm:text-left tracking-wide uppercase">
-                A SUA PRESENÇA É MUITO IMPORTANTE PRA TODOS NÓS
-              </p>
-              
-              {/* Medalhas ao lado do nome */}
-              <div className="flex gap-2 mt-2 sm:mt-0 justify-center sm:justify-start">
-                {/* Medalha de Sobriedade */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur-lg opacity-50 animate-pulse"></div>
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg relative">
-                      <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </div>
-                  </div>
-                  <span className="text-yellow-400 text-xs sm:text-sm font-bold ml-1">{profile?.dias_sobriedade || 0}d</span>
-                </motion.div>
-
-                {/* Medalha de Uso do App */}
-                <motion.div 
-                  className="flex items-center"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full blur-lg opacity-50 animate-pulse"></div>
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg relative">
-                      <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                    </div>
-                  </div>
-                  <span className="text-blue-400 text-xs sm:text-sm font-bold ml-1">{profile?.mood_points || 0}d</span>
-                </motion.div>
-
-                {/* Nível do Usuário */}
-                <motion.div
-                  className="flex items-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 }}
-                >
-                  <div className={`px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r ${getUserLevel(profile?.dias_sobriedade || 0).color} text-white text-xs sm:text-sm font-medium shadow-lg`}>
-                    {getUserLevel(profile?.dias_sobriedade || 0).name}
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Botão de Sobriedade com efeito de brilho */}
-        <motion.div 
-          className="mt-6 px-0 sm:px-4 w-full max-w-md mx-auto"
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          <motion.button
-            onClick={handleSobrietyConfirmation}
-            disabled={hasConfirmedSobriety}
-            className={`w-full py-4 sm:py-5 rounded-[16px] sm:rounded-[20px] text-white font-bold text-lg sm:text-xl relative overflow-hidden backdrop-blur-sm ${
-              hasConfirmedSobriety 
-                ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 shadow-[0_8px_30px_rgba(16,185,129,0.2)]' 
-                : 'bg-gradient-to-r from-red-600 to-red-500 shadow-[0_8px_30px_rgba(239,68,68,0.2)] hover:shadow-[0_8px_30px_rgba(239,68,68,0.3)]'
-            }`}
+          {/* Contador de Uso do App */}
+          <motion.div 
+            className="bg-gradient-to-br from-[#2d0036]/60 to-black/60 p-4 rounded-xl backdrop-blur-sm border border-purple-900/50"
             whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
           >
-            <motion.div
-              className="absolute inset-0 bg-white/20"
-              initial={{ x: '-100%' }}
-              animate={{ x: '100%' }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            />
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-              initial={{ x: '-100%' }}
-              animate={{ x: '100%' }}
-              transition={{ repeat: Infinity, duration: 3, delay: 0.5 }}
-            />
-            <div className="relative z-10 flex items-center justify-center gap-3">
-              {hasConfirmedSobriety ? (
-                <>
-                  <span className="drop-shadow-lg">SOBRIEDADE CONFIRMADA HOJE</span>
-                  <motion.div
-                    className="text-2xl"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                  >
-                    ✓
-                  </motion.div>
-                </>
-              ) : (
-                <>
-                  <span className="drop-shadow-lg">HOJE EU NÃO VOU USAR!</span>
-                  <motion.div
-                    className="text-2xl"
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                  >
-                    !
-                  </motion.div>
-                </>
-              )}
+            <div className="flex items-center mb-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg relative">
+                <Calendar className="w-5 h-5 text-white" />
+              </div>
+              <div className="ml-3">
+                <p className="text-xs text-white/80 font-medium">No Aplicativo</p>
+                <p className="text-lg text-blue-400 font-bold">{profile?.mood_points || 0} dias</p>
+              </div>
             </div>
-          </motion.button>
-        </motion.div>
+            <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-blue-400 to-blue-600"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, (profile?.mood_points || 0) / 3.65)}%` }}
+                transition={{ delay: 1, duration: 1 }}
+              />
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Botão de confirmação de sobriedade */}
+      <motion.div 
+        className="mt-4 px-6"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.5 }}
+      >
+        <motion.button
+          onClick={handleSobrietyConfirmation}
+          disabled={hasConfirmedSobriety}
+          className={`w-full py-4 rounded-[16px] text-white font-bold text-lg relative overflow-hidden backdrop-blur-sm ${
+            hasConfirmedSobriety 
+              ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 shadow-[0_8px_30px_rgba(16,185,129,0.2)]' 
+              : 'bg-gradient-to-r from-red-600 to-red-500 shadow-[0_8px_30px_rgba(239,68,68,0.2)] hover:shadow-[0_8px_30px_rgba(239,68,68,0.3)]'
+          }`}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <motion.div
+            className="absolute inset-0 bg-white/20"
+            initial={{ x: '-100%' }}
+            animate={{ x: '100%' }}
+            transition={{ repeat: Infinity, duration: 2 }}
+          />
+          <div className="relative z-10 flex items-center justify-center gap-3">
+            {hasConfirmedSobriety ? (
+              <>
+                <span className="drop-shadow-lg">SOBRIEDADE CONFIRMADA HOJE</span>
+                <motion.div
+                  className="text-2xl"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  ✓
+                </motion.div>
+              </>
+            ) : (
+              <>
+                <span className="drop-shadow-lg">HOJE EU NÃO VOU USAR!</span>
+                <motion.div
+                  className="text-2xl"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  !
+                </motion.div>
+              </>
+            )}
+          </div>
+        </motion.button>
       </motion.div>
 
       {/* Menu Grid com efeito de vidro e animações */}

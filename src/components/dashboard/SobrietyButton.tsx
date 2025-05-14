@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { registerActivity } from "@/utils/activityPoints";
+import { motion } from "framer-motion";
 
 type SobrietyButtonProps = {
   hasConfirmedSobriety: boolean;
@@ -55,20 +57,48 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
   });
 
   return (
-    <div className="px-6 mb-8">
-      <Button 
-        className={`w-full py-6 text-lg font-bold transition-all duration-300 ${
-          hasConfirmedSobriety 
-            ? 'bg-green-600 hover:bg-green-700' 
-            : 'bg-red-600 hover:bg-red-700'
-        } text-white`}
-        onClick={() => sobrietyDeclaration.mutate()}
-        disabled={hasConfirmedSobriety}
-      >
-        {hasConfirmedSobriety 
-          ? "SOBRIEDADE CONFIRMADA HOJE ✓" 
-          : "HOJE EU NAO VOU USAR!"}
-      </Button>
-    </div>
+    <motion.button
+      onClick={() => sobrietyDeclaration.mutate()}
+      disabled={hasConfirmedSobriety}
+      className={`w-full py-4 rounded-[16px] text-white font-bold text-lg relative overflow-hidden backdrop-blur-sm ${
+        hasConfirmedSobriety 
+          ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 shadow-[0_8px_30px_rgba(16,185,129,0.2)]' 
+          : 'bg-gradient-to-r from-red-600 to-red-500 shadow-[0_8px_30px_rgba(239,68,68,0.2)] hover:shadow-[0_8px_30px_rgba(239,68,68,0.3)]'
+      }`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <motion.div
+        className="absolute inset-0 bg-white/20"
+        initial={{ x: '-100%' }}
+        animate={{ x: '100%' }}
+        transition={{ repeat: Infinity, duration: 2 }}
+      />
+      <div className="relative z-10 flex items-center justify-center gap-3">
+        {hasConfirmedSobriety ? (
+          <>
+            <span className="drop-shadow-lg">SOBRIEDADE CONFIRMADA HOJE</span>
+            <motion.div
+              className="text-2xl"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            >
+              ✓
+            </motion.div>
+          </>
+        ) : (
+          <>
+            <span className="drop-shadow-lg">HOJE EU NÃO VOU USAR!</span>
+            <motion.div
+              className="text-2xl"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            >
+              !
+            </motion.div>
+          </>
+        )}
+      </div>
+    </motion.button>
   );
 };
