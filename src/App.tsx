@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Sonner } from "@/components/ui/sonner";
@@ -29,6 +30,8 @@ import AtualizarHumor from "./pages/AtualizarHumor";
 import Admin from "./pages/Admin";
 import Triggers from "./pages/Triggers";
 import Users from "./pages/Users";
+import UserProfile from "./pages/UserProfile";
+import Irmandade from "./pages/Irmandade";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +69,8 @@ const App = () => {
               <Route path="/devotional" element={<Devotional />} />
               <Route path="/triggers" element={<Triggers />} />
               <Route path="/usuarios" element={<Users />} />
+              <Route path="/perfil/:id" element={<UserProfile />} />
+              <Route path="/irmandade" element={<Irmandade />} />
               <Route path="/talk-to-me" element={<Navigate to="/triggers" replace />} />
               <Route path="/chat" element={<Navigate to="/triggers" replace />} />
               <Route path="/treatments" element={<Treatments />} />

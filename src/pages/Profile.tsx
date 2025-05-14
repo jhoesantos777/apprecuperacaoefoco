@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { BackButton } from "@/components/BackButton";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -21,6 +22,8 @@ const Profile = () => {
   const [tratamentosConcluidos, setTratamentosConcluidos] = useState(0);
   const [historicoFamiliar, setHistoricoFamiliar] = useState(false);
   const [idade, setIdade] = useState<number>(0);
+  const [cidade, setCidade] = useState<string>("");
+  const [story, setStory] = useState<string>("");
 
   useEffect(() => {
     loadUserProfile();
@@ -47,6 +50,8 @@ const Profile = () => {
         setTratamentosConcluidos(profile.tratamentos_concluidos || 0);
         setHistoricoFamiliar(profile.historico_familiar_uso || false);
         setIdade(profile.idade || 0);
+        setCidade(profile.cidade || "");
+        setStory(profile.story || "");
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -81,6 +86,8 @@ const Profile = () => {
           tratamentos_concluidos: tratamentosConcluidos,
           historico_familiar_uso: historicoFamiliar,
           idade: idade,
+          cidade: cidade,
+          story: story,
         })
         .eq("id", user.id);
 
@@ -109,7 +116,45 @@ const Profile = () => {
 
         <Card className="p-6 space-y-6">
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Histórico de Uso</h2>
+            <h2 className="text-xl font-semibold">Informações Pessoais</h2>
+            
+            <div>
+              <Label htmlFor="idade">Idade</Label>
+              <Input
+                id="idade"
+                type="number"
+                min={0}
+                max={120}
+                value={idade}
+                onChange={(e) => setIdade(Number(e.target.value))}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="cidade">Cidade</Label>
+              <Input
+                id="cidade"
+                placeholder="Sua cidade"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="story">Minha História de Recuperação</Label>
+              <Textarea
+                id="story"
+                placeholder="Compartilhe sua jornada de recuperação (opcional)"
+                value={story}
+                onChange={(e) => setStory(e.target.value)}
+                rows={5}
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Esta história será compartilhada apenas com membros da Irmandade
+              </p>
+            </div>
+
+            <h2 className="text-xl font-semibold pt-4">Histórico de Uso</h2>
             
             <div>
               <Label>Tipo(s) de Droga(s) Usada(s)</Label>
@@ -160,18 +205,6 @@ const Profile = () => {
                 id="historicoFamiliar"
                 checked={historicoFamiliar}
                 onCheckedChange={setHistoricoFamiliar}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="idade">Idade</Label>
-              <Input
-                id="idade"
-                type="number"
-                min={0}
-                max={120}
-                value={idade}
-                onChange={(e) => setIdade(Number(e.target.value))}
               />
             </div>
           </div>
