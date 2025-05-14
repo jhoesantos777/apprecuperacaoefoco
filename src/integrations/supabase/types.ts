@@ -401,6 +401,24 @@ export type Database = {
         }
         Relationships: []
       }
+      irmandade_members: {
+        Row: {
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lessons: {
         Row: {
           content: string
@@ -523,6 +541,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          badges: string[] | null
           cidade: string | null
           created_at: string | null
           data_nascimento: string | null
@@ -537,7 +556,9 @@ export type Database = {
           mood_points: number | null
           motivation_note: string | null
           nome: string | null
+          rank: string | null
           sobriety_start_date: string | null
+          story: string | null
           telefone: string | null
           tempo_uso: string | null
           tratamentos_concluidos: number | null
@@ -546,6 +567,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          badges?: string[] | null
           cidade?: string | null
           created_at?: string | null
           data_nascimento?: string | null
@@ -560,7 +582,9 @@ export type Database = {
           mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
+          rank?: string | null
           sobriety_start_date?: string | null
+          story?: string | null
           telefone?: string | null
           tempo_uso?: string | null
           tratamentos_concluidos?: number | null
@@ -569,6 +593,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          badges?: string[] | null
           cidade?: string | null
           created_at?: string | null
           data_nascimento?: string | null
@@ -583,7 +608,9 @@ export type Database = {
           mood_points?: number | null
           motivation_note?: string | null
           nome?: string | null
+          rank?: string | null
           sobriety_start_date?: string | null
+          story?: string | null
           telefone?: string | null
           tempo_uso?: string | null
           tratamentos_concluidos?: number | null

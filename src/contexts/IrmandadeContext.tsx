@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "@/components/ui/use-toast";
 import { IrmandadeMember } from "@/types/supabase";
 
 interface IrmandadeContextType {
@@ -58,7 +58,9 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast("Você precisa estar logado para participar da Irmandade");
+        toast({
+          description: "Você precisa estar logado para participar da Irmandade"
+        });
         return;
       }
 
@@ -69,15 +71,21 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       if (error) {
         console.error("Error joining Irmandade:", error);
-        toast("Erro ao entrar na Irmandade. Tente novamente.");
+        toast({
+          description: "Erro ao entrar na Irmandade. Tente novamente."
+        });
         return;
       }
 
       setIsMember(true);
-      toast("Bem-vindo à Irmandade! Você agora tem acesso completo à comunidade.");
+      toast({
+        description: "Bem-vindo à Irmandade! Você agora tem acesso completo à comunidade."
+      });
     } catch (error) {
       console.error("Error joining Irmandade:", error);
-      toast("Erro ao entrar na Irmandade. Tente novamente.");
+      toast({
+        description: "Erro ao entrar na Irmandade. Tente novamente."
+      });
     }
   };
 
@@ -95,15 +103,21 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       if (error) {
         console.error("Error leaving Irmandade:", error);
-        toast("Erro ao sair da Irmandade. Tente novamente.");
+        toast({
+          description: "Erro ao sair da Irmandade. Tente novamente."
+        });
         return;
       }
 
       setIsMember(false);
-      toast("Você saiu da Irmandade. Esperamos vê-lo novamente em breve.");
+      toast({
+        description: "Você saiu da Irmandade. Esperamos vê-lo novamente em breve."
+      });
     } catch (error) {
       console.error("Error leaving Irmandade:", error);
-      toast("Erro ao sair da Irmandade. Tente novamente.");
+      toast({
+        description: "Erro ao sair da Irmandade. Tente novamente."
+      });
     }
   };
 
