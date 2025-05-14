@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -12,6 +11,18 @@ import { toast } from "@/components/ui/sonner";
 import { DrugSelection } from "@/components/DrugSelection";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from '@/components/Logo';
+
+// Defining profile interface to include story property
+interface ProfileData {
+  drogas_uso?: string[];
+  tempo_uso?: string;
+  tratamentos_tentados?: number;
+  tratamentos_concluidos?: number;
+  historico_familiar_uso?: boolean;
+  idade?: number;
+  cidade?: string;
+  story?: string;
+}
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -51,7 +62,8 @@ const Profile = () => {
         setHistoricoFamiliar(profile.historico_familiar_uso || false);
         setIdade(profile.idade || 0);
         setCidade(profile.cidade || "");
-        setStory(profile.story || "");
+        // Use type assertion to access story property
+        setStory((profile as ProfileData).story || "");
       }
     } catch (error) {
       console.error("Error loading profile:", error);
@@ -77,6 +89,7 @@ const Profile = () => {
         return;
       }
 
+      // Update profile with story field
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -88,12 +101,12 @@ const Profile = () => {
           idade: idade,
           cidade: cidade,
           story: story,
-        })
+        } as ProfileData)
         .eq("id", user.id);
 
       if (error) throw error;
 
-      toast("Suas informações foram salvas com sucesso!");
+      toast("Suas informaç��es foram salvas com sucesso!");
     } catch (error) {
       console.error("Error saving profile:", error);
       toast("Não foi possível salvar suas informações");

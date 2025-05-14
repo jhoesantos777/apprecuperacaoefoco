@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
 import { Search, UserPlus, Users, Filter } from 'lucide-react';
-import { Lock } from '@/components/icons/Lock';
+import { Lock } from 'lucide-react'; // Updated import from lucide-react
 
 interface UserProfile {
   id: string;
@@ -34,6 +34,7 @@ const Irmandade: React.FC = () => {
     const fetchProfiles = async () => {
       setLoading(true);
       try {
+        // Not querying for story field since it may not exist yet
         const { data, error } = await supabase
           .from('profiles')
           .select('id, nome, avatar_url, dias_sobriedade, cidade')
@@ -45,8 +46,9 @@ const Irmandade: React.FC = () => {
           return;
         }
         
-        setProfiles(data || []);
-        setFilteredProfiles(data || []);
+        // Cast data to UserProfile[] to allow for story property
+        setProfiles(data || [] as UserProfile[]);
+        setFilteredProfiles(data || [] as UserProfile[]);
       } catch (error) {
         console.error('Erro inesperado:', error);
       } finally {

@@ -29,6 +29,7 @@ const UserProfilePage: React.FC = () => {
     const fetchUser = async () => {
       setLoading(true);
       try {
+        // Note: We're not selecting story field directly as it may not exist yet in the database
         const { data, error } = await supabase
           .from('profiles')
           .select('id, nome, avatar_url, dias_sobriedade, cidade')
@@ -36,6 +37,7 @@ const UserProfilePage: React.FC = () => {
           .single();
         
         if (!error && data) {
+          // Cast data to UserProfile to allow for story property
           setUser(data as UserProfile);
           
           // If not a member, decrement the view count

@@ -29,13 +29,11 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return false;
       }
 
+      // Using raw SQL query to check membership to avoid TypeScript errors
       const { data, error } = await supabase
-        .from('irmandade_members')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .rpc('check_irmandade_membership', { user_id_param: user.id });
 
-      if (error && !error.message.includes('no rows returned')) {
+      if (error) {
         console.error("Error checking membership:", error);
         setIsMember(false);
         return false;
@@ -59,9 +57,9 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return;
       }
 
+      // Using raw SQL to insert into irmandade_members
       const { error } = await supabase
-        .from('irmandade_members')
-        .insert({ user_id: user.id });
+        .rpc('join_irmandade', { user_id_param: user.id });
 
       if (error) {
         console.error("Error joining Irmandade:", error);
@@ -83,10 +81,9 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       if (!user) return;
 
+      // Using raw SQL to delete from irmandade_members
       const { error } = await supabase
-        .from('irmandade_members')
-        .delete()
-        .eq('user_id', user.id);
+        .rpc('leave_irmandade', { user_id_param: user.id });
 
       if (error) {
         console.error("Error leaving Irmandade:", error);
