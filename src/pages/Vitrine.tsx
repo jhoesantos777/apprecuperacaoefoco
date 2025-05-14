@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
-import { Search, Users, Award, SlidersHorizontal } from 'lucide-react';
+import { Search, Users, Award, SlidersHorizontal, Edit2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { UserProfile } from '@/types/supabase';
 import {
@@ -26,13 +26,21 @@ const Vitrine: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('sobriedade');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { isMember } = useIrmandade();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchUserAndProfiles = async () => {
       setLoading(true);
       try {
+        // Obter o ID do usuário atual
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData?.user?.id) {
+          setCurrentUserId(userData.user.id);
+        }
+
+        // Buscar perfis
         const { data, error } = await supabase
           .from('profiles')
           .select('id, nome, avatar_url, dias_sobriedade, cidade, story, rank, badges')
@@ -64,7 +72,7 @@ const Vitrine: React.FC = () => {
       }
     };
     
-    fetchProfiles();
+    fetchUserAndProfiles();
   }, []);
 
   useEffect(() => {
@@ -121,6 +129,17 @@ const Vitrine: React.FC = () => {
             <p className="text-gray-300 max-w-2xl">
               Conecte-se com pessoas em jornada de recuperação, compartilhe experiências e encontre inspiração.
             </p>
+          </div>
+          
+          {/* Botão de editar perfil */}
+          <div className="mt-4 sm:mt-0">
+            <Button 
+              onClick={() => navigate('/profile')}
+              className="flex items-center gap-2 bg-purple-700 hover:bg-purple-800"
+            >
+              <Edit2 className="h-4 w-4" />
+              Editar Meu Perfil
+            </Button>
           </div>
         </div>
         
@@ -193,6 +212,7 @@ const Vitrine: React.FC = () => {
                     key={profile.id} 
                     profile={profile} 
                     preview={!isMember}
+                    isCurrentUser={profile.id === currentUserId}
                   />
                 ))}
               </div>

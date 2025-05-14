@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,20 +7,28 @@ import { Button } from '@/components/ui/button';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
 import { MembershipBanner } from '@/components/irmandade/MembershipBanner';
 import { Card } from '@/components/ui/card';
-import { Shield, MapPin, Calendar, MessageSquare } from 'lucide-react';
+import { Shield, MapPin, Calendar, MessageSquare, Edit2 } from 'lucide-react';
 import { UserProfile } from '@/types/supabase';
+import { toast } from '@/components/ui/use-toast';
 
 const UserProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const navigate = useNavigate();
   const { isMember, decrementViews, remainingViews } = useIrmandade();
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchProfileData = async () => {
       setLoading(true);
       try {
+        // Verificar se o perfil é do próprio usuário
+        const { data: userData } = await supabase.auth.getUser();
+        const isOwn = userData?.user?.id === id;
+        setIsOwnProfile(isOwn);
+        
+        // Buscar dados do perfil
         const { data, error } = await supabase
           .from('profiles')
           .select('id, nome, avatar_url, dias_sobriedade, cidade, story, rank, badges')
@@ -29,19 +38,24 @@ const UserProfilePage: React.FC = () => {
         if (!error && data) {
           setUser(data as UserProfile);
           
-          // If not a member, decrement the view count
-          if (!isMember && remainingViews > 0) {
+          // Se não é membro e não é o próprio perfil, decrementar visualizações
+          if (!isMember && remainingViews > 0 && !isOwn) {
             decrementViews();
           }
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar o perfil do usuário",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
     
-    if (id) fetchUser();
+    if (id) fetchProfileData();
   }, [id, isMember, decrementViews, remainingViews]);
 
   if (loading) {
@@ -89,7 +103,16 @@ const UserProfilePage: React.FC = () => {
               )}
             </div>
             
-            {user?.story && isMember && (
+            {isOwnProfile && (
+              <Button 
+                onClick={() => navigate('/profile')}
+                className="mb-6 bg-yellow-600 hover:bg-yellow-700 flex items-center gap-2"
+              >
+                <Edit2 className="h-4 w-4" /> Editar Meu Perfil
+              </Button>
+            )}
+            
+            {user?.story && (isMember || isOwnProfile) && (
               <Card className="bg-white/10 w-full mb-6 p-4">
                 <div className="flex items-start gap-3">
                   <MessageSquare className="text-purple-400 h-5 w-5 mt-1" />
@@ -101,7 +124,7 @@ const UserProfilePage: React.FC = () => {
               </Card>
             )}
             
-            {!isMember && (
+            {!isMember && !isOwnProfile && (
               <Card className="bg-white/10 w-full mb-6 p-4">
                 <div className="text-center p-4">
                   <MessageSquare className="mx-auto text-gray-400 h-8 w-8 mb-2" />
@@ -128,10 +151,10 @@ const UserProfilePage: React.FC = () => {
               </Button>
               
               <Button
-                onClick={() => navigate('/irmandade')}
+                onClick={() => navigate('/vitrine')}
                 className="bg-purple-700 hover:bg-purple-800 text-white"
               >
-                Ver Comunidade
+                Ver Todos os Membros
               </Button>
             </div>
           </div>

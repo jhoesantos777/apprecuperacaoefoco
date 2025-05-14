@@ -5,16 +5,17 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
-import { Lock, MessageSquare, User, MapPin, Award } from 'lucide-react';
+import { Lock, MessageSquare, User, MapPin, Award, Edit2 } from 'lucide-react';
 import { ProfilePicture } from '@/components/ProfilePicture';
 import { UserProfile } from '@/types/supabase';
 
 interface ProfileCardProps {
   profile: UserProfile;
   preview?: boolean;
+  isCurrentUser?: boolean;
 }
 
-export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, preview = false }) => {
+export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, preview = false, isCurrentUser = false }) => {
   const navigate = useNavigate();
   const { decrementViews } = useIrmandade();
   
@@ -27,8 +28,20 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, preview = fal
     }
   };
 
+  const handleEditProfile = () => {
+    navigate('/profile');
+  };
+
   return (
-    <Card className={`p-6 border border-purple-600/40 bg-gradient-to-b from-[#2d0036]/60 to-black overflow-hidden relative ${preview ? 'opacity-90' : ''} hover:shadow-xl hover:shadow-purple-900/20 transition-all`}>
+    <Card className={`p-6 border ${isCurrentUser ? 'border-yellow-500/70' : 'border-purple-600/40'} bg-gradient-to-b from-[#2d0036]/60 to-black overflow-hidden relative ${preview ? 'opacity-90' : ''} hover:shadow-xl hover:shadow-purple-900/20 transition-all`}>
+      {isCurrentUser && (
+        <div className="absolute top-2 left-2">
+          <Badge variant="outline" className="bg-yellow-900/50 text-yellow-200 border-yellow-600/50">
+            Seu Perfil
+          </Badge>
+        </div>
+      )}
+
       {preview && (
         <div className="absolute top-2 right-2">
           <Badge variant="secondary" className="bg-purple-900 text-purple-100">Preview</Badge>
@@ -80,21 +93,31 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile, preview = fal
           )}
         </div>
 
-        <Button
-          onClick={handleViewProfile}
-          className="w-full bg-purple-700 hover:bg-purple-800 mt-auto"
-          size="sm"
-        >
-          {preview ? (
-            <>
-              <Lock className="h-4 w-4 mr-1" /> Visualizar Perfil
-            </>
-          ) : (
-            <>
-              <MessageSquare className="h-4 w-4 mr-1" /> Conectar
-            </>
-          )}
-        </Button>
+        {isCurrentUser ? (
+          <Button
+            onClick={handleEditProfile}
+            className="w-full bg-yellow-600 hover:bg-yellow-700 mt-auto"
+            size="sm"
+          >
+            <Edit2 className="h-4 w-4 mr-1" /> Editar Meu Perfil
+          </Button>
+        ) : (
+          <Button
+            onClick={handleViewProfile}
+            className="w-full bg-purple-700 hover:bg-purple-800 mt-auto"
+            size="sm"
+          >
+            {preview ? (
+              <>
+                <Lock className="h-4 w-4 mr-1" /> Visualizar Perfil
+              </>
+            ) : (
+              <>
+                <MessageSquare className="h-4 w-4 mr-1" /> Conectar
+              </>
+            )}
+          </Button>
+        )}
       </div>
     </Card>
   );
