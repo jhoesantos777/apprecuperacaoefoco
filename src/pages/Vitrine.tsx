@@ -69,7 +69,7 @@ const Vitrine: React.FC = () => {
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
-      handleSort(sortBy, profiles);
+      handleSort(sortBy);
       return;
     }
     
@@ -78,10 +78,18 @@ const Vitrine: React.FC = () => {
       profile.cidade?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     
-    handleSort(sortBy, filtered);
+    handleSort(sortBy);
   }, [searchTerm, profiles, sortBy]);
 
-  const handleSort = (sortValue: string, profilesToSort: UserProfile[]) => {
+  // Modified handleSort to use the current state instead of accepting profiles as an argument
+  const handleSort = (sortValue: string) => {
+    let profilesToSort = searchTerm.trim() === '' 
+      ? [...profiles] 
+      : [...profiles.filter(profile => 
+          profile.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          profile.cidade?.toLowerCase().includes(searchTerm.toLowerCase())
+        )];
+    
     let sorted = [...profilesToSort];
     
     switch (sortValue) {
