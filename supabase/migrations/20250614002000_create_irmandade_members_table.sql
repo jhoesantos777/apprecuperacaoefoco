@@ -1,3 +1,4 @@
+
 -- Create the irmandade_members table
 CREATE TABLE IF NOT EXISTS public.irmandade_members (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

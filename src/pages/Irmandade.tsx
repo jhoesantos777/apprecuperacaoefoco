@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,8 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
-import { Search, UserPlus, Users, Filter } from 'lucide-react';
-import { Lock } from 'lucide-react'; // Updated import from lucide-react
+import { Search, UserPlus, Users, Filter, Lock } from 'lucide-react';
 
 interface UserProfile {
   id: string;
