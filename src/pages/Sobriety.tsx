@@ -108,7 +108,7 @@ const Sobriety = () => {
               onDateSelect={handleDateSelect}
             />
 
-            {medals && <SobrietyMedals medals={medals} daysCount={profile?.dias_sobriedade || 0} />}
+            {medals && <SobrietyMedals medals={medals} />}
 
             <MotivationNote 
               isEditing={isEditingNote}
