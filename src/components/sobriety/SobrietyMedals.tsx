@@ -1,16 +1,26 @@
 
-import { Trophy } from "lucide-react";
+import { Trophy, Medal } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type Medal = {
   id: string;
   days_milestone: number;
 };
 
-type SobrietyMedalsProps = {
+export type SobrietyMedalsProps = {
   medals: Medal[];
+  compact?: boolean;
+  daysCount?: number;
+  variant?: "sobriety" | "app";
 };
 
-export const SobrietyMedals = ({ medals }: SobrietyMedalsProps) => {
+export const SobrietyMedals = ({ 
+  medals, 
+  compact = false, 
+  daysCount = 0, 
+  variant = "sobriety" 
+}: SobrietyMedalsProps) => {
   const getMedalColor = (days: number) => {
     if (days >= 365) return "text-yellow-400";
     if (days >= 180) return "text-purple-400";
@@ -18,6 +28,60 @@ export const SobrietyMedals = ({ medals }: SobrietyMedalsProps) => {
     if (days >= 30) return "text-green-400";
     return "text-gray-400";
   };
+
+  const getMedalIcon = (days: number) => {
+    if (days >= 365) return "🏆";
+    if (days >= 180) return "🥇";
+    if (days >= 90) return "🥈";
+    if (days >= 30) return "🥉";
+    return "🏅";
+  };
+
+  const getMedalName = (days: number) => {
+    if (days >= 365) return "Troféu Anual";
+    if (days >= 180) return "Medalha de Ouro";
+    if (days >= 90) return "Medalha de Prata";
+    if (days >= 30) return "Medalha de Bronze";
+    return "Medalha Iniciante";
+  };
+
+  const getBadgeVariant = (days: number) => {
+    if (variant === "sobriety") {
+      if (days >= 365) return "gold";
+      if (days >= 180) return "purple";
+      if (days >= 90) return "blue";
+      if (days >= 30) return "green";
+      return "default";
+    } else {
+      if (days >= 365) return "diamond";
+      if (days >= 180) return "platinum";
+      if (days >= 90) return "silver";
+      if (days >= 30) return "bronze";
+      return "default";
+    }
+  };
+
+  // Get the highest medal based on days count
+  const getHighestMedal = () => {
+    if (daysCount >= 365) return { days: 365, icon: "🏆" };
+    if (daysCount >= 180) return { days: 180, icon: "🥇" };
+    if (daysCount >= 90) return { days: 90, icon: "🥈" };
+    if (daysCount >= 30) return { days: 30, icon: "🥉" };
+    return { days: 0, icon: "🏅" };
+  };
+
+  const highestMedal = getHighestMedal();
+
+  if (compact) {
+    return (
+      <div className="flex items-center">
+        <Badge variant={getBadgeVariant(highestMedal.days)} size="lg" className="gap-1">
+          <span className="text-lg">{highestMedal.icon}</span>
+          <span className="ml-1 font-medium">{daysCount} dias</span>
+        </Badge>
+      </div>
+    );
+  }
 
   if (!medals || medals.length === 0) return null;
 

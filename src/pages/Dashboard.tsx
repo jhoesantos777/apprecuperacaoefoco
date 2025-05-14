@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,11 +17,11 @@ import {
   AlertTriangle, 
   Thermometer 
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/ui/sonner';
 import { Logo } from '@/components/Logo';
 import { SobrietyButton } from '@/components/dashboard/SobrietyButton';
+import { SobrietyMedals } from '@/components/dashboard/SobrietyMedals';
 
 const Dashboard = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
@@ -222,16 +223,16 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
-      {/* Medalhas e contadores */}
+      {/* Medalhas e insignias */}
       <motion.div 
         className="px-6 py-4 w-full"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7, duration: 0.5 }}
       >
-        {/* Container para os dois contadores lado a lado */}
+        {/* Container para os dois badges de medalhas lado a lado */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Contador de Sobriedade */}
+          {/* Medalha de Sobriedade */}
           <motion.div 
             className="bg-gradient-to-br from-[#2d0036]/60 to-black/60 p-4 rounded-xl backdrop-blur-sm border border-purple-900/50"
             whileHover={{ scale: 1.02 }}
@@ -242,7 +243,12 @@ const Dashboard = () => {
               </div>
               <div className="ml-3">
                 <p className="text-xs text-white/80 font-medium">Sobriedade</p>
-                <p className="text-lg text-yellow-400 font-bold">{profile?.dias_sobriedade || 0} dias</p>
+                <SobrietyMedals 
+                  medals={[]} 
+                  compact={true} 
+                  daysCount={profile?.dias_sobriedade || 0} 
+                  variant="sobriety"
+                />
               </div>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
@@ -255,7 +261,7 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Contador de Uso do App */}
+          {/* Medalha de Uso do App */}
           <motion.div 
             className="bg-gradient-to-br from-[#2d0036]/60 to-black/60 p-4 rounded-xl backdrop-blur-sm border border-purple-900/50"
             whileHover={{ scale: 1.02 }}
@@ -266,7 +272,12 @@ const Dashboard = () => {
               </div>
               <div className="ml-3">
                 <p className="text-xs text-white/80 font-medium">No Aplicativo</p>
-                <p className="text-lg text-blue-400 font-bold">{profile?.mood_points || 0} dias</p>
+                <SobrietyMedals 
+                  medals={[]} 
+                  compact={true} 
+                  daysCount={profile?.mood_points || 0} 
+                  variant="app"
+                />
               </div>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
