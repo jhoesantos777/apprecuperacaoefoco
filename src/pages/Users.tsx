@@ -1,20 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfilePicture } from '@/components/ProfilePicture';
 import { useIrmandade } from '@/contexts/IrmandadeContext';
-
-interface UserProfile {
-  id: string;
-  nome: string;
-  avatar_url: string;
-  dias_sobriedade?: number;
-  cidade?: string;
-  story?: string;
-  rank?: string;
-  badges?: string[];
-}
+import { UserProfile } from '@/types/supabase';
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -26,7 +15,6 @@ const Users: React.FC = () => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        // Include new fields in the query
         const { data, error } = await supabase
           .from('profiles')
           .select('id, nome, avatar_url, dias_sobriedade, cidade, story, rank, badges');

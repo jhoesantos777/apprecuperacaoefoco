@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { IrmandadeMember } from "@/types/supabase";
 
 interface IrmandadeContextType {
   isMember: boolean;
@@ -30,7 +31,6 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
 
       // Check if the user exists in the irmandade_members table
-      // Using custom queries instead of RPC calls to avoid TypeScript errors
       const { data, error } = await supabase
         .from('irmandade_members')
         .select('user_id')

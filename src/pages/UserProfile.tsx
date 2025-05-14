@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,17 +7,7 @@ import { useIrmandade } from '@/contexts/IrmandadeContext';
 import { MembershipBanner } from '@/components/irmandade/MembershipBanner';
 import { Card } from '@/components/ui/card';
 import { Shield, MapPin, Calendar, MessageSquare } from 'lucide-react';
-
-interface UserProfile {
-  id: string;
-  nome: string;
-  avatar_url: string;
-  dias_sobriedade?: number;
-  cidade?: string;
-  story?: string;
-  rank?: string;
-  badges?: string[];
-}
+import { UserProfile } from '@/types/supabase';
 
 const UserProfilePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +20,6 @@ const UserProfilePage: React.FC = () => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        // Include story field in the selection
         const { data, error } = await supabase
           .from('profiles')
           .select('id, nome, avatar_url, dias_sobriedade, cidade, story, rank, badges')
@@ -39,7 +27,6 @@ const UserProfilePage: React.FC = () => {
           .single();
         
         if (!error && data) {
-          // Cast data to UserProfile
           setUser(data as UserProfile);
           
           // If not a member, decrement the view count
