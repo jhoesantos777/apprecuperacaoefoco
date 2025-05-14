@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,7 +98,10 @@ const Sobriety = () => {
 
         <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <div className="space-y-8">
-            <SobrietyCounter daysCount={profile?.dias_sobriedade || 0} />
+            <SobrietyCounter 
+              daysCount={profile?.dias_sobriedade || 0} 
+              sobrietyStartDate={profile?.sobriety_start_date}
+            />
             
             <SobrietyDatePicker 
               startDate={profile?.sobriety_start_date ? new Date(profile.sobriety_start_date) : null}

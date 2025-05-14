@@ -1,11 +1,22 @@
+
 import { CalendarDays } from "lucide-react";
 import { motion } from "framer-motion";
+import { format, differenceInDays } from "date-fns";
 
 type SobrietyCounterProps = {
   daysCount: number;
+  sobrietyStartDate?: string | null;
 };
 
-export const SobrietyCounter = ({ daysCount }: SobrietyCounterProps) => {
+export const SobrietyCounter = ({ daysCount, sobrietyStartDate }: SobrietyCounterProps) => {
+  // Calcular dias com base na data de início, se disponível
+  const calculatedDaysCount = sobrietyStartDate 
+    ? differenceInDays(new Date(), new Date(sobrietyStartDate))
+    : daysCount || 0;
+  
+  // Usar o maior valor entre o calculado e o informado
+  const displayDaysCount = Math.max(calculatedDaysCount, daysCount || 0);
+  
   const motivationalPhrases = [
     "Você está vencendo um dia de cada vez!",
     "Cada dia limpo é uma vitória!",
@@ -39,7 +50,7 @@ export const SobrietyCounter = ({ daysCount }: SobrietyCounterProps) => {
         className="relative"
       >
         <h1 className="text-7xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-blue-300 drop-shadow-lg">
-          {daysCount}
+          {displayDaysCount}
         </h1>
         <motion.div
           className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-purple-300 to-blue-300 rounded-full"
@@ -75,15 +86,15 @@ export const SobrietyCounter = ({ daysCount }: SobrietyCounterProps) => {
       >
         <div className="bg-white/5 p-3 rounded-lg border border-white/10">
           <p className="text-sm text-white/60">Dias</p>
-          <p className="text-xl font-bold text-white">{daysCount}</p>
+          <p className="text-xl font-bold text-white">{displayDaysCount}</p>
         </div>
         <div className="bg-white/5 p-3 rounded-lg border border-white/10">
           <p className="text-sm text-white/60">Meses</p>
-          <p className="text-xl font-bold text-white">{Math.floor(daysCount / 30)}</p>
+          <p className="text-xl font-bold text-white">{Math.floor(displayDaysCount / 30)}</p>
         </div>
         <div className="bg-white/5 p-3 rounded-lg border border-white/10">
           <p className="text-sm text-white/60">Anos</p>
-          <p className="text-xl font-bold text-white">{(daysCount / 365).toFixed(1)}</p>
+          <p className="text-xl font-bold text-white">{(displayDaysCount / 365).toFixed(1)}</p>
         </div>
       </motion.div>
     </motion.div>
