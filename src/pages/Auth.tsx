@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { BackButton } from '@/components/BackButton';
 import { Logo } from '@/components/Logo';
 
 const Auth = () => {
@@ -130,23 +129,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 flex flex-col px-6 py-8">
-      <div className="flex justify-between items-center">
-        <BackButton text="Início" className="text-white/70 hover:text-white" />
-        <Logo size="sm" className="mr-2" />
+      <div className="flex justify-center items-center">
+        <Logo size="lg" className="mb-4" />
       </div>
 
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full">
-        <div className="w-20 h-20 mb-8 mx-auto">
-          <div className="w-full h-full rounded-full border-4 border-yellow-300 flex items-center justify-center relative">
-            <div className="text-yellow-300 absolute">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-10 h-10">
-                <path d="M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4" />
-                <path d="M8 12L11 15L16 9" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
         <div className="text-center mb-12">
           <h1 className="text-yellow-300 text-3xl font-bold mb-2">
             OLÁ!
