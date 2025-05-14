@@ -14,15 +14,13 @@ import {
   Award, 
   GraduationCap, 
   AlertTriangle, 
-  Thermometer, 
-  Trophy 
+  Thermometer 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/ui/sonner';
 import { Logo } from '@/components/Logo';
 import { SobrietyButton } from '@/components/dashboard/SobrietyButton';
-import { SobrietyMedals } from '@/components/dashboard/SobrietyMedals';
 
 const Dashboard = () => {
   const [hasConfirmedSobriety, setHasConfirmedSobriety] = useState(false);
@@ -140,7 +138,7 @@ const Dashboard = () => {
     visible: { opacity: 1, y: 0 }
   };
 
-  // Function to determine the user's level
+  // Função para determinar o nível do usuário
   const getUserLevel = (sobrietyDays: number | null | undefined) => {
     const days = sobrietyDays || 0;
     if (days >= 7300) return { name: "🦕 Dinossauro da Recuperação", color: "from-purple-500 to-pink-500" };
@@ -233,25 +231,19 @@ const Dashboard = () => {
       >
         {/* Container para os dois contadores lado a lado */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Contador de Sobriedade com medalhas */}
+          {/* Contador de Sobriedade */}
           <motion.div 
             className="bg-gradient-to-br from-[#2d0036]/60 to-black/60 p-4 rounded-xl backdrop-blur-sm border border-purple-900/50"
             whileHover={{ scale: 1.02 }}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg relative">
-                  <Trophy className="w-5 h-5 text-white" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-xs text-white/80 font-medium">Sobriedade</p>
-                </div>
+            <div className="flex items-center mb-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg relative">
+                <Crown className="w-5 h-5 text-white" />
               </div>
-              <SobrietyMedals 
-                medals={[]} 
-                daysCount={profile?.dias_sobriedade || 0} 
-                compact={true} 
-              />
+              <div className="ml-3">
+                <p className="text-xs text-white/80 font-medium">Sobriedade</p>
+                <p className="text-lg text-yellow-400 font-bold">{profile?.dias_sobriedade || 0} dias</p>
+              </div>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
               <motion.div 
@@ -263,25 +255,19 @@ const Dashboard = () => {
             </div>
           </motion.div>
 
-          {/* Contador de Uso do App com medalhas */}
+          {/* Contador de Uso do App */}
           <motion.div 
             className="bg-gradient-to-br from-[#2d0036]/60 to-black/60 p-4 rounded-xl backdrop-blur-sm border border-purple-900/50"
             whileHover={{ scale: 1.02 }}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg relative">
-                  <Calendar className="w-5 h-5 text-white" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-xs text-white/80 font-medium">No Aplicativo</p>
-                </div>
+            <div className="flex items-center mb-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg relative">
+                <Calendar className="w-5 h-5 text-white" />
               </div>
-              <SobrietyMedals 
-                medals={[]} 
-                daysCount={profile?.mood_points || 0} 
-                compact={true}
-              />
+              <div className="ml-3">
+                <p className="text-xs text-white/80 font-medium">No Aplicativo</p>
+                <p className="text-lg text-blue-400 font-bold">{profile?.mood_points || 0} dias</p>
+              </div>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
               <motion.div 
@@ -347,7 +333,7 @@ const Dashboard = () => {
         </motion.button>
       </motion.div>
 
-      {/* Menu Grid with app features */}
+      {/* Menu Grid com efeito de vidro e animações */}
       <div className="px-2 sm:px-6 mt-5 flex-1 overflow-x-auto z-10">
         <motion.div 
           className="flex gap-4 sm:gap-5 pb-4 min-w-max"
@@ -519,7 +505,7 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation com efeito de vidro */}
       <motion.div 
         className="mt-auto p-4 backdrop-blur-xl bg-white/10 border-t border-white/20 rounded-t-3xl flex justify-around"
         initial={{ y: 40, opacity: 0 }}
