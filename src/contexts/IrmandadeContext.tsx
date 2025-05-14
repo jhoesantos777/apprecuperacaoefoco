@@ -30,21 +30,22 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
 
       // Check if the user exists in the irmandade_members table
+      // Using custom queries instead of RPC calls to avoid TypeScript errors
       const { data, error } = await supabase
         .from('irmandade_members')
         .select('user_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.error("Error checking membership:", error);
         setIsMember(false);
         return false;
       }
 
-      const isMember = !!data;
-      setIsMember(isMember);
-      return isMember;
+      const membershipExists = !!data;
+      setIsMember(membershipExists);
+      return membershipExists;
     } catch (error) {
       console.error("Error checking membership:", error);
       setIsMember(false);
@@ -61,7 +62,7 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return;
       }
 
-      // Add the user to the irmandade_members table
+      // Add the user to the irmandade_members table using direct query
       const { error } = await supabase
         .from('irmandade_members')
         .insert({ user_id: user.id });
@@ -86,7 +87,7 @@ export const IrmandadeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       
       if (!user) return;
 
-      // Remove the user from the irmandade_members table
+      // Remove the user from the irmandade_members table using direct query
       const { error } = await supabase
         .from('irmandade_members')
         .delete()

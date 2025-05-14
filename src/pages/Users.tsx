@@ -3,26 +3,33 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfilePicture } from '@/components/ProfilePicture';
+import { useIrmandade } from '@/contexts/IrmandadeContext';
 
 interface UserProfile {
   id: string;
   nome: string;
   avatar_url: string;
   dias_sobriedade?: number;
+  cidade?: string;
+  story?: string;
+  rank?: string;
+  badges?: string[];
 }
 
 const Users: React.FC = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isMember } = useIrmandade();
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
+        // Include new fields in the query
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, nome, avatar_url, dias_sobriedade');
+          .select('id, nome, avatar_url, dias_sobriedade, cidade, story, rank, badges');
         
         console.log('Dados retornados:', data);
         console.log('Erro se houver:', error);
@@ -34,7 +41,7 @@ const Users: React.FC = () => {
         
         if (data) {
           console.log('Número de usuários encontrados:', data.length);
-          setUsers(data);
+          setUsers(data as UserProfile[]);
         }
       } catch (err) {
         console.error('Erro inesperado:', err);
@@ -69,9 +76,22 @@ const Users: React.FC = () => {
                 <div className="text-white font-bold text-xl mb-2 text-center group-hover:text-[#a259ec] transition-all">
                   {user.nome}
                 </div>
-                <div className="text-yellow-400 text-sm font-semibold mb-4">
+                <div className="text-yellow-400 text-sm font-semibold mb-2">
                   {user.dias_sobriedade ?? 0} dias em sobriedade
                 </div>
+                
+                {user.rank && isMember && (
+                  <div className="text-green-300 text-xs font-semibold mb-4">
+                    {user.rank}
+                  </div>
+                )}
+                
+                {user.cidade && (
+                  <div className="text-gray-300 text-xs mb-4">
+                    {user.cidade}
+                  </div>
+                )}
+                
                 <button
                   className="mt-auto w-full px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all text-sm transform hover:scale-105"
                   onClick={e => { e.stopPropagation(); navigate(`/perfil/${user.id}`); }}
@@ -87,4 +107,4 @@ const Users: React.FC = () => {
   );
 };
 
-export default Users; 
+export default Users;

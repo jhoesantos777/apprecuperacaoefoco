@@ -16,6 +16,8 @@ interface UserProfile {
   dias_sobriedade?: number;
   cidade?: string;
   story?: string;
+  rank?: string;
+  badges?: string[];
 }
 
 const UserProfilePage: React.FC = () => {
@@ -29,15 +31,15 @@ const UserProfilePage: React.FC = () => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        // Note: We're not selecting story field directly as it may not exist yet in the database
+        // Include story field in the selection
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, nome, avatar_url, dias_sobriedade, cidade')
+          .select('id, nome, avatar_url, dias_sobriedade, cidade, story, rank, badges')
           .eq('id', id)
           .single();
         
         if (!error && data) {
-          // Cast data to UserProfile to allow for story property
+          // Cast data to UserProfile
           setUser(data as UserProfile);
           
           // If not a member, decrement the view count
@@ -89,6 +91,13 @@ const UserProfilePage: React.FC = () => {
                 <div className="flex items-center text-gray-300">
                   <MapPin className="mr-1 h-4 w-4" />
                   <span>{user.cidade}</span>
+                </div>
+              )}
+
+              {user?.rank && (
+                <div className="flex items-center text-green-300">
+                  <Shield className="mr-1 h-4 w-4" />
+                  <span>{user.rank}</span>
                 </div>
               )}
             </div>
