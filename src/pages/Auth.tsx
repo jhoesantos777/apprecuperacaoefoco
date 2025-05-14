@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -211,11 +212,11 @@ const Auth = () => {
           </p>
         </div>
         
-        {/* Imagem adicionada abaixo dos textos */}
+        {/* Imagem atualizada abaixo dos textos */}
         <div className="mt-8 flex justify-center">
           <img 
-            src="/lovable-uploads/5a78990e-37e4-4311-b4f8-de3aafc25407.png" 
-            alt="Comunidade Terapêutica - Resgatados por Jesus" 
+            src="/lovable-uploads/598d5387-baa6-493c-bbe3-2f6a74da95d2.png" 
+            alt="Philos Logo" 
             className="max-w-full h-auto max-h-48"
           />
         </div>
