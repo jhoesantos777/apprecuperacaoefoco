@@ -1,19 +1,22 @@
 
-import { toast as sonnerToast, type Toast as SonnerToast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
-export type ToastProps = SonnerToast & {
+export interface ToastProps {
   title?: string;
   description?: string;
   variant?: "default" | "destructive";
-};
+  [key: string]: any;
+}
 
 // Re-export the toast function with our custom type
 export const toast = (props: ToastProps) => {
-  return sonnerToast(props.title || "", {
-    description: props.description,
+  // Extract title and description for sonner toast
+  const { title, description, variant, ...rest } = props;
+  return sonnerToast(title || "", {
+    description,
     // Map variant to Sonner's classes if needed
-    className: props.variant === "destructive" ? "bg-red-100" : undefined,
-    ...props
+    className: variant === "destructive" ? "bg-red-100" : undefined,
+    ...rest
   });
 };
 

@@ -1,20 +1,22 @@
 
-import { useToast } from "@/hooks/use-toast"
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
-} from "@/components/ui/toast"
+import { Toaster as SonnerToaster } from "sonner";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export function Toaster() {
-  const { toast } = useToast()
-  // Since we're using sonner's toast, we don't have 'toasts' property
+  const { isDarkMode } = useTheme();
+  
   return (
-    <ToastProvider>
-      <ToastViewport />
-    </ToastProvider>
-  )
+    <SonnerToaster
+      theme={isDarkMode ? "dark" : "light"}
+      className="toaster group"
+      toastOptions={{
+        classNames: {
+          toast: "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-muted-foreground",
+          actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
+          cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+        },
+      }}
+    />
+  );
 }

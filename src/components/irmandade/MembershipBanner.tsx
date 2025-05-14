@@ -13,17 +13,17 @@ export const MembershipBanner: React.FC<MembershipBannerProps> = ({ compact = fa
   const { isMember, joinIrmandade, leaveIrmandade, loading } = useIrmandade();
 
   return (
-    <Card className={`p-${compact ? '4' : '6'} border transition-all ${isMember ? 'bg-gradient-to-r from-green-900/40 to-green-800/20 border-green-600' : 'bg-gradient-to-r from-purple-900/30 to-purple-800/10 border-purple-600/50'}`}>
+    <Card className={`${compact ? 'p-4' : 'p-6'} border transition-all ${isMember ? 'bg-gradient-to-r from-green-900/40 to-green-800/20 border-green-600' : 'bg-gradient-to-r from-purple-900/30 to-purple-800/10 border-purple-600/50'}`}>
       <div className="flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center mb-4 sm:mb-0">
           {isMember ? (
-            <ShieldCheck className={`h-${compact ? '8' : '10'} w-${compact ? '8' : '10'} text-green-400 mr-4`} />
+            <ShieldCheck className={`${compact ? 'h-8 w-8' : 'h-10 w-10'} text-green-400 mr-4`} />
           ) : (
-            <Lock className={`h-${compact ? '8' : '10'} w-${compact ? '8' : '10'} text-purple-400 mr-4`} />
+            <Lock className={`${compact ? 'h-8 w-8' : 'h-10 w-10'} text-purple-400 mr-4`} />
           )}
           
           <div>
-            <h3 className={`text-${compact ? 'lg' : 'xl'} font-semibold text-white`}>
+            <h3 className={`${compact ? 'text-lg' : 'text-xl'} font-semibold text-white`}>
               {isMember ? 'Você é membro da Irmandade' : 'Acesso Exclusivo da Irmandade'}
             </h3>
             {!compact && (
