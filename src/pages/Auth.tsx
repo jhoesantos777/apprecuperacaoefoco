@@ -128,17 +128,17 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-800 to-teal-900 flex flex-col px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#461475] to-[#300b50] flex flex-col px-6 py-8">
       <div className="flex justify-center items-center">
         <Logo size="lg" className="mb-4" />
       </div>
 
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full">
         <div className="text-center mb-12">
-          <h1 className="text-yellow-300 text-3xl font-bold mb-2">
+          <h1 className="text-white text-3xl font-bold mb-2">
             OLÁ!
           </h1>
-          <h2 className="text-yellow-300 text-2xl font-bold">
+          <h2 className="text-white text-2xl font-bold">
             QUE BOM TE VER NOVAMENTE!
           </h2>
         </div>
@@ -173,7 +173,7 @@ const Auth = () => {
             </button>
           </div>
 
-          <div className="flex items-center justify-between text-sm text-white/70">
+          <div className="flex items-center justify-between text-sm text-white">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="remember"
@@ -185,7 +185,7 @@ const Auth = () => {
               />
               <label htmlFor="remember">ME LEMBRE</label>
             </div>
-            <button type="button" className="hover:text-white">
+            <button type="button" className="hover:text-white/80">
               ESQUECEU A SENHA?
             </button>
           </div>
@@ -193,18 +193,18 @@ const Auth = () => {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-yellow-300 hover:bg-yellow-400 text-teal-900 font-bold py-6 rounded-full text-lg"
+            className="w-full bg-white hover:bg-white/90 text-[#461475] font-bold py-6 rounded-full text-lg"
           >
             {isLoading ? "Entrando..." : "ENTRAR"}
           </Button>
         </form>
 
         <div className="mt-8 text-center">
-          <p className="text-white/70">
+          <p className="text-white">
             NÃO TEM UMA CONTA?{" "}
             <a
               href="/cadastro-simplificado"
-              className="text-yellow-300 hover:underline font-bold"
+              className="text-white hover:underline font-bold"
             >
               CADASTRE-SE
             </a>
