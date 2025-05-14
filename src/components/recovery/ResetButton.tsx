@@ -3,7 +3,7 @@ import React from 'react';
 import { RotateCcw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
+import { toast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,
@@ -31,12 +31,14 @@ export const ResetButton = () => {
 
       await queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
       
-      toast("Termômetro resetado com sucesso", {
+      toast({
+        title: "Termômetro resetado com sucesso", 
         description: "Todas as atividades dos últimos 7 dias foram removidas"
       });
     } catch (error) {
       console.error('Error resetting activities:', error);
-      toast("Erro ao resetar o termômetro", {
+      toast({
+        title: "Erro ao resetar o termômetro", 
         description: "Tente novamente mais tarde"
       });
     }
