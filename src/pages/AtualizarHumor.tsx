@@ -103,6 +103,8 @@ const AtualizarHumor = () => {
         return;
       }
 
+      // Update this section - don't include note in the database operation
+      // since the 'humores' table doesn't have a 'note' column
       const { error: humorError } = await supabase.from('humores').insert({
         user_id: user.id,
         emocao: moodData.emocao,
@@ -111,6 +113,7 @@ const AtualizarHumor = () => {
 
       if (humorError) throw humorError;
 
+      // We'll pass the note to the activity registration instead
       await registerActivity('Humor', moodData.pontos, `Humor: ${moodData.emocao}${note ? ' - ' + note : ''}`);
       
       await queryClient.invalidateQueries({ queryKey: ['recovery-thermometer'] });
