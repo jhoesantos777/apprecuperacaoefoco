@@ -1,14 +1,14 @@
 
-import { useToast as useSonnerToast, toast as sonnerToast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
-// Tipos para compatibilidade
+// Types for compatibility
 export type ToastProps = {
   title?: string;
   description?: string;
   variant?: "default" | "destructive";
 };
 
-// Wrapper do toast para manter a interface consistente
+// Wrapper for toast to maintain consistent interface
 export const toast = (props: ToastProps | string) => {
   if (typeof props === 'string') {
     return sonnerToast(props);
@@ -28,10 +28,7 @@ export const toast = (props: ToastProps | string) => {
 };
 
 export const useToast = () => {
-  const sonnerToastHook = useSonnerToast();
-  
   return {
-    ...sonnerToastHook,
     toast
   };
 };
