@@ -1,7 +1,6 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -49,11 +48,7 @@ const AIChat = () => {
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }]);
     } catch (error) {
       console.error('Erro:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível obter resposta da IA. Tente novamente.",
-        variant: "destructive"
-      });
+      toast("Não foi possível obter resposta da IA. Tente novamente.");
     } finally {
       setIsLoading(false);
     }

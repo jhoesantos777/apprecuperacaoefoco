@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, HelpCircle, List } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -86,29 +85,18 @@ export const ReflectionForm = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reflection-history'] });
       queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
-      toast({
-        title: "Reflexão salva!",
-        description: "Sua reflexão do dia foi salva com sucesso. (+3 pontos)",
-      });
+      toast("Reflexão salva com sucesso! (+3 pontos)");
       setReflection('');
     },
     onError: (error) => {
-      toast({
-        title: "Erro ao salvar",
-        description: "Não foi possível salvar sua reflexão.",
-        variant: "destructive"
-      });
+      toast("Não foi possível salvar sua reflexão.");
       console.error('Error saving reflection:', error);
     },
   });
 
   const handleSave = () => {
     if (!reflection.trim()) {
-      toast({
-        title: "Campo vazio",
-        description: "Por favor, escreva sua reflexão antes de salvar.",
-        variant: "destructive"
-      });
+      toast("Por favor, escreva sua reflexão antes de salvar.");
       return;
     }
 

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -67,17 +66,10 @@ export const ProfilePicture = ({
 
       onImageUpdated?.(publicUrl);
       
-      toast({
-        title: "Foto atualizada",
-        description: "Sua foto de perfil foi atualizada com sucesso!"
-      });
+      toast("Foto atualizada com sucesso!");
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível atualizar sua foto de perfil.",
-        variant: "destructive"
-      });
+      toast("Não foi possível atualizar sua foto de perfil.");
     } finally {
       setIsUploading(false);
     }

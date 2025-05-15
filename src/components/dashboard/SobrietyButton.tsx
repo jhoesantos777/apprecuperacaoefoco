@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { registerActivity } from "@/utils/activityPoints";
 import { motion } from "framer-motion";
 
@@ -43,9 +42,7 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
       toast("Parabéns! Sua determinação é inspiradora. Continue firme!");
     },
     onError: (error) => {
-      toast("Erro: Não foi possível registrar sua declaração.", {
-        variant: "destructive"
-      });
+      toast("Erro: Não foi possível registrar sua declaração.");
       console.error('Error registering sobriety declaration:', error);
     },
   });

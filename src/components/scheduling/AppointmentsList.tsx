@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -44,18 +43,11 @@ export const AppointmentsList = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Consulta cancelada",
-        description: "Sua consulta foi cancelada com sucesso.",
-      });
+      toast("Consulta cancelada com sucesso.");
 
       refetch();
     } catch (error) {
-      toast({
-        title: "Erro ao cancelar",
-        description: "Não foi possível cancelar sua consulta. Tente novamente.",
-        variant: "destructive",
-      });
+      toast("Não foi possível cancelar sua consulta. Tente novamente.");
     }
   };
 

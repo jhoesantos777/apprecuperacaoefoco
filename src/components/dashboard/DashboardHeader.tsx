@@ -23,18 +23,11 @@ export const DashboardHeader = ({ profile, userRole }: DashboardHeaderProps) => 
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      toast({
-        title: "Logout Successful",
-        description: "Você foi desconectado do aplicativo.",
-      });
+      toast("Logout realizado com sucesso! Você foi desconectado do aplicativo.");
       
       navigate('/');
     } catch (error) {
-      toast({
-        title: "Erro no Logout",
-        description: "Não foi possível sair do aplicativo. Por favor, tente novamente.",
-        variant: "destructive"
-      });
+      toast("Não foi possível sair do aplicativo. Por favor, tente novamente.");
       console.error('Logout error:', error);
     }
   };
