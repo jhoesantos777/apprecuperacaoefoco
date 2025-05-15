@@ -14,16 +14,37 @@ const DailyVerse = () => {
   const [verse, setVerse] = useState<Verse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Effect to load verse on component mount and check for updates at midnight
   useEffect(() => {
     loadDailyVerse();
+
+    // Set up a timer to check for verse updates
+    const checkForUpdates = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      
+      // Check if it's midnight (0 hours, 0 minutes)
+      if (currentHour === 0 && currentMinute === 0) {
+        console.log('Midnight detected, updating verse...');
+        loadDailyVerse(true);
+      }
+    };
+
+    // Check every minute for midnight update
+    const intervalId = setInterval(checkForUpdates, 60000); // 60000ms = 1 minute
+
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, []);
 
-  const loadDailyVerse = async () => {
+  const loadDailyVerse = async (forceRefresh = false) => {
     try {
+      setIsLoading(true);
+      
       const today = new Date().toISOString().split('T')[0];
       const storedVerse = localStorage.getItem('dailyVerse');
       
-      if (storedVerse) {
+      if (storedVerse && !forceRefresh) {
         const parsedVerse = JSON.parse(storedVerse);
         if (parsedVerse.date === today) {
           setVerse(parsedVerse);
@@ -32,7 +53,7 @@ const DailyVerse = () => {
         }
       }
 
-      // Se não houver versículo para hoje, gerar um novo
+      // Se não houver versículo para hoje ou forceRefresh=true, gerar um novo
       await generateNewVerse();
     } catch (error) {
       console.error('Erro ao carregar versículo:', error);
@@ -76,7 +97,10 @@ const DailyVerse = () => {
       localStorage.setItem('dailyVerse', JSON.stringify(newVerse));
       setVerse(newVerse);
       
-      toast("Novo versículo gerado com sucesso!");
+      if (newVerse.date !== localStorage.getItem('lastVerseDate')) {
+        toast("Novo versículo do dia disponível!");
+        localStorage.setItem('lastVerseDate', newVerse.date);
+      }
     } catch (error) {
       console.error('Erro ao gerar versículo:', error);
       toast("Erro ao gerar o versículo do dia. Tente novamente.");
@@ -105,16 +129,6 @@ const DailyVerse = () => {
         <div className="border-t border-[#4b206b] pt-6">
           <h3 className="text-lg font-semibold text-white mb-4">Reflexão</h3>
           <p className="text-gray-300 leading-relaxed">{verse?.explanation}</p>
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            onClick={generateNewVerse}
-            disabled={isLoading}
-            className="px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Gerando...' : 'Gerar Novo Versículo'}
-          </button>
         </div>
       </div>
     </div>
