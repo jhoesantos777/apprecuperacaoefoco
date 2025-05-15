@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
@@ -250,7 +251,7 @@ const RecoveryChecklistActivities = () => {
         {
           id: 'recovery-content',
           label: 'Conteúdo sobre recuperação',
-          description: 'Assisti/li sobre dependência e recuperaç��o',
+          description: 'Assisti/li sobre dependência e recuperação',
           icon: BookOpen
         }
       ]
