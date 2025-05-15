@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -22,7 +21,7 @@ const getDashboardCategories = (userRole: string): Category[] => {
       title: 'Atualizar Humor',
       description: 'Como você está se sentindo hoje?',
       icon: SmilePlus,
-      path: '/atualizar-humor'
+      path: '/humor'  // Changed to match the primary route in App.tsx
     }
   ];
   

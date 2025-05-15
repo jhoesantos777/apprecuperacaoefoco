@@ -65,6 +65,7 @@ function App() {
               <Route path="/conquistas" element={<Achievements />} />
               <Route path="/agendar" element={<Schedule />} />
               <Route path="/humor" element={<AtualizarHumor />} />
+              <Route path="/atualizar-humor" element={<AtualizarHumor />} /> {/* Added this line to support both routes */}
               <Route path="/tarefas" element={<Tasks />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/premium" element={<Premium />} />
