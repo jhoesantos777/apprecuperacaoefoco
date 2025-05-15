@@ -3,7 +3,7 @@ import React from 'react';
 import { RotateCcw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   AlertDialog,

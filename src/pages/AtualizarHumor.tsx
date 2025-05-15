@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/sonner";
 import { Card } from "@/components/ui/card";
 import { BackButton } from '@/components/BackButton';
 import { registerActivity } from '@/utils/activityPoints';
@@ -84,7 +83,7 @@ const AtualizarHumor = () => {
     if (!selectedMood) {
       toast({
         title: "Aviso",
-        description: "Por favor, selecione como você está se sentindo hoje.",
+        description: "Por favor, selecione como você está se sentindo hoje."
       });
       return;
     }
@@ -98,12 +97,11 @@ const AtualizarHumor = () => {
         toast({
           title: "Erro",
           description: "Você precisa estar logado para registrar seu humor.",
-          variant: "destructive"
         });
         return;
       }
 
-      // Update this section - don't include note in the database operation
+      // Don't include note in the database operation
       // since the 'humores' table doesn't have a 'note' column
       const { error: humorError } = await supabase.from('humores').insert({
         user_id: user.id,
@@ -131,8 +129,7 @@ const AtualizarHumor = () => {
       console.error('Erro ao registrar humor:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível registrar seu humor. Tente novamente.",
-        variant: "destructive"
+        description: "Não foi possível registrar seu humor. Tente novamente."
       });
     } finally {
       setIsSubmitting(false);

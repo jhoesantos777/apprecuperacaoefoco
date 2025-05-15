@@ -95,15 +95,15 @@ const DailyVerse = () => {
       localStorage.setItem('dailyVerse', JSON.stringify(newVerse));
       setVerse(newVerse);
       
-      toast("Sucesso", {
-        description: "Novo versículo gerado com sucesso!",
-        style: { backgroundColor: 'hsl(var(--success))' }
+      toast({
+        title: "Sucesso",
+        description: "Novo versículo gerado com sucesso!"
       });
     } catch (error) {
       console.error('Erro ao gerar versículo:', error);
-      toast("Erro", {
-        description: "Não foi possível gerar o versículo do dia. Tente novamente.",
-        style: { backgroundColor: 'hsl(var(--destructive))' }
+      toast({
+        title: "Erro",
+        description: "Não foi possível gerar o versículo do dia. Tente novamente."
       });
     } finally {
       setIsLoading(false);
@@ -146,4 +146,4 @@ const DailyVerse = () => {
   );
 };
 
-export default DailyVerse; 
+export default DailyVerse;
