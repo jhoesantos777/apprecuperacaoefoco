@@ -34,10 +34,7 @@ const DailyVerse = () => {
       await generateNewVerse();
     } catch (error) {
       console.error('Erro ao carregar versículo:', error);
-      toast("Erro", {
-        description: "Não foi possível carregar o versículo do dia.",
-        style: { backgroundColor: 'hsl(var(--destructive))' }
-      });
+      toast("Erro ao carregar versículo do dia. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -95,16 +92,10 @@ const DailyVerse = () => {
       localStorage.setItem('dailyVerse', JSON.stringify(newVerse));
       setVerse(newVerse);
       
-      toast({
-        title: "Sucesso",
-        description: "Novo versículo gerado com sucesso!"
-      });
+      toast("Sucesso! Novo versículo gerado com sucesso!");
     } catch (error) {
       console.error('Erro ao gerar versículo:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível gerar o versículo do dia. Tente novamente."
-      });
+      toast("Erro! Não foi possível gerar o versículo do dia. Tente novamente.");
     } finally {
       setIsLoading(false);
     }

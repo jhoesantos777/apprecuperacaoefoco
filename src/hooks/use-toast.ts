@@ -9,15 +9,8 @@ export interface ToastProps {
 }
 
 // Re-export the toast function with our custom type
-export const toast = (props: ToastProps) => {
-  // Extract title and description for sonner toast
-  const { title, description, variant, ...rest } = props;
-  return sonnerToast(title || "", {
-    description,
-    // Map variant to Sonner's classes if needed
-    className: variant === "destructive" ? "bg-red-100" : undefined,
-    ...rest
-  });
+export const toast = (message: string, options?: Omit<ToastProps, 'title'>) => {
+  return sonnerToast(message, options);
 };
 
 // Creating a custom hook to use our toast

@@ -10,24 +10,12 @@ export type ToastProps = {
 };
 
 // Wrapper for toast to maintain consistent interface
-export const toast = (props: ToastProps | string) => {
-  if (typeof props === 'string') {
-    return sonnerToast(props);
+export const toast = (message: string, options?: Omit<ToastProps, 'title'>) => {
+  if (options?.variant === 'destructive') {
+    return sonnerToast.error(message, options);
   }
   
-  const { title, description, variant, ...rest } = props;
-  
-  if (variant === 'destructive') {
-    return sonnerToast.error(title || "", {
-      description,
-      ...rest
-    });
-  }
-  
-  return sonnerToast(title || "", {
-    description,
-    ...rest
-  });
+  return sonnerToast(message, options);
 };
 
 export const useToast = () => {

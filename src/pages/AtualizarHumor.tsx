@@ -81,10 +81,7 @@ const AtualizarHumor = () => {
 
   const handleSubmit = async () => {
     if (!selectedMood) {
-      toast({
-        title: "Aviso",
-        description: "Por favor, selecione como você está se sentindo hoje."
-      });
+      toast("Aviso: Por favor, selecione como você está se sentindo hoje.");
       return;
     }
 
@@ -94,10 +91,7 @@ const AtualizarHumor = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast({
-          title: "Erro",
-          description: "Você precisa estar logado para registrar seu humor.",
-        });
+        toast("Erro: Você precisa estar logado para registrar seu humor.");
         return;
       }
 
@@ -121,16 +115,10 @@ const AtualizarHumor = () => {
       setMotivationalMessage(getMotivationalMessage(selectedMood));
       setShowMotivation(true);
       
-      toast({
-        title: "Sucesso!",
-        description: "Seu humor foi registrado com sucesso."
-      });
+      toast("Sucesso! Seu humor foi registrado com sucesso.");
     } catch (error) {
       console.error('Erro ao registrar humor:', error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível registrar seu humor. Tente novamente."
-      });
+      toast("Erro: Não foi possível registrar seu humor. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }

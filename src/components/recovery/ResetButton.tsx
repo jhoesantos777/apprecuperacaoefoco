@@ -31,16 +31,10 @@ export const ResetButton = () => {
 
       await queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
       
-      toast({
-        title: "Termômetro resetado com sucesso", 
-        description: "Todas as atividades dos últimos 7 dias foram removidas"
-      });
+      toast("Termômetro resetado com sucesso! Todas as atividades dos últimos 7 dias foram removidas");
     } catch (error) {
       console.error('Error resetting activities:', error);
-      toast({
-        title: "Erro ao resetar o termômetro", 
-        description: "Tente novamente mais tarde"
-      });
+      toast("Erro ao resetar o termômetro. Tente novamente mais tarde");
     }
   };
 
