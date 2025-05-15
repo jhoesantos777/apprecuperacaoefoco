@@ -7,7 +7,19 @@ export type ActivityType =
   | 'Tarefas'
   | 'Devocional'
   | 'HojeNãoVouUsar'
-  | 'Gatilho';
+  | 'Gatilho'
+  | 'Exercício'
+  | 'Alimentação'
+  | 'Sono'
+  | 'Hidratação'
+  | 'GrupoApoio'
+  | 'Lazer'
+  | 'Criatividade'
+  | 'Trabalho'
+  | 'Estudo'
+  | 'Leitura'
+  | 'Meditação'
+  | 'Família';
 
 export const registerActivity = async (
   tipo: ActivityType,

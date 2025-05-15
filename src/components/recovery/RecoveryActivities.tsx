@@ -5,7 +5,28 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/components/ui/sonner';
-import { Book, Heart, Users, Calendar, BookOpen, Music, Dumbbell, Smile, Star } from 'lucide-react';
+import { 
+  Book, 
+  Heart, 
+  Users, 
+  Calendar, 
+  BookOpen, 
+  Music, 
+  Dumbbell, 
+  Smile, 
+  Star, 
+  Brain,
+  Utensils,
+  Moon, 
+  GlassWater, 
+  HandHeart, 
+  MessagesSquare,
+  HeartHandshake,
+  Book as BookIcon,
+  Clock,
+  Lightbulb,
+  MessageSquare
+} from 'lucide-react';
 import { registerActivity } from '@/utils/activityPoints';
 
 interface ActivityOption {
@@ -22,7 +43,7 @@ type ActivityCategory = {
   icon: React.ElementType;
   color: string;
   activities: ActivityOption[];
-  type: 'Reflexão' | 'Devocional' | 'Tarefas' | 'Humor' | 'HojeNãoVouUsar';
+  type: 'Reflexão' | 'Devocional' | 'Tarefas' | 'Humor' | 'HojeNãoVouUsar' | 'Gatilho' | 'Exercício' | 'Família';
 };
 
 const RecoveryActivities = () => {
@@ -35,7 +56,7 @@ const RecoveryActivities = () => {
       id: 'mindfulness',
       title: 'Reflexão e Mindfulness',
       description: 'Atividades que promovem a consciência plena e autoconhecimento',
-      icon: Book,
+      icon: Brain,
       color: 'bg-purple-500',
       type: 'Reflexão',
       activities: [
@@ -62,6 +83,18 @@ const RecoveryActivities = () => {
           label: 'Análise de Gatilhos', 
           description: 'Identifiquei e refleti sobre meus gatilhos e como lidar com eles', 
           points: 4 
+        },
+        { 
+          id: 'mindful-walk', 
+          label: 'Caminhada Consciente', 
+          description: 'Fiz uma caminhada prestando atenção às sensações e ao ambiente', 
+          points: 2 
+        },
+        { 
+          id: 'values', 
+          label: 'Reflexão sobre Valores', 
+          description: 'Refleti sobre meus valores e como alinhá-los com minhas ações', 
+          points: 3 
         }
       ]
     },
@@ -96,6 +129,18 @@ const RecoveryActivities = () => {
           label: 'Serviço ao Próximo', 
           description: 'Ajudei alguém ou pratiquei um ato de bondade', 
           points: 3 
+        },
+        { 
+          id: 'spiritual-reflection', 
+          label: 'Reflexão Espiritual', 
+          description: 'Refleti sobre meu propósito e sentido na vida', 
+          points: 3 
+        },
+        { 
+          id: 'forgiveness', 
+          label: 'Perdão', 
+          description: 'Pratiquei o perdão a mim mesmo ou a outros', 
+          points: 4 
         }
       ]
     },
@@ -105,7 +150,7 @@ const RecoveryActivities = () => {
       description: 'Cuidados com seu corpo e saúde física',
       icon: Dumbbell,
       color: 'bg-green-500',
-      type: 'Tarefas',
+      type: 'Exercício',
       activities: [
         { 
           id: 'exercise', 
@@ -130,6 +175,18 @@ const RecoveryActivities = () => {
           label: 'Hidratação', 
           description: 'Bebi pelo menos 2 litros de água hoje', 
           points: 1 
+        },
+        { 
+          id: 'outdoor', 
+          label: 'Atividade ao Ar Livre', 
+          description: 'Passei tempo ao ar livre em contato com a natureza', 
+          points: 2 
+        },
+        { 
+          id: 'relaxation', 
+          label: 'Técnicas de Relaxamento', 
+          description: 'Pratiquei técnicas corporais de relaxamento', 
+          points: 2 
         }
       ]
     },
@@ -139,7 +196,7 @@ const RecoveryActivities = () => {
       description: 'Cultivando relacionamentos saudáveis',
       icon: Users,
       color: 'bg-pink-500',
-      type: 'Tarefas',
+      type: 'Família',
       activities: [
         { 
           id: 'support-group', 
@@ -164,6 +221,18 @@ const RecoveryActivities = () => {
           label: 'Tempo em Família', 
           description: 'Passei tempo de qualidade com minha família', 
           points: 3 
+        },
+        { 
+          id: 'community-activity', 
+          label: 'Atividade Comunitária', 
+          description: 'Participei de uma atividade ou evento comunitário', 
+          points: 3 
+        },
+        { 
+          id: 'sponsor-talk', 
+          label: 'Conversa com Padrinho/Madrinha', 
+          description: 'Conversei com meu padrinho/madrinha de recuperação', 
+          points: 4 
         }
       ]
     },
@@ -171,7 +240,7 @@ const RecoveryActivities = () => {
       id: 'emotional',
       title: 'Bem-estar Emocional',
       description: 'Regulando emoções de forma saudável',
-      icon: Smile,
+      icon: Heart,
       color: 'bg-yellow-500',
       type: 'Humor',
       activities: [
@@ -198,6 +267,18 @@ const RecoveryActivities = () => {
           label: 'Expressão Criativa', 
           description: 'Me expressei através de arte, música ou outra forma criativa', 
           points: 3 
+        },
+        { 
+          id: 'therapy-session', 
+          label: 'Sessão Terapêutica', 
+          description: 'Participei de uma sessão de terapia ou aconselhamento', 
+          points: 4 
+        },
+        { 
+          id: 'affirmations', 
+          label: 'Afirmações Positivas', 
+          description: 'Pratiquei afirmações positivas para fortalecer minha autoestima', 
+          points: 2 
         }
       ]
     },
@@ -232,6 +313,202 @@ const RecoveryActivities = () => {
           label: 'Celebrar Progressos', 
           description: 'Celebrei um marco ou progresso na minha recuperação', 
           points: 3 
+        },
+        { 
+          id: 'replacement-activities', 
+          label: 'Atividades Substitutivas', 
+          description: 'Substitui o desejo de usar por uma atividade saudável', 
+          points: 4 
+        },
+        { 
+          id: 'relapse-prevention', 
+          label: 'Prevenção de Recaída', 
+          description: 'Revisei e atualizei meu plano de prevenção de recaída', 
+          points: 5 
+        }
+      ]
+    },
+    {
+      id: 'intellectual',
+      title: 'Desenvolvimento Intelectual',
+      description: 'Estimulando a mente de forma construtiva',
+      icon: BookIcon,
+      color: 'bg-indigo-500',
+      type: 'Tarefas',
+      activities: [
+        { 
+          id: 'learning', 
+          label: 'Aprendizado', 
+          description: 'Aprendi algo novo relacionado aos meus interesses ou objetivos', 
+          points: 3 
+        },
+        { 
+          id: 'reading', 
+          label: 'Leitura', 
+          description: 'Li um livro ou artigo que contribui para meu crescimento', 
+          points: 2 
+        },
+        { 
+          id: 'course', 
+          label: 'Curso ou Estudo', 
+          description: 'Dediquei tempo a estudos ou um curso que estou fazendo', 
+          points: 3 
+        },
+        { 
+          id: 'hobby', 
+          label: 'Hobby Construtivo', 
+          description: 'Pratiquei um hobby que estimula minhas habilidades cognitivas', 
+          points: 2 
+        },
+        { 
+          id: 'recovery-education', 
+          label: 'Educação sobre Recuperação', 
+          description: 'Aprendi mais sobre dependência, recuperação e saúde mental', 
+          points: 3 
+        },
+        { 
+          id: 'problem-solving', 
+          label: 'Resolução de Problemas', 
+          description: 'Abordei um problema ou desafio de forma construtiva', 
+          points: 3 
+        }
+      ]
+    },
+    {
+      id: 'professional',
+      title: 'Desenvolvimento Profissional',
+      description: 'Construindo uma vida profissional estável',
+      icon: Clock,
+      color: 'bg-cyan-500',
+      type: 'Tarefas',
+      activities: [
+        { 
+          id: 'work-goals', 
+          label: 'Metas Profissionais', 
+          description: 'Estabeleci ou trabalhei em direção a objetivos profissionais', 
+          points: 3 
+        },
+        { 
+          id: 'skill-building', 
+          label: 'Desenvolvimento de Habilidades', 
+          description: 'Aprendi ou pratiquei habilidades relevantes para minha carreira', 
+          points: 3 
+        },
+        { 
+          id: 'work-consistency', 
+          label: 'Consistência no Trabalho', 
+          description: 'Mantive um compromisso consistente com minhas responsabilidades', 
+          points: 4 
+        },
+        { 
+          id: 'work-balance', 
+          label: 'Equilíbrio Trabalho-Vida', 
+          description: 'Mantive um equilíbrio saudável entre trabalho e vida pessoal', 
+          points: 3 
+        },
+        { 
+          id: 'networking', 
+          label: 'Networking Profissional', 
+          description: 'Construí ou mantive conexões profissionais positivas', 
+          points: 2 
+        },
+        { 
+          id: 'financial-health', 
+          label: 'Saúde Financeira', 
+          description: 'Tomei decisões financeiras responsáveis alinhadas com minha recuperação', 
+          points: 3 
+        }
+      ]
+    },
+    {
+      id: 'leisure',
+      title: 'Lazer e Diversão Saudável',
+      description: 'Encontrando prazer em atividades sem substâncias',
+      icon: Smile,
+      color: 'bg-emerald-500',
+      type: 'Humor',
+      activities: [
+        { 
+          id: 'nature-time', 
+          label: 'Tempo na Natureza', 
+          description: 'Passei tempo em um ambiente natural (parque, praia, etc.)', 
+          points: 2 
+        },
+        { 
+          id: 'creative-hobby', 
+          label: 'Hobby Criativo', 
+          description: 'Dediquei tempo a um hobby criativo que me dá prazer', 
+          points: 3 
+        },
+        { 
+          id: 'clean-fun', 
+          label: 'Diversão Sóbria', 
+          description: 'Participei de uma atividade divertida sem o uso de substâncias', 
+          points: 3 
+        },
+        { 
+          id: 'laughter', 
+          label: 'Risadas e Humor', 
+          description: 'Encontrei momentos de riso e leveza em meu dia', 
+          points: 2 
+        },
+        { 
+          id: 'new-experience', 
+          label: 'Nova Experiência', 
+          description: 'Experimentei uma nova atividade saudável que trouxe satisfação', 
+          points: 3 
+        },
+        { 
+          id: 'music-dance', 
+          label: 'Música e Dança', 
+          description: 'Me conectei com música ou dança de forma positiva', 
+          points: 2 
+        }
+      ]
+    },
+    {
+      id: 'communication',
+      title: 'Comunicação e Relacionamentos',
+      description: 'Desenvolvendo interações saudáveis e assertivas',
+      icon: MessageSquare,
+      color: 'bg-orange-500',
+      type: 'Família',
+      activities: [
+        { 
+          id: 'assertive-comm', 
+          label: 'Comunicação Assertiva', 
+          description: 'Me comuniquei de forma clara e assertiva em uma situação desafiadora', 
+          points: 4 
+        },
+        { 
+          id: 'active-listen', 
+          label: 'Escuta Ativa', 
+          description: 'Pratiquei escuta ativa em uma conversa importante', 
+          points: 3 
+        },
+        { 
+          id: 'conflict-resolution', 
+          label: 'Resolução de Conflitos', 
+          description: 'Abordei um conflito de forma construtiva e respeitosa', 
+          points: 4 
+        },
+        { 
+          id: 'honesty', 
+          label: 'Honestidade', 
+          description: 'Pratiquei honestidade em minhas interações, evitando mentiras', 
+          points: 3 
+        },
+        { 
+          id: 'apology', 
+          label: 'Pedido de Desculpas', 
+          description: 'Pedi desculpas sinceramente quando necessário', 
+          points: 3 
+        },
+        { 
+          id: 'gratitude-express', 
+          label: 'Expressão de Gratidão', 
+          description: 'Expressei gratidão a alguém que me apoia', 
+          points: 2 
         }
       ]
     }
