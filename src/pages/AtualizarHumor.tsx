@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +19,36 @@ const AtualizarHumor = () => {
   const [showMotivation, setShowMotivation] = useState(false);
   const [note, setNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [moodHistory, setMoodHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMoodHistory();
+  }, []);
+
+  const fetchMoodHistory = async () => {
+    try {
+      setIsLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('humores')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('data_registro', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      
+      setMoodHistory(data || []);
+    } catch (error) {
+      console.error('Error fetching mood history:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleMoodChange = (mood: string) => {
     setSelectedMood(mood);
@@ -37,12 +68,13 @@ const AtualizarHumor = () => {
   };
 
   const getMoodData = (mood: string) => {
+    // Updated point values as requested
     const moodData = {
-      'otimo': { emocao: 'Ótimo', pontos: 20 }, // Updated to match new scoring rules
+      'otimo': { emocao: 'Ótimo', pontos: 20 },
       'bem': { emocao: 'Bem', pontos: 15 },
       'desmotivado': { emocao: 'Desmotivado', pontos: 10 },
       'triste': { emocao: 'Triste', pontos: 5 },
-      'irritado': { emocao: 'Irritado', pontos: 5 }
+      'irritado': { emocao: 'Irritado', pontos: 0 }
     };
 
     return moodData[mood as keyof typeof moodData] || { emocao: 'Indefinido', pontos: 0 };
@@ -82,6 +114,7 @@ const AtualizarHumor = () => {
       await registerActivity('Humor', moodData.pontos, `Humor: ${moodData.emocao}${note ? ' - ' + note : ''}`);
       
       await queryClient.invalidateQueries({ queryKey: ['recovery-thermometer'] });
+      await fetchMoodHistory();
 
       // Show motivational message
       setMotivationalMessage(getMotivationalMessage(selectedMood));
@@ -122,16 +155,34 @@ const AtualizarHumor = () => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('pt-BR');
+  };
+
+  const getMoodEmoji = (mood: string) => {
+    const emojis = {
+      'Ótimo': '😄',
+      'Bem': '🙂',
+      'Desmotivado': '😐',
+      'Triste': '😔',
+      'Irritado': '😠'
+    };
+    
+    return emojis[mood as keyof typeof emojis] || '😶';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
+        <BackButton className="text-white/70 mb-6" />
         <h1 className="text-4xl font-extrabold text-center text-white mb-8 tracking-[-0.06em] uppercase drop-shadow">
           Como você está se sentindo?
         </h1>
 
         <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <div className="space-y-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
               <button
                 key="otimo"
                 onClick={() => handleMoodChange('otimo')}
@@ -143,6 +194,7 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😄</div>
                 <div className="text-white text-sm font-medium">ÓTIMO</div>
+                <div className="text-green-400 text-xs mt-1">+20 pontos</div>
               </button>
               
               <button
@@ -156,6 +208,7 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">🙂</div>
                 <div className="text-white text-sm font-medium">BEM</div>
+                <div className="text-green-400 text-xs mt-1">+15 pontos</div>
               </button>
               
               <button
@@ -169,6 +222,7 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😐</div>
                 <div className="text-white text-sm font-medium">DESMOTIVADO</div>
+                <div className="text-yellow-400 text-xs mt-1">+10 pontos</div>
               </button>
               
               <button
@@ -182,6 +236,7 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😔</div>
                 <div className="text-white text-sm font-medium">TRISTE</div>
+                <div className="text-orange-400 text-xs mt-1">+5 pontos</div>
               </button>
               
               <button
@@ -195,6 +250,7 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😠</div>
                 <div className="text-white text-sm font-medium">IRRITADO</div>
+                <div className="text-red-400 text-xs mt-1">0 pontos</div>
               </button>
             </div>
 
@@ -221,31 +277,47 @@ const AtualizarHumor = () => {
                 </div>
               </div>
             )}
+
+            {showMotivation && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-6 rounded-xl bg-gradient-to-br from-[#4b206b]/30 to-[#2d0036]/30 border border-[#a259ec]/30 text-white text-center"
+              >
+                <p className="text-xl italic">{motivationalMessage}</p>
+              </motion.div>
+            )}
           </div>
         </div>
 
         <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <h2 className="text-2xl font-bold text-white mb-4">Seu Histórico de Humor</h2>
           <div className="space-y-4">
-            {/* moodHistory.map((entry, index) => (
-              <div
-                key={index}
-                className="p-4 rounded-xl border border-[#4b206b] bg-white/5"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{entry.mood.emoji}</span>
-                  <div>
-                    <div className="text-white font-medium">{entry.mood.label}</div>
-                    <div className="text-gray-400 text-sm">
-                      {new Date(entry.timestamp).toLocaleString()}
+            {isLoading ? (
+              <p className="text-white/70 text-center py-4">Carregando histórico...</p>
+            ) : moodHistory.length > 0 ? (
+              moodHistory.map((entry: any, index) => (
+                <div
+                  key={index}
+                  className="p-4 rounded-xl border border-[#4b206b] bg-white/5"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{getMoodEmoji(entry.emocao)}</span>
+                    <div>
+                      <div className="text-white font-medium">{entry.emocao}</div>
+                      <div className="text-gray-400 text-sm">
+                        {formatDate(entry.data_registro)}
+                      </div>
+                      <div className="text-yellow-400 text-sm mt-1">
+                        {entry.pontos} pontos
+                      </div>
                     </div>
-                    {entry.note && (
-                      <div className="text-gray-300 mt-2 text-sm">{entry.note}</div>
-                    )}
                   </div>
                 </div>
-              </div>
-            )) */}
+              ))
+            ) : (
+              <p className="text-white/70 text-center py-4">Nenhum registro de humor encontrado.</p>
+            )}
           </div>
         </div>
       </div>
