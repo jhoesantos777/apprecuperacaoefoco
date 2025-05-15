@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -75,13 +74,12 @@ const AtualizarHumor = () => {
       const { error: humorError } = await supabase.from('humores').insert({
         user_id: user.id,
         emocao: moodData.emocao,
-        pontos: moodData.pontos,
-        note: note
+        pontos: moodData.pontos
       });
 
       if (humorError) throw humorError;
 
-      await registerActivity('Humor', moodData.pontos, `Humor: ${moodData.emocao}`);
+      await registerActivity('Humor', moodData.pontos, `Humor: ${moodData.emocao}${note ? ' - ' + note : ''}`);
       
       await queryClient.invalidateQueries({ queryKey: ['recovery-thermometer'] });
 
