@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
+import dailyVerses from '@/data/dailyVerses';
 
 interface Verse {
   verse: string;
@@ -43,48 +45,22 @@ const DailyVerse = () => {
   const generateNewVerse = async () => {
     try {
       setIsLoading(true);
-      // Lista de versículos bíblicos para recuperação
-      const verses = [
-        { verse: "Porque para Deus nada é impossível.", reference: "Lucas 1:37" },
-        { verse: "Tudo posso naquele que me fortalece.", reference: "Filipenses 4:13" },
-        { verse: "O Senhor é meu pastor, nada me faltará.", reference: "Salmos 23:1" },
-        { verse: "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.", reference: "Mateus 11:28" },
-        { verse: "Mas os que esperam no Senhor renovarão as suas forças.", reference: "Isaías 40:31" },
-        { verse: "O Senhor é a minha luz e a minha salvação; de quem terei medo?", reference: "Salmos 27:1" },
-        { verse: "Deixo-vos a paz, a minha paz vos dou; não vo-la dou como o mundo a dá.", reference: "João 14:27" },
-        { verse: "O Senhor é meu refúgio e fortaleza, socorro bem presente na angústia.", reference: "Salmos 46:1" },
-        { verse: "Esperei com paciência pelo Senhor, e ele se inclinou para mim e ouviu o meu clamor.", reference: "Salmos 40:1" }
-      ];
-
-      // Selecionar um versículo aleatório
-      const randomVerse = verses[Math.floor(Math.random() * verses.length)];
-
-      // Gerar explicação usando ChatGPT
-      const response = await fetch('/api/verse-explanation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          verse: randomVerse.verse,
-          reference: randomVerse.reference,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao gerar explicação');
-      }
-
-      const data = await response.json();
       
-      if (!data.explanation) {
-        throw new Error('Explicação não recebida');
-      }
-
+      // Get today's day of the year (1-365)
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = now - start.getTime();
+      const oneDay = 1000 * 60 * 60 * 24;
+      const dayOfYear = Math.floor(diff / oneDay);
+      
+      // Use the day of year to select a verse (ensures consistent verse per day)
+      const index = (dayOfYear - 1) % dailyVerses.length;
+      const dailyVerse = dailyVerses[index];
+      
       const newVerse = {
-        verse: randomVerse.verse,
-        reference: randomVerse.reference,
-        explanation: data.explanation,
+        verse: dailyVerse.verse,
+        reference: dailyVerse.reference,
+        explanation: dailyVerse.reflection,
         date: new Date().toISOString().split('T')[0]
       };
 
@@ -92,10 +68,10 @@ const DailyVerse = () => {
       localStorage.setItem('dailyVerse', JSON.stringify(newVerse));
       setVerse(newVerse);
       
-      toast("Sucesso! Novo versículo gerado com sucesso!");
+      toast("Novo versículo gerado com sucesso!");
     } catch (error) {
       console.error('Erro ao gerar versículo:', error);
-      toast("Erro! Não foi possível gerar o versículo do dia. Tente novamente.");
+      toast("Erro ao gerar o versículo do dia. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
