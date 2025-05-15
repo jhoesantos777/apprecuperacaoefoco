@@ -57,6 +57,7 @@ function App() {
               <Route path="/sobre" element={<About />} />
               <Route path="/recuperacao" element={<Recovery />} />
               <Route path="/devocional" element={<Devotional />} />
+              <Route path="/devotional" element={<Navigate to="/devocional" replace />} /> {/* Added redirect from English to Portuguese route */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/cadastro" element={<SignUp />} />
               <Route path="/cadastro-simplificado" element={<CadastroSimplificado />} />
