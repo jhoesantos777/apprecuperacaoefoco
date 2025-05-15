@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
@@ -15,7 +14,7 @@ import {
   Music,
   Lightbulb,
   Home,
-  Walk,
+  BookOpen,
   Dumbbell,
   GlassWater,
   Utensils,
@@ -26,10 +25,9 @@ import {
   AlertCircle,
   HandHeart,
   HeartHandshake,
-  BookOpen,
+  Brain,
   Clock,
   Star,
-  Brain,
   CircleCheck,
   MessageSquare
 } from 'lucide-react';
@@ -149,7 +147,7 @@ const RecoveryChecklistActivities = () => {
           id: 'daily-walks',
           label: 'Caminhadas diárias de 30 minutos',
           description: 'Caminhei em ritmo leve ou moderado',
-          icon: Walk
+          icon: BookOpen
         },
         {
           id: 'home-exercises',
@@ -252,7 +250,7 @@ const RecoveryChecklistActivities = () => {
         {
           id: 'recovery-content',
           label: 'Conteúdo sobre recuperação',
-          description: 'Assisti/li sobre dependência e recuperação',
+          description: 'Assisti/li sobre dependência e recuperaç��o',
           icon: BookOpen
         }
       ]

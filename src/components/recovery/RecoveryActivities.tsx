@@ -333,7 +333,7 @@ const RecoveryActivities = () => {
       id: 'intellectual',
       title: 'Desenvolvimento Intelectual',
       description: 'Estimulando a mente de forma construtiva',
-      icon: BookIcon,
+      icon: Book,
       color: 'bg-indigo-500',
       type: 'Tarefas',
       activities: [
