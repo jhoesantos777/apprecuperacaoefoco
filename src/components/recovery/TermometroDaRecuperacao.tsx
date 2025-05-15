@@ -5,6 +5,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import RecoveryThermometer from '@/components/RecoveryThermometer';
 
+interface ScoreBreakdown {
+  taskPoints: number;
+  moodPoints: number;
+  devotionalPoints: number;
+  sobrietyPoints: number;
+  reflectionPoints: number;
+}
+
 const TermometroDaRecuperacao = () => {
   // Calculate overall thermometer score based on registered activities
   const { data: activityPoints, isLoading } = useQuery({
@@ -26,7 +34,7 @@ const TermometroDaRecuperacao = () => {
         if (error) throw error;
         
         // Calculate points by category
-        const pointsByCategory = {
+        const pointsByCategory: ScoreBreakdown = {
           taskPoints: calculatePointsByType(data, 'Tarefas'),
           moodPoints: calculatePointsByType(data, 'Humor'),
           devotionalPoints: calculatePointsByType(data, 'Devocional'),
@@ -45,21 +53,31 @@ const TermometroDaRecuperacao = () => {
         };
       } catch (error) {
         console.error('Failed to fetch activity points:', error);
-        return { score: 0, details: {}, hasPoints: false };
+        return { 
+          score: 0, 
+          details: {
+            taskPoints: 0,
+            moodPoints: 0,
+            devotionalPoints: 0,
+            sobrietyPoints: 0,
+            reflectionPoints: 0
+          }, 
+          hasPoints: false 
+        };
       }
     }
   });
   
   // Query for triggers to check vulnerability
-  const { data: triggers } = useQuery({
-    queryKey: ['triggers'],
+  const { data: triggerData } = useQuery({
+    queryKey: ['recovery-triggers'],
     queryFn: async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error('User not authenticated');
         
         const { data, error } = await supabase
-          .from('triggers')
+          .from('recovery_triggers')
           .select('*')
           .eq('user_id', user.id);
           
@@ -99,7 +117,7 @@ const TermometroDaRecuperacao = () => {
       
       <RecoveryThermometer 
         score={activityPoints?.score || 0} 
-        hasMultipleTriggers={(triggers?.length || 0) > 3}
+        hasMultipleTriggers={(triggerData?.length || 0) > 3}
         details={activityPoints?.details}
       />
     </div>
