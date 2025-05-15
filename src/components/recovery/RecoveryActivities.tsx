@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/components/ui/sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Book, 
   Heart, 
@@ -22,12 +22,12 @@ import {
   HandHeart, 
   MessagesSquare,
   HeartHandshake,
-  Book as BookIcon,
-  Clock,
   Lightbulb,
+  Clock,
   MessageSquare
 } from 'lucide-react';
 import { registerActivity } from '@/utils/activityPoints';
+import RecoveryChecklistActivities from './RecoveryChecklistActivities';
 
 interface ActivityOption {
   id: string;
@@ -50,7 +50,8 @@ const RecoveryActivities = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [activeTab, setActiveTab] = useState("standard");
+  
   const categories: ActivityCategory[] = [
     {
       id: 'mindfulness',
@@ -570,111 +571,128 @@ const RecoveryActivities = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-white">Jornada de Recuperação</h2>
           <p className="text-xl text-white/80 mt-2">Registre suas atividades diárias para fortalecer sua recuperação</p>
         </motion.div>
-      
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {categories.map((category) => {
-            const Icon = category.icon;
-            const isSelected = category.id === selectedCategory;
+        
+        <Tabs 
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full"
+        >
+          <TabsList className="grid grid-cols-2 mb-8 w-full">
+            <TabsTrigger value="standard">Atividades Padrão</TabsTrigger>
+            <TabsTrigger value="checklist">Lista Completa</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="standard" className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {categories.map((category) => {
+                const Icon = category.icon;
+                const isSelected = category.id === selectedCategory;
 
-            return (
-              <motion.div
-                key={category.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleCategorySelect(category.id)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Card 
-                  className={`p-4 cursor-pointer transition-all duration-300 border ${
-                    isSelected ? 'border-white shadow-glow' : 'border-white/20'
-                  } bg-white/10 backdrop-blur-sm hover:bg-white/20`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-3 rounded-full ${category.color} bg-opacity-90 flex items-center justify-center`}>
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white">{category.title}</h3>
-                      <p className="text-xs text-white/70">{category.description}</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            );
-          })}
-        </div>
-      
-        {selectedCategory && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mb-8 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6"
-          >
-            <div className="text-white mb-4">
-              <h3 className="text-xl font-bold mb-2">
-                {categories.find(c => c.id === selectedCategory)?.title}
-              </h3>
-              <p className="text-white/80 text-sm">
-                Selecione uma atividade que você realizou hoje:
-              </p>
-            </div>
-
-            <RadioGroup 
-              value={selectedActivity || ""} 
-              onValueChange={handleActivitySelect}
-              className="space-y-3"
-            >
-              {categories
-                .find(c => c.id === selectedCategory)
-                ?.activities.map(activity => (
-                  <div 
-                    key={activity.id} 
-                    className={`flex items-start space-x-3 p-3 rounded-md transition-all ${
-                      selectedActivity === activity.id 
-                        ? 'bg-white/20 border border-white/40' 
-                        : 'bg-white/5 border border-white/10 hover:bg-white/10'
-                    }`}
+                return (
+                  <motion.div
+                    key={category.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleCategorySelect(category.id)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                   >
-                    <RadioGroupItem 
-                      value={activity.id} 
-                      id={activity.id} 
-                      className="mt-1"
-                    />
-                    <div className="flex-1 cursor-pointer" onClick={() => handleActivitySelect(activity.id)}>
-                      <div className="flex justify-between">
-                        <label htmlFor={activity.id} className="font-medium text-white cursor-pointer">
-                          {activity.label}
-                        </label>
-                        <span className="text-sm font-semibold text-green-400">+{activity.points} pts</span>
+                    <Card 
+                      className={`p-4 cursor-pointer transition-all duration-300 border ${
+                        isSelected ? 'border-white shadow-glow' : 'border-white/20'
+                      } bg-white/10 backdrop-blur-sm hover:bg-white/20`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`p-3 rounded-full ${category.color} bg-opacity-90 flex items-center justify-center`}>
+                          <Icon className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-white">{category.title}</h3>
+                          <p className="text-xs text-white/70">{category.description}</p>
+                        </div>
                       </div>
-                      <p className="text-sm text-white/70 mt-1">{activity.description}</p>
-                    </div>
-                  </div>
-                ))
-              }
-            </RadioGroup>
-            
-            <Button
-              onClick={handleSubmit}
-              disabled={!selectedActivity || isSubmitting}
-              className="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-            >
-              {isSubmitting ? 'Registrando...' : 'Registrar Atividade'}
-            </Button>
-          </motion.div>
-        )}
-      
-        {!selectedCategory && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-white/80 mt-4"
-          >
-            <p>Selecione uma categoria para registrar suas atividades</p>
-          </motion.div>
-        )}
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          
+            {selectedCategory && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-8 bg-white/10 backdrop-blur-md rounded-lg border border-white/20 p-6"
+              >
+                <div className="text-white mb-4">
+                  <h3 className="text-xl font-bold mb-2">
+                    {categories.find(c => c.id === selectedCategory)?.title}
+                  </h3>
+                  <p className="text-white/80 text-sm">
+                    Selecione uma atividade que você realizou hoje:
+                  </p>
+                </div>
+
+                <RadioGroup 
+                  value={selectedActivity || ""} 
+                  onValueChange={handleActivitySelect}
+                  className="space-y-3"
+                >
+                  {categories
+                    .find(c => c.id === selectedCategory)
+                    ?.activities.map(activity => (
+                      <div 
+                        key={activity.id} 
+                        className={`flex items-start space-x-3 p-3 rounded-md transition-all ${
+                          selectedActivity === activity.id 
+                            ? 'bg-white/20 border border-white/40' 
+                            : 'bg-white/5 border border-white/10 hover:bg-white/10'
+                        }`}
+                      >
+                        <RadioGroupItem 
+                          value={activity.id} 
+                          id={activity.id} 
+                          className="mt-1"
+                        />
+                        <div className="flex-1 cursor-pointer" onClick={() => handleActivitySelect(activity.id)}>
+                          <div className="flex justify-between">
+                            <label htmlFor={activity.id} className="font-medium text-white cursor-pointer">
+                              {activity.label}
+                            </label>
+                            <span className="text-sm font-semibold text-green-400">+{activity.points} pts</span>
+                          </div>
+                          <p className="text-sm text-white/70 mt-1">{activity.description}</p>
+                        </div>
+                      </div>
+                    ))
+                  }
+                </RadioGroup>
+                
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!selectedActivity || isSubmitting}
+                  className="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                >
+                  {isSubmitting ? 'Registrando...' : 'Registrar Atividade'}
+                </Button>
+              </motion.div>
+            )}
+          
+            {!selectedCategory && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center text-white/80 mt-4"
+              >
+                <p>Selecione uma categoria para registrar suas atividades</p>
+              </motion.div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="checklist" className="space-y-6">
+            <RecoveryChecklistActivities />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
