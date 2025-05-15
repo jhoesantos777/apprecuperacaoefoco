@@ -7,6 +7,7 @@ import { SobrietyCounter } from "@/components/sobriety/SobrietyCounter";
 import { SobrietyDatePicker } from "@/components/sobriety/SobrietyDatePicker";
 import { SobrietyMedals } from "@/components/sobriety/SobrietyMedals";
 import { MotivationNote } from "@/components/sobriety/MotivationNote";
+import { Logo } from "@/components/Logo";
 
 const Sobriety = () => {
   const queryClient = useQueryClient();
@@ -65,7 +66,8 @@ const Sobriety = () => {
       toast("Sucesso! Suas informações foram atualizadas.");
     },
     onError: (error) => {
-      toast("Erro: Não foi possível atualizar suas informações.", {
+      toast({
+        description: "Erro: Não foi possível atualizar suas informações.",
         variant: "destructive"
       });
       console.error('Error updating profile:', error);
@@ -86,9 +88,9 @@ const Sobriety = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-4xl font-extrabold text-center text-red-600 mb-8 tracking-[-0.06em] uppercase drop-shadow">
-          Diário da Sobriedade
-        </h1>
+        <div className="flex justify-center mb-8">
+          <Logo size="lg" className="drop-shadow" />
+        </div>
 
         <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <div className="space-y-8">
