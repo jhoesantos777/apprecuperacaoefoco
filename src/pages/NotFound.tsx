@@ -16,6 +16,9 @@ const NotFound = () => {
     );
   }, [location.pathname]);
 
+  // Determine if we should use Portuguese or English based on the URL path
+  const isPortuguese = !location.pathname.match(/^\/[a-z-]+$/);
+
   return (
     <div 
       className="min-h-screen flex flex-col p-6"
@@ -51,7 +54,7 @@ const NotFound = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            Oops! Página não encontrada
+            {isPortuguese ? 'Oops! Página não encontrada' : 'Oops! Page not found'}
           </motion.p>
           <motion.div
             initial={{ y: 10, opacity: 0 }}
@@ -60,7 +63,7 @@ const NotFound = () => {
           >
             <Button asChild variant="default">
               <a href="/" className="hover-scale">
-                Voltar para o Início
+                {isPortuguese ? 'Voltar para o Início' : 'Back to Home'}
               </a>
             </Button>
           </motion.div>

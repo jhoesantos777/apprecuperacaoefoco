@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -50,14 +50,14 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/sobriedade" element={<Sobriety />} />
-              <Route path="/sobriety" element={<Navigate to="/sobriedade" replace />} /> {/* Added redirect from English to Portuguese route */}
+              <Route path="/sobriety" element={<Navigate to="/sobriedade" replace />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/reflexoes" element={<Reflection />} />
               <Route path="/gatilhos" element={<Triggers />} />
               <Route path="/sobre" element={<About />} />
               <Route path="/recuperacao" element={<Recovery />} />
               <Route path="/devocional" element={<Devotional />} />
-              <Route path="/devotional" element={<Navigate to="/devocional" replace />} /> {/* Added redirect from English to Portuguese route */}
+              <Route path="/devotional" element={<Navigate to="/devocional" replace />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/cadastro" element={<SignUp />} />
               <Route path="/cadastro-simplificado" element={<CadastroSimplificado />} />
@@ -69,6 +69,7 @@ function App() {
               <Route path="/humor" element={<AtualizarHumor />} />
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
               <Route path="/tarefas" element={<Tasks />} />
+              <Route path="/tasks" element={<Navigate to="/tarefas" replace />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/premium" element={<Premium />} />
               <Route path="/cursos" element={<Courses />} />
