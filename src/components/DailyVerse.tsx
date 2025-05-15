@@ -46,23 +46,34 @@ const DailyVerse = () => {
     try {
       setIsLoading(true);
       
-      // Get today's day of the year (1-365)
-      const now = new Date();
-      const start = new Date(now.getFullYear(), 0, 0);
-      // Convert now to timestamp before subtraction
-      const diff = now.getTime() - start.getTime();
-      const oneDay = 1000 * 60 * 60 * 24;
-      const dayOfYear = Math.floor(diff / oneDay);
+      // Get today's date and create a unique seed based on full date
+      const today = new Date();
+      const day = today.getDate();
+      const month = today.getMonth() + 1; // getMonth() returns 0-11
+      const year = today.getFullYear();
       
-      // Use the day of year to select a verse (ensures consistent verse per day)
-      const index = (dayOfYear - 1) % dailyVerses.length;
+      // Create a unique number for today that will be different each day
+      // but consistent throughout the same day
+      const uniqueDayIdentifier = (year * 10000) + (month * 100) + day;
+      
+      // Use the unique identifier to select a verse
+      // This ensures different verses on different days, but same verse all day
+      const index = uniqueDayIdentifier % dailyVerses.length;
+      
+      console.log(`Today's identifier: ${uniqueDayIdentifier}, Verse index: ${index}, Total verses: ${dailyVerses.length}`);
+      
       const dailyVerse = dailyVerses[index];
+      
+      if (!dailyVerse) {
+        console.error(`No verse found at index ${index}. Available verses: ${dailyVerses.length}`);
+        throw new Error('Versículo não encontrado');
+      }
       
       const newVerse = {
         verse: dailyVerse.verse,
         reference: dailyVerse.reference,
         explanation: dailyVerse.reflection,
-        date: new Date().toISOString().split('T')[0]
+        date: today.toISOString().split('T')[0]
       };
 
       // Salvar no localStorage
