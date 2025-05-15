@@ -50,6 +50,7 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/sobriedade" element={<Sobriety />} />
+              <Route path="/sobriety" element={<Navigate to="/sobriedade" replace />} /> {/* Added redirect from English to Portuguese route */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/reflexoes" element={<Reflection />} />
               <Route path="/gatilhos" element={<Triggers />} />
@@ -65,7 +66,7 @@ function App() {
               <Route path="/conquistas" element={<Achievements />} />
               <Route path="/agendar" element={<Schedule />} />
               <Route path="/humor" element={<AtualizarHumor />} />
-              <Route path="/atualizar-humor" element={<AtualizarHumor />} /> {/* Added this line to support both routes */}
+              <Route path="/atualizar-humor" element={<AtualizarHumor />} />
               <Route path="/tarefas" element={<Tasks />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/premium" element={<Premium />} />

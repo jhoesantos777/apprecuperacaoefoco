@@ -2,14 +2,16 @@
 import { toast as sonnerToast } from "sonner";
 
 export interface ToastProps {
-  title?: string;
-  description?: string;
   variant?: "default" | "destructive";
   [key: string]: any;
 }
 
-// Re-export the toast function with our custom type
-export const toast = (message: string, options?: Omit<ToastProps, 'title'>) => {
+// Create a consistent toast function that works with both string and object formats
+export const toast = (message: string, options?: ToastProps) => {
+  if (options?.variant === 'destructive') {
+    return sonnerToast.error(message, options);
+  }
+  
   return sonnerToast(message, options);
 };
 

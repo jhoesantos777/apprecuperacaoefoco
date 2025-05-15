@@ -2,14 +2,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { SobrietyCounter } from "@/components/sobriety/SobrietyCounter";
 import { SobrietyDatePicker } from "@/components/sobriety/SobrietyDatePicker";
 import { SobrietyMedals } from "@/components/sobriety/SobrietyMedals";
 import { MotivationNote } from "@/components/sobriety/MotivationNote";
 
 const Sobriety = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [motivationNote, setMotivationNote] = useState("");
@@ -63,16 +62,11 @@ const Sobriety = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast({
-        title: "Sucesso!",
-        description: "Suas informações foram atualizadas.",
-      });
+      toast("Sucesso! Suas informações foram atualizadas.");
     },
     onError: (error) => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível atualizar suas informações.",
-        variant: "destructive",
+      toast("Erro: Não foi possível atualizar suas informações.", {
+        variant: "destructive"
       });
       console.error('Error updating profile:', error);
     },

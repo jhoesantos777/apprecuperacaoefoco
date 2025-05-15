@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { registerActivity } from "@/utils/activityPoints";
 import { motion } from "framer-motion";
 
@@ -13,7 +13,6 @@ type SobrietyButtonProps = {
 };
 
 export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButtonProps) => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const sobrietyDeclaration = useMutation({
@@ -41,16 +40,11 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
       queryClient.invalidateQueries({ queryKey: ['sobriety-medals'] });
-      toast({
-        title: "Parabéns!",
-        description: "Sua determinação é inspiradora. Continue firme!",
-      });
+      toast("Parabéns! Sua determinação é inspiradora. Continue firme!");
     },
     onError: (error) => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível registrar sua declaração.",
-        variant: "destructive",
+      toast("Erro: Não foi possível registrar sua declaração.", {
+        variant: "destructive"
       });
       console.error('Error registering sobriety declaration:', error);
     },

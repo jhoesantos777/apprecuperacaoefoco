@@ -2,15 +2,13 @@
 import { toast as sonnerToast } from "sonner";
 
 // Types for compatibility
-export type ToastProps = {
-  title?: string;
-  description?: string;
+export interface ToastProps {
   variant?: "default" | "destructive";
   [key: string]: any;
-};
+}
 
-// Wrapper for toast to maintain consistent interface
-export const toast = (message: string, options?: Omit<ToastProps, 'title'>) => {
+// Create a consistent toast function that works with both string and object formats
+export const toast = (message: string, options?: ToastProps) => {
   if (options?.variant === 'destructive') {
     return sonnerToast.error(message, options);
   }
@@ -18,8 +16,8 @@ export const toast = (message: string, options?: Omit<ToastProps, 'title'>) => {
   return sonnerToast(message, options);
 };
 
-export const useToast = () => {
+export function useToast() {
   return {
     toast
   };
-};
+}
