@@ -10,13 +10,17 @@ interface Verse {
   date: string;
 }
 
-const DailyVerse = () => {
+interface DailyVerseProps {
+  forceRefresh?: boolean;
+}
+
+const DailyVerse = ({ forceRefresh = false }: DailyVerseProps) => {
   const [verse, setVerse] = useState<Verse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Effect to load verse on component mount and check for updates at midnight
   useEffect(() => {
-    loadDailyVerse();
+    loadDailyVerse(forceRefresh);
 
     // Set up a timer to check for verse updates
     const checkForUpdates = () => {
@@ -35,17 +39,19 @@ const DailyVerse = () => {
     const intervalId = setInterval(checkForUpdates, 60000); // 60000ms = 1 minute
 
     return () => clearInterval(intervalId); // Cleanup on unmount
-  }, []);
+  }, [forceRefresh]);
 
-  const loadDailyVerse = async (forceRefresh = false) => {
+  const loadDailyVerse = async (shouldForceRefresh = false) => {
     try {
       setIsLoading(true);
       
       const today = new Date().toISOString().split('T')[0];
       const storedVerse = localStorage.getItem('dailyVerse');
       
-      if (storedVerse && !forceRefresh) {
+      if (storedVerse && !shouldForceRefresh) {
         const parsedVerse = JSON.parse(storedVerse);
+        
+        // Check if the verse is from today, if not generate a new one
         if (parsedVerse.date === today) {
           setVerse(parsedVerse);
           setIsLoading(false);
@@ -53,7 +59,7 @@ const DailyVerse = () => {
         }
       }
 
-      // Se não houver versículo para hoje ou forceRefresh=true, gerar um novo
+      // If no verse for today or forceRefresh=true, generate a new one
       await generateNewVerse();
     } catch (error) {
       console.error('Erro ao carregar versículo:', error);
