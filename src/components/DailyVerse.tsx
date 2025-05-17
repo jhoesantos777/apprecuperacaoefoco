@@ -73,18 +73,18 @@ const DailyVerse = ({ forceRefresh = false }: DailyVerseProps) => {
     try {
       setIsLoading(true);
       
-      // Get today's day of the year (1-365)
       const now = new Date();
-      const start = new Date(now.getFullYear(), 0, 0);
-      const diff = now.getTime() - start.getTime();
-      const oneDay = 1000 * 60 * 60 * 24;
-      const dayOfYear = Math.floor(diff / oneDay);
       
-      // Use the day of year to select the corresponding verse
-      // Ensure index is within the array bounds (1-365 maps to 0-364)
-      const index = Math.min(dayOfYear - 1, dailyVerses.length - 1);
+      // Use the getDevocionalDoDia function to get today's devotional
+      const diaDoAno = Math.floor(
+        (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
+         Date.UTC(now.getFullYear(), 0, 0)) / 86400000
+      );
       
-      console.log(`Dia do ano: ${dayOfYear}, Índice do versículo: ${index}, Total de versículos: ${dailyVerses.length}`);
+      // Ensure index is within array bounds
+      const index = diaDoAno % dailyVerses.length;
+      
+      console.log(`Dia do ano: ${diaDoAno+1}, Índice do versículo: ${index}, Total de versículos: ${dailyVerses.length}`);
       
       const dailyVerse = dailyVerses[index];
       
