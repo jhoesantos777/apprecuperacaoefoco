@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +10,7 @@ import { registerActivity } from '@/utils/activityPoints';
 import { useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Smile, Brain } from 'lucide-react';
+import { Logo } from '@/components/Logo';
 
 const AtualizarHumor = () => {
   const navigate = useNavigate();
@@ -67,7 +69,7 @@ const AtualizarHumor = () => {
   };
 
   const getMoodData = (mood: string) => {
-    // Updated point values as requested
+    // Points are maintained internally but not shown to user
     const moodData = {
       'otimo': { emocao: 'Ótimo', pontos: 20 },
       'bem': { emocao: 'Bem', pontos: 15 },
@@ -163,7 +165,11 @@ const AtualizarHumor = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <BackButton className="text-white/70 mb-6" />
+        <div className="flex flex-col items-center justify-center mb-6">
+          <Logo size="md" className="mb-4" />
+          <BackButton className="text-white/70" />
+        </div>
+        
         <h1 className="text-4xl font-extrabold text-center text-white mb-8 tracking-[-0.06em] uppercase drop-shadow">
           Como você está se sentindo?
         </h1>
@@ -182,7 +188,6 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😄</div>
                 <div className="text-white text-sm font-medium">ÓTIMO</div>
-                <div className="text-green-400 text-xs mt-1">+20 pontos</div>
               </button>
               
               <button
@@ -196,7 +201,6 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">🙂</div>
                 <div className="text-white text-sm font-medium">BEM</div>
-                <div className="text-green-400 text-xs mt-1">+15 pontos</div>
               </button>
               
               <button
@@ -210,7 +214,6 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😐</div>
                 <div className="text-white text-sm font-medium">DESMOTIVADO</div>
-                <div className="text-yellow-400 text-xs mt-1">+10 pontos</div>
               </button>
               
               <button
@@ -224,7 +227,6 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😔</div>
                 <div className="text-white text-sm font-medium">TRISTE</div>
-                <div className="text-orange-400 text-xs mt-1">+5 pontos</div>
               </button>
               
               <button
@@ -238,7 +240,6 @@ const AtualizarHumor = () => {
               >
                 <div className="text-4xl mb-2">😠</div>
                 <div className="text-white text-sm font-medium">IRRITADO</div>
-                <div className="text-red-400 text-xs mt-1">0 pontos</div>
               </button>
             </div>
 
@@ -295,9 +296,6 @@ const AtualizarHumor = () => {
                       <div className="text-white font-medium">{entry.emocao}</div>
                       <div className="text-gray-400 text-sm">
                         {formatDate(entry.data_registro)}
-                      </div>
-                      <div className="text-yellow-400 text-sm mt-1">
-                        {entry.pontos} pontos
                       </div>
                     </div>
                   </div>
