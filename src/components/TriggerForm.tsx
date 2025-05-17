@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { triggers, TriggerType, getCategoryTriggers } from '@/utils/triggerTips'
 import { registerActivity } from '@/utils/activityPoints';
 import { useQueryClient } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TriggerForm = () => {
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([]);
@@ -15,6 +17,7 @@ const TriggerForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("social");
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   const handleTriggerToggle = (triggerId: string) => {
     setSelectedTriggers(prev =>
@@ -86,9 +89,15 @@ const TriggerForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Tabs defaultValue="social" value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="w-full grid grid-cols-5 mb-4">
+        <TabsList className={`w-full ${isMobile ? 'flex flex-wrap justify-center gap-1 h-auto py-1' : 'grid grid-cols-5'} mb-4`}>
           {categories.map(category => (
-            <TabsTrigger key={category.id} value={category.id}>{category.label}</TabsTrigger>
+            <TabsTrigger 
+              key={category.id} 
+              value={category.id} 
+              className={`${isMobile ? 'text-xs py-1 px-2 flex-1 min-w-fit' : ''}`}
+            >
+              {category.label}
+            </TabsTrigger>
           ))}
         </TabsList>
 
@@ -106,9 +115,9 @@ const TriggerForm = () => {
                     />
                     <label
                       htmlFor={trigger.id}
-                      className="flex items-center space-x-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      className="flex items-center space-x-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-amber-500 hover:text-amber-400 transition-colors"
                     >
-                      <Icon className="h-4 w-4" />
+                      <Icon className="h-4 w-4 text-amber-500" />
                       <span>{trigger.label}</span>
                     </label>
                   </div>
@@ -137,9 +146,9 @@ const TriggerForm = () => {
             return (
               <Card key={triggerId} className="p-4 bg-muted">
                 <div className="flex items-start space-x-3">
-                  {trigger && <trigger.icon className="h-5 w-5 mt-0.5 flex-shrink-0" />}
+                  {trigger && <trigger.icon className="h-5 w-5 mt-0.5 flex-shrink-0 text-amber-500" />}
                   <div>
-                    <p className="font-medium">{trigger?.label}</p>
+                    <p className="font-medium text-amber-500">{trigger?.label}</p>
                     <p className="text-sm text-muted-foreground mt-1">{trigger?.tip}</p>
                   </div>
                 </div>
