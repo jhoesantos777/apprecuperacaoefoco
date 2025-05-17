@@ -53,6 +53,7 @@ function App() {
               <Route path="/sobriety" element={<Navigate to="/sobriedade" replace />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/reflexoes" element={<Reflection />} />
+              <Route path="/reflection" element={<Navigate to="/reflexoes" replace />} />
               <Route path="/gatilhos" element={<Triggers />} />
               <Route path="/sobre" element={<About />} />
               <Route path="/recuperacao" element={<Recovery />} />
