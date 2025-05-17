@@ -277,18 +277,21 @@ export type Database = {
       }
       daily_tasks: {
         Row: {
+          category_id: string | null
           description: string
           id: string
           name: string
           points: number
         }
         Insert: {
+          category_id?: string | null
           description: string
           id?: string
           name: string
           points?: number
         }
         Update: {
+          category_id?: string | null
           description?: string
           id?: string
           name?: string
