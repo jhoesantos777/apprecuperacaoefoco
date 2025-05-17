@@ -3,10 +3,11 @@ import React from 'react';
 import { BackButton } from '@/components/BackButton';
 import TriggerForm from '@/components/TriggerForm';
 import { Card } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '@/components/ui/button';
 
 const Triggers = () => {
   const navigate = useNavigate();
@@ -27,6 +28,18 @@ const Triggers = () => {
             
             <TriggerForm />
           </div>
+        </div>
+        
+        {/* Back Button at the bottom left */}
+        <div className="mt-6 flex justify-start">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)} 
+            className="flex items-center gap-2 text-gray-400 hover:text-amber-500"
+          >
+            <ArrowLeft size={20} />
+            Voltar
+          </Button>
         </div>
       </div>
     </div>
