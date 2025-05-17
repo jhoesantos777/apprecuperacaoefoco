@@ -66,6 +66,7 @@ function App() {
               <Route path="/admin" element={<Admin />} />
               <Route path="/tratamentos" element={<Treatments />} />
               <Route path="/conquistas" element={<Achievements />} />
+              <Route path="/achievements" element={<Navigate to="/conquistas" replace />} />
               <Route path="/agendar" element={<Schedule />} />
               <Route path="/humor" element={<AtualizarHumor />} />
               <Route path="/atualizar-humor" element={<AtualizarHumor />} />
