@@ -163,7 +163,7 @@ const AtualizarHumor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8 relative">
+    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8 pb-24">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex flex-col items-center justify-center mb-6">
           <Logo size="md" className="mb-4" />
@@ -307,8 +307,8 @@ const AtualizarHumor = () => {
         </div>
       </div>
       
-      {/* Back button positioned at bottom left */}
-      <div className="fixed bottom-8 left-8">
+      {/* Back button positioned at bottom left with absolute position */}
+      <div className="absolute bottom-8 left-8">
         <BackButton 
           className="bg-[#4b206b]/70 text-white hover:bg-[#4b206b] transition-colors shadow-lg" 
         />
