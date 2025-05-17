@@ -26,13 +26,6 @@ const Triggers = () => {
             </div>
             
             <TriggerForm />
-            
-            <button
-              onClick={() => navigate('/triggers/novo')}
-              className="w-full px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105"
-            >
-              Adicionar Novo Gatilho
-            </button>
           </div>
         </div>
       </div>
