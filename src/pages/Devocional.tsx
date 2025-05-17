@@ -1,5 +1,7 @@
+
 import React from 'react';
 import DailyVerse from '@/components/DailyVerse';
+import DevocionalDoDia from '@/components/DevocionalDoDia';
 
 const Devocional = () => {
   return (
@@ -9,7 +11,7 @@ const Devocional = () => {
           Devocional Diário
         </h1>
 
-        <DailyVerse />
+        <DevocionalDoDia />
 
         <div className="bg-gradient-to-br from-[#2d0036] to-black border border-[#4b206b] rounded-2xl shadow-xl p-8">
           <div className="space-y-6">
@@ -34,4 +36,4 @@ const Devocional = () => {
   );
 };
 
-export default Devocional; 
+export default Devocional;
