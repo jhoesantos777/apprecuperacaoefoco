@@ -163,11 +163,10 @@ const AtualizarHumor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#2d0036] to-black px-4 sm:px-6 py-8 relative">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex flex-col items-center justify-center mb-6">
           <Logo size="md" className="mb-4" />
-          <BackButton className="text-white/70" />
         </div>
         
         <h1 className="text-4xl font-extrabold text-center text-white mb-8 tracking-[-0.06em] uppercase drop-shadow">
@@ -306,6 +305,13 @@ const AtualizarHumor = () => {
             )}
           </div>
         </div>
+      </div>
+      
+      {/* Back button positioned at bottom left */}
+      <div className="fixed bottom-8 left-8">
+        <BackButton 
+          className="bg-[#4b206b]/70 text-white hover:bg-[#4b206b] transition-colors shadow-lg" 
+        />
       </div>
     </div>
   );
