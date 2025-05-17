@@ -1,14 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Check, CalendarDays, Smile, Brain, HandHeart, Dumbbell, MessageCircle, Wrench, Star, ArrowDown } from 'lucide-react';
+import { Check, CalendarDays, Smile, Brain, HandHeart, Dumbbell, MessageCircle, Wrench, Star, ArrowDown, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from '@/components/ui/sonner';
 import { Checkbox } from '@/components/ui/checkbox';
-import { BackButton } from '@/components/BackButton';
 import { registerActivity } from '@/utils/activityPoints';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Database } from '@/integrations/supabase/types';
@@ -277,7 +275,7 @@ const Tasks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 md:p-6 font-inter">
-      <BackButton className="text-white/90 hover:text-white" />
+      {/* Remove the BackButton component from the top */}
       
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -391,56 +389,57 @@ const Tasks = () => {
               </div>
             </motion.div>
             
-            <AnimatePresence>
-              {expandedCategories.includes(category.id) && (
-                <motion.div 
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="overflow-hidden"
-                >
-                  <div className={`mt-2 p-3 rounded-xl ${category.cardBg} backdrop-blur-sm border ${category.borderColor}`}>
-                    {tasks
-                      .filter(task => task.category_id === category.id)
-                      .map(task => (
-                        <div 
-                          key={task.id} 
-                          className="flex items-center justify-between p-3 mb-2 bg-white/60 dark:bg-black/10 rounded-lg border border-gray-200/70 dark:border-gray-700/30"
+            {/* Task items for each category - make it always visible */}
+            <div className={`mt-2 p-3 rounded-xl ${category.cardBg} backdrop-blur-sm border ${category.borderColor}`}>
+              {tasks
+                .filter(task => task.category_id === category.id)
+                .map(task => (
+                  <div 
+                    key={task.id} 
+                    className="flex items-center justify-between p-3 mb-2 bg-white/60 dark:bg-black/10 rounded-lg border border-gray-200/70 dark:border-gray-700/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        id={`task-${task.id}`}
+                        checked={isTaskCompleted(task.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            handleTaskComplete(task.id);
+                          } else {
+                            handleTaskUncomplete(task.id);
+                          }
+                        }}
+                        className="border-2 border-gray-300 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                      />
+                      <div>
+                        <label 
+                          htmlFor={`task-${task.id}`}
+                          className={`font-medium text-gray-900 dark:text-gray-100 ${isTaskCompleted(task.id) ? 'line-through text-gray-500' : ''}`}
                         >
-                          <div className="flex items-center gap-3">
-                            <Checkbox 
-                              id={`task-${task.id}`}
-                              checked={isTaskCompleted(task.id)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  handleTaskComplete(task.id);
-                                } else {
-                                  handleTaskUncomplete(task.id);
-                                }
-                              }}
-                              className="border-2 border-gray-300 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            />
-                            <div>
-                              <label 
-                                htmlFor={`task-${task.id}`}
-                                className={`font-medium text-gray-900 dark:text-gray-100 ${isTaskCompleted(task.id) ? 'line-through text-gray-500' : ''}`}
-                              >
-                                {task.name}
-                              </label>
-                              <p className="text-xs text-gray-600 dark:text-gray-400">{task.description}</p>
-                            </div>
-                          </div>
-                          <span className={`text-sm font-semibold ${category.color}`}>+{task.points}pts</span>
-                        </div>
-                      ))}
+                          {task.name}
+                        </label>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{task.description}</p>
+                      </div>
+                    </div>
+                    <span className={`text-sm font-semibold ${category.color}`}>+{task.points}pts</span>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                ))}
+            </div>
           </motion.div>
         ))}
       </motion.div>
+      
+      {/* Back button at bottom left */}
+      <div className="max-w-md mx-auto mt-8 mb-4">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-white/90 hover:text-white"
+        >
+          <ArrowLeft size={20} />
+          Voltar
+        </Button>
+      </div>
     </div>
   );
 };
