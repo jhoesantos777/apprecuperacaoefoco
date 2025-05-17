@@ -3,202 +3,205 @@ interface DailyVerse {
   verse: string;
   reference: string;
   reflection: string;
+  day?: number; // Adicionando campo de dia para controle interno
 }
 
 const dailyVerses: DailyVerse[] = [
   {
-    verse: "O Senhor é o meu pastor, nada me faltará.",
+    verse: "O Senhor é o meu pastor; nada me faltará.",
     reference: "Salmos 23:1",
-    reflection: "Este versículo nos lembra que Deus cuida de nós como um pastor cuida de suas ovelhas. Quando confiamos nEle, todas as nossas necessidades são supridas. Não precisamos temer a falta, pois Ele está atento a tudo que precisamos."
-  },
-  {
-    verse: "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.",
-    reference: "João 3:16",
-    reflection: "O amor de Deus por nós é incondicional e eterno. Ele demonstrou esse amor através do maior presente que poderia nos dar: Seu próprio Filho. Hoje, reflita sobre como esse amor infinito pode transformar sua vida e como você pode compartilhar esse amor com outros."
-  },
-  {
-    verse: "Não temas, porque eu sou contigo; não te assombres, porque eu sou teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.",
-    reference: "Isaías 41:10",
-    reflection: "Em momentos de medo e ansiedade, este versículo nos lembra que não estamos sozinhos. Deus está conosco, nos fortalecendo e nos ajudando. Podemos encontrar coragem sabendo que Ele nos sustenta com Sua mão poderosa."
+    reflection: "Esse versículo nos lembra que Deus cuida de cada necessidade nossa, mesmo quando não percebemos.",
+    day: 1
   },
   {
     verse: "Posso todas as coisas naquele que me fortalece.",
     reference: "Filipenses 4:13",
-    reflection: "Com a força que vem de Cristo, somos capazes de enfrentar qualquer desafio. Este versículo nos encoraja a não nos limitarmos pelo que parece impossível, mas a confiar no poder de Deus que opera em nós."
+    reflection: "A força que vem de Deus nos capacita a superar qualquer desafio com fé e confiança.",
+    day: 2
   },
   {
-    verse: "Confie no Senhor de todo o seu coração e não se apoie em seu próprio entendimento.",
+    verse: "Confia no Senhor de todo o teu coração...",
     reference: "Provérbios 3:5",
-    reflection: "Muitas vezes queremos entender tudo e controlar cada situação. Este versículo nos convida a entregar nossa confiança completamente a Deus, reconhecendo que Sua sabedoria é superior à nossa."
+    reflection: "A confiança verdadeira em Deus nos liberta da ansiedade e nos guia pelo caminho certo.",
+    day: 3
   },
   {
-    verse: "O Senhor é a minha luz e a minha salvação; a quem temerei? O Senhor é a força da minha vida; de quem me recearei?",
+    verse: "O Senhor é a minha luz e a minha salvação; a quem temerei?",
     reference: "Salmos 27:1",
-    reflection: "Quando Deus é nossa luz, Ele ilumina nosso caminho e nos mostra a direção. Quando Ele é nossa salvação e força, não há o que temer. Este versículo nos relembra da segurança que temos em Deus."
+    reflection: "Quando Deus é nossa luz, não há escuridão que nos impeça de seguir em frente com coragem.",
+    day: 4
   },
   {
-    verse: "Mas os que esperam no Senhor renovarão as suas forças, subirão com asas como águias; correrão, e não se cansarão; caminharão, e não se fatigarão.",
+    verse: "Não temas, porque eu sou contigo; não te assombres, porque eu sou teu Deus.",
+    reference: "Isaías 41:10",
+    reflection: "A presença de Deus em nossa vida nos dá a segurança de que nunca estamos sozinhos nas dificuldades.",
+    day: 5
+  },
+  {
+    verse: "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito.",
+    reference: "João 3:16",
+    reflection: "O amor de Deus é tão grandioso que Ele entregou o que tinha de mais precioso por nós.",
+    day: 6
+  },
+  {
+    verse: "Mas os que esperam no Senhor renovarão as suas forças.",
     reference: "Isaías 40:31",
-    reflection: "A espera em Deus não é passiva, mas um ato de confiança ativa. Quando esperamos nEle, Ele renova nossas forças e nos capacita a perseverar, mesmo nas circunstâncias mais desafiadoras."
-  },
-  {
-    verse: "Não vos inquieteis com nada; antes, em tudo, por meio da oração e súplica com ações de graça, sejam os vossos pedidos conhecidos de Deus.",
-    reference: "Filipenses 4:6",
-    reflection: "A ansiedade nos rouba a paz. Este versículo nos ensina a substituir a preocupação pela oração, levando a Deus tudo que nos aflige e agradecendo pelo que Ele já fez e fará."
-  },
-  {
-    verse: "Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.",
-    reference: "1 Pedro 5:7",
-    reflection: "Deus se importa com cada detalhe de nossa vida. Este versículo nos lembra que podemos entregar a Ele todas as nossas preocupações, grandes ou pequenas, porque Ele cuida de nós."
-  },
-  {
-    verse: "E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados segundo o seu propósito.",
-    reference: "Romanos 8:28",
-    reflection: "Mesmo em circunstâncias difíceis, podemos confiar que Deus está trabalhando para o nosso bem. Este versículo nos assegura que nada está fora do controle divino e que Ele tem um propósito em tudo."
-  },
-  {
-    verse: "Ora, àquele que é poderoso para fazer infinitamente mais do que tudo quanto pedimos ou pensamos, conforme o seu poder que opera em nós.",
-    reference: "Efésios 3:20",
-    reflection: "O poder de Deus vai além da nossa imaginação. Este versículo nos encoraja a ter expectativas grandes, sabendo que Ele pode fazer muito mais do que podemos pedir ou pensar."
-  },
-  {
-    verse: "Mas buscai primeiro o reino de Deus, e a sua justiça, e todas estas coisas vos serão acrescentadas.",
-    reference: "Mateus 6:33",
-    reflection: "Quando priorizamos Deus e Seu reino em nossa vida, Ele cuida de tudo mais que precisamos. Este versículo nos desafia a manter o foco correto nas nossas prioridades."
-  },
-  {
-    verse: "A tua palavra é lâmpada para os meus pés e luz para o meu caminho.",
-    reference: "Salmos 119:105",
-    reflection: "A Palavra de Deus nos guia como uma luz em meio à escuridão. Este versículo nos lembra da importância de buscar direção nas Escrituras para cada passo de nossa jornada."
-  },
-  {
-    verse: "Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor; pensamentos de paz, e não de mal, para vos dar o fim que esperais.",
-    reference: "Jeremias 29:11",
-    reflection: "Deus tem planos bons para nosso futuro. Este versículo nos assegura de Sua intenção de nos dar esperança e um propósito, mesmo quando não compreendemos o processo que estamos vivendo."
-  },
-  {
-    verse: "Sede fortes e corajosos; não temais, nem vos atemorizeis diante deles; porque o Senhor, vosso Deus, é quem vai convosco; não vos deixará nem vos desamparará.",
-    reference: "Deuteronômio 31:6",
-    reflection: "A presença constante de Deus nos dá coragem. Este versículo nos encoraja a enfrentar os desafios com força e confiança, sabendo que não estamos sozinhos."
-  },
-  {
-    verse: "Crê no Senhor Jesus Cristo e serás salvo, tu e a tua casa.",
-    reference: "Atos 16:31",
-    reflection: "A salvação vem pela fé em Jesus Cristo. Este versículo nos lembra da simplicidade e da profundidade do evangelho, e da esperança que temos para nós mesmos e para aqueles que amamos."
-  },
-  {
-    verse: "Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.",
-    reference: "Mateus 11:28",
-    reflection: "Jesus nos convida a descansar nEle quando estamos exaustos. Este versículo nos lembra que podemos encontrar alívio e renovação quando nos aproximamos de Cristo com nossos fardos."
-  },
-  {
-    verse: "De sorte que, se alguém está em Cristo, nova criatura é: as coisas velhas já passaram; eis que tudo se fez novo.",
-    reference: "2 Coríntios 5:17",
-    reflection: "Em Cristo, somos transformados completamente. Este versículo celebra a nova identidade e a nova vida que recebemos quando nos tornamos seguidores de Jesus."
-  },
-  {
-    verse: "Reconhece-o em todos os teus caminhos, e ele endireitará as tuas veredas.",
-    reference: "Provérbios 3:6",
-    reflection: "Quando incluímos Deus em cada área de nossa vida, Ele nos guia pelo caminho certo. Este versículo nos encoraja a buscar a direção divina em tudo o que fazemos."
-  },
-  {
-    verse: "Agora, pois, permanecem a fé, a esperança e o amor, estes três; mas o maior destes é o amor.",
-    reference: "1 Coríntios 13:13",
-    reflection: "De todas as virtudes cristãs, o amor é a mais importante. Este versículo nos lembra que o amor deve ser o centro de nossa vida e relacionamentos, refletindo o caráter de Deus."
+    reflection: "Esperar em Deus não é perder tempo, mas renovar as forças para prosseguir na jornada.",
+    day: 7
   },
   {
     verse: "E conhecereis a verdade, e a verdade vos libertará.",
     reference: "João 8:32",
-    reflection: "A verdade de Deus tem poder para nos libertar. Este versículo nos lembra que quando conhecemos e vivemos na verdade de Cristo, experimentamos verdadeira liberdade das mentiras que nos aprisionam."
+    reflection: "A verdade de Deus tem o poder de nos libertar de tudo o que nos aprisiona.",
+    day: 8
+  },
+  {
+    verse: "Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.",
+    reference: "1 Pedro 5:7",
+    reflection: "Podemos entregar todas as nossas preocupações a Deus, pois Ele se importa com cada detalhe de nossa vida.",
+    day: 9
+  },
+  {
+    verse: "Ora, àquele que é poderoso para fazer infinitamente mais do que tudo quanto pedimos ou pensamos.",
+    reference: "Efésios 3:20",
+    reflection: "O poder de Deus não tem limites e vai muito além do que nossa mente pode imaginar ou pedir.",
+    day: 10
+  },
+  {
+    verse: "Mas buscai primeiro o reino de Deus, e a sua justiça, e todas estas coisas vos serão acrescentadas.",
+    reference: "Mateus 6:33",
+    reflection: "Quando colocamos Deus em primeiro lugar, tudo o mais encontra seu devido lugar em nossa vida.",
+    day: 11
+  },
+  {
+    verse: "A tua palavra é lâmpada para os meus pés e luz para o meu caminho.",
+    reference: "Salmos 119:105",
+    reflection: "A Palavra de Deus ilumina nossa jornada e nos mostra qual direção seguir em cada situação.",
+    day: 12
+  },
+  {
+    verse: "Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor; pensamentos de paz, e não de mal.",
+    reference: "Jeremias 29:11",
+    reflection: "Os planos de Deus para nós são sempre bons, mesmo quando não compreendemos o processo.",
+    day: 13
+  },
+  {
+    verse: "Sede fortes e corajosos; não temais, nem vos atemorizeis diante deles.",
+    reference: "Deuteronômio 31:6",
+    reflection: "A coragem que vem de Deus nos permite enfrentar qualquer desafio sem medo.",
+    day: 14
+  },
+  {
+    verse: "Crê no Senhor Jesus Cristo e serás salvo, tu e a tua casa.",
+    reference: "Atos 16:31",
+    reflection: "A fé em Jesus é o caminho para a salvação, tanto para nós quanto para aqueles que amamos.",
+    day: 15
+  },
+  {
+    verse: "Vinde a mim, todos os que estais cansados e sobrecarregados, e eu vos aliviarei.",
+    reference: "Mateus 11:28",
+    reflection: "Jesus nos convida a encontrar descanso nele quando estamos exaustos das lutas da vida.",
+    day: 16
+  },
+  {
+    verse: "De sorte que, se alguém está em Cristo, nova criatura é; as coisas velhas já passaram; eis que tudo se fez novo.",
+    reference: "2 Coríntios 5:17",
+    reflection: "Em Cristo, recebemos uma nova identidade e a oportunidade de um recomeço verdadeiro.",
+    day: 17
+  },
+  {
+    verse: "Reconhece-o em todos os teus caminhos, e ele endireitará as tuas veredas.",
+    reference: "Provérbios 3:6",
+    reflection: "Quando incluímos Deus em cada área de nossa vida, Ele nos guia pelo caminho certo.",
+    day: 18
+  },
+  {
+    verse: "Agora, pois, permanecem a fé, a esperança e o amor, estes três; mas o maior destes é o amor.",
+    reference: "1 Coríntios 13:13",
+    reflection: "Entre todas as virtudes, o amor é a mais importante e deve ser o centro de tudo o que fazemos.",
+    day: 19
   },
   {
     verse: "Não se turbe o vosso coração; credes em Deus, crede também em mim.",
     reference: "João 14:1",
-    reflection: "Em tempos de turbulência emocional, a fé em Deus e em Jesus é nossa âncora. Este versículo nos convida a substituir a ansiedade pela confiança em Deus."
+    reflection: "A fé em Deus e em Jesus traz paz ao coração em meio às turbulências da vida.",
+    day: 20
   },
   {
     verse: "O ladrão vem somente para roubar, matar e destruir; eu vim para que tenham vida e a tenham em abundância.",
     reference: "João 10:10",
-    reflection: "Jesus veio para nos dar uma vida plena e abundante. Este versículo contrasta o propósito do inimigo de destruir com o propósito de Cristo de trazer vida verdadeira."
+    reflection: "Jesus veio para nos dar uma vida plena e abundante, muito além da mera existência.",
+    day: 21
   },
   {
     verse: "Portanto, quer comais, quer bebais ou façais outra coisa qualquer, fazei tudo para a glória de Deus.",
     reference: "1 Coríntios 10:31",
-    reflection: "Cada aspecto de nossa vida pode ser uma expressão de adoração a Deus. Este versículo nos desafia a viver intencionalmente para glorificar a Deus em tudo o que fazemos."
+    reflection: "Cada aspecto de nossa vida pode ser uma expressão de adoração e glorificação a Deus.",
+    day: 22
   },
   {
-    verse: "Tudo posso naquele que me fortalece.",
-    reference: "Filipenses 4:13",
-    reflection: "Nossa força não vem de nós mesmos, mas de Cristo. Este versículo nos lembra que com Ele, podemos superar qualquer obstáculo e desafio que enfrentamos."
-  },
-  {
-    verse: "Bem-aventurado o homem que não anda segundo o conselho dos ímpios, nem se detém no caminho dos pecadores, nem se assenta na roda dos escarnecedores.",
+    verse: "Bem-aventurado o homem que não anda segundo o conselho dos ímpios.",
     reference: "Salmos 1:1",
-    reflection: "Nossas escolhas de companhias e influências afetam nossa vida espiritual. Este versículo nos encoraja a buscar relacionamentos que nos aproximem de Deus, não que nos afastem dEle."
+    reflection: "As companhias e influências que escolhemos têm um grande impacto em nossa jornada espiritual.",
+    day: 23
   },
   {
-    verse: "Ele te declarou, ó homem, o que é bom; e que é o que o Senhor requer de ti, senão que pratiques a justiça, e ames a bondade, e andes humildemente com o teu Deus?",
+    verse: "Ele te declarou, ó homem, o que é bom; e que é o que o Senhor requer de ti, senão que pratiques a justiça, e ames a bondade.",
     reference: "Miquéias 6:8",
-    reflection: "Deus não busca rituais vazios, mas corações transformados. Este versículo resume o que Deus realmente deseja de nós: justiça, bondade e humildade diante dEle."
+    reflection: "Deus nos chama a viver com justiça, amar a bondade e caminhar humildemente com Ele.",
+    day: 24
   },
   {
-    verse: "E, quando estiverdes orando, perdoai, se tendes alguma coisa contra alguém, para que também vosso Pai, que está nos céus, vos perdoe as vossas ofensas.",
+    verse: "E, quando estiverdes orando, perdoai, se tendes alguma coisa contra alguém.",
     reference: "Marcos 11:25",
-    reflection: "O perdão é essencial na vida cristã. Este versículo nos lembra que não podemos esperar receber o perdão de Deus se não estamos dispostos a perdoar os outros."
+    reflection: "O perdão é uma parte essencial de nossa comunicação com Deus e de nossos relacionamentos.",
+    day: 25
   },
   {
-    verse: "Suportai-vos uns aos outros, e perdoai-vos uns aos outros, se alguém tiver queixa contra outrem; assim como o Senhor vos perdoou, assim fazei vós também.",
+    verse: "Suportai-vos uns aos outros, e perdoai-vos uns aos outros, se alguém tiver queixa contra outrem.",
     reference: "Colossenses 3:13",
-    reflection: "A paciência e o perdão são fundamentais nos relacionamentos. Este versículo nos encoraja a tratar os outros com a mesma graça que Cristo nos mostrou."
+    reflection: "Assim como Cristo nos perdoou, devemos perdoar e ter paciência uns com os outros.",
+    day: 26
   },
   {
-    verse: "Não to mandei eu? Sê forte e corajoso; não temas, nem te espantes; porque o Senhor, teu Deus, é contigo, por onde quer que andares.",
+    verse: "Não to mandei eu? Sê forte e corajoso; não temas, nem te espantes; porque o Senhor, teu Deus, é contigo.",
     reference: "Josué 1:9",
-    reflection: "Deus nos chama para avançar com coragem. Este versículo nos assegura da presença constante de Deus conosco, onde quer que vamos, dando-nos força para enfrentar qualquer desafio."
+    reflection: "A presença constante de Deus conosco é o que nos dá força e coragem para enfrentar qualquer desafio.",
+    day: 27
   },
-  // Continua com mais versículos (31-365)
-  // Adicionando mais versículos para completar os 365
   {
     verse: "O que vos digo no escuro, dizei-o em plena luz; e o que escutais ao pé do ouvido, proclamai-o sobre os eirados.",
     reference: "Mateus 10:27",
-    reflection: "Somos chamados a compartilhar o evangelho abertamente. Este versículo nos encoraja a não guardar para nós mesmos o que aprendemos com Cristo, mas a proclamá-lo aos outros."
+    reflection: "Somos chamados a compartilhar com outros o que aprendemos com Cristo, sendo testemunhas da verdade.",
+    day: 28
   },
   {
     verse: "Ora, a fé é a certeza de coisas que se esperam, a convicção de fatos que se não veem.",
     reference: "Hebreus 11:1",
-    reflection: "A fé nos permite ver além das circunstâncias presentes. Este versículo nos lembra que a fé não é apenas sentimento, mas uma confiança firme nas promessas de Deus."
-  }
-];
-
-// Adding more verses to reach a total of 365
-const moreVerses = [
+    reflection: "A fé nos permite enxergar além das circunstâncias presentes e confiar no que Deus prometeu.",
+    day: 29
+  },
   {
     verse: "Mas o fruto do Espírito é: amor, alegria, paz, longanimidade, benignidade, bondade, fidelidade, mansidão, domínio próprio.",
     reference: "Gálatas 5:22-23",
-    reflection: "O Espírito Santo produz em nós qualidades que refletem o caráter de Cristo. Este versículo nos lembra que essas virtudes são fruto da obra de Deus em nós, não de nosso próprio esforço."
+    reflection: "O Espírito Santo produz em nós qualidades que refletem o caráter de Cristo quando permitimos sua atuação.",
+    day: 30
   },
   {
-    verse: "Porque o salário do pecado é a morte, mas o dom gratuito de Deus é a vida eterna em Cristo Jesus, nosso Senhor.",
+    verse: "Porque o salário do pecado é a morte, mas o dom gratuito de Deus é a vida eterna em Cristo Jesus.",
     reference: "Romanos 6:23",
-    reflection: "O pecado tem consequências graves, mas Deus oferece perdão e vida eterna gratuitamente. Este versículo contrasta o que merecemos com o que Deus nos dá por Sua graça."
-  },
-  {
-    verse: "Não se amoldem ao padrão deste mundo, mas transformem-se pela renovação da sua mente, para que sejam capazes de experimentar e comprovar a boa, agradável e perfeita vontade de Deus.",
-    reference: "Romanos 12:2",
-    reflection: "Deus nos chama a pensar diferentemente do mundo. Este versículo nos encoraja a permitir que nossa mente seja transformada pela verdade de Deus, levando a uma vida que agrada a Ele."
-  },
-  // Adicionando mais versículos para completar 365...
+    reflection: "Deus oferece gratuitamente a vida eterna por meio de Jesus, mesmo que não mereçamos tal presente.",
+    day: 31
+  }
 ];
 
-// Adicionando os versículos adicionais ao array principal
-dailyVerses.push(...moreVerses);
-
-// Para completar o total de 365 versículos
-for (let i = dailyVerses.length; i < 365; i++) {
+// Para completar até 365 dias, adicionamos versículos genéricos
+for (let i = dailyVerses.length + 1; i <= 365; i++) {
   dailyVerses.push({
-    verse: `Se, porém, algum de vós necessita de sabedoria, peça-a a Deus, que a todos dá liberalmente e não o lança em rosto; e ser-lhe-á concedida.`,
-    reference: `Tiago 1:5`,
-    reflection: `Quando precisamos de direção, podemos pedir a Deus sabedoria. Este versículo nos assegura que Deus dará generosamente sabedoria a todos que pedirem com fé, sem criticar por nossa necessidade.`
+    verse: "Se, porém, algum de vós necessita de sabedoria, peça-a a Deus, que a todos dá liberalmente e não o lança em rosto; e ser-lhe-á concedida.",
+    reference: "Tiago 1:5",
+    reflection: "Quando precisamos de direção, podemos pedir a Deus sabedoria com confiança, sabendo que Ele dará generosamente.",
+    day: i
   });
 }
 

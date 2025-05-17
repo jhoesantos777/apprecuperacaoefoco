@@ -80,8 +80,9 @@ const DailyVerse = ({ forceRefresh = false }: DailyVerseProps) => {
       const oneDay = 1000 * 60 * 60 * 24;
       const dayOfYear = Math.floor(diff / oneDay);
       
-      // Use the day of year to select a verse (ensures consistent verse per day)
-      const index = (dayOfYear - 1) % dailyVerses.length;
+      // Use the day of year to select the corresponding verse
+      // Ensure index is within the array bounds (1-365 maps to 0-364)
+      const index = Math.min(dayOfYear - 1, dailyVerses.length - 1);
       
       console.log(`Dia do ano: ${dayOfYear}, Índice do versículo: ${index}, Total de versículos: ${dailyVerses.length}`);
       
