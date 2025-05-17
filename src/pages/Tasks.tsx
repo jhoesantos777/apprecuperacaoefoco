@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Check, CalendarDays, Smile, Brain, HandHeart, Dumbbell, MessageCircle, Wrench, Star, ArrowDown, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -90,6 +91,7 @@ const TaskCategories = [
 
 const Tasks = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate(); // Initialize the navigate function
   const [showCelebration, setShowCelebration] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -246,7 +248,6 @@ const Tasks = () => {
   if (tasksLoading || completionsLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-6">
-        <BackButton />
         <div className="max-w-lg mx-auto">
           <div className="text-center mt-12">
             <div className="flex justify-center">
@@ -275,8 +276,6 @@ const Tasks = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4 md:p-6 font-inter">
-      {/* Remove the BackButton component from the top */}
-      
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -289,7 +288,6 @@ const Tasks = () => {
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-slate-100 space-y-4"
         >
-          {/* Logo Philos */}
           <div className="flex justify-center mb-4">
             <img 
               src="/lovable-uploads/2c65cc34-7f0b-418d-a887-bd5a5c877041.png" 
@@ -345,7 +343,6 @@ const Tasks = () => {
         </motion.div>
       </motion.div>
 
-      {/* Aqui iria o conteúdo das tarefas que não foi implementado anteriormente */}
       <motion.div 
         className="max-w-md mx-auto mt-8 space-y-6"
         initial={{ opacity: 0 }}
@@ -389,7 +386,6 @@ const Tasks = () => {
               </div>
             </motion.div>
             
-            {/* Task items for each category - make it always visible */}
             <div className={`mt-2 p-3 rounded-xl ${category.cardBg} backdrop-blur-sm border ${category.borderColor}`}>
               {tasks
                 .filter(task => task.category_id === category.id)
@@ -429,7 +425,6 @@ const Tasks = () => {
         ))}
       </motion.div>
       
-      {/* Back button at bottom left */}
       <div className="max-w-md mx-auto mt-8 mb-4">
         <Button 
           variant="ghost" 
