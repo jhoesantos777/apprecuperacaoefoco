@@ -57,6 +57,8 @@ function App() {
               <Route path="/gatilhos" element={<Triggers />} />
               <Route path="/sobre" element={<About />} />
               <Route path="/recuperacao" element={<Recovery />} />
+              <Route path="/recovery" element={<Navigate to="/recuperacao" replace />} />
+              <Route path="/termometro" element={<Navigate to="/recuperacao" replace />} />
               <Route path="/devocional" element={<Devotional />} />
               <Route path="/devotional" element={<Navigate to="/devocional" replace />} />
               <Route path="/auth" element={<Auth />} />
