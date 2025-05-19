@@ -40,11 +40,9 @@ export const ReflectionForm = () => {
         return;
       }
       
-      const { error } = await supabase.from('reflexoes').insert({
+      const { error } = await supabase.from('reflections').insert({
         user_id: user.id,
-        titulo: title,
-        conteudo: content,
-        data: date.toISOString()
+        content: content
       });
       
       if (error) {

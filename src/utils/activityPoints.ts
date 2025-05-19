@@ -20,7 +20,8 @@ export type ActivityType =
   | 'Estudo'
   | 'Leitura'
   | 'Meditação'
-  | 'Família';
+  | 'Família'
+  | 'Recuperação';
 
 // Point values for each activity type
 export const ACTIVITY_POINTS = {

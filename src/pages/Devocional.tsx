@@ -1,7 +1,7 @@
 
 import React from 'react';
 import DailyVerse from '@/components/DailyVerse';
-import DevocionalDoDia from '@/components/DevocionalDoDia';
+import { DevocionalDoDia } from '@/components/DevocionalDoDia';
 
 const Devocional = () => {
   return (

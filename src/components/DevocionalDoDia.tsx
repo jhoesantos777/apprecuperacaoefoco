@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { DailyVerse } from '@/components/DailyVerse';
+import DailyVerse from '@/components/DailyVerse';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Check, BookOpen } from 'lucide-react';
