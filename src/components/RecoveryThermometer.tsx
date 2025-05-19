@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { Alert } from '@/components/ui/alert';
-import { AlertCircle, Thermometer } from 'lucide-react';
+import { AlertCircle, Thermometer, ThermometerSnowflake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +15,7 @@ interface ScoreBreakdown {
   devotionalPoints: number;
   sobrietyPoints: number;
   reflectionPoints: number;
+  motivationNotePoints: number;
 }
 
 interface ThermometerProps {
@@ -66,7 +68,7 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
       color: 'bg-gradient-to-r from-red-500 to-rose-600', 
       textColor: 'text-red-400',
       bgColor: 'bg-red-50/30',
-      icon: Thermometer,
+      icon: ThermometerSnowflake,
       emoji: '😟',
       message: "Importante buscar apoio terapêutico adicional"
     };
@@ -143,17 +145,22 @@ const RecoveryThermometer = ({ score, hasMultipleTriggers, details }: Thermomete
               </div>
             </div>
 
-      {(score < 31 || hasMultipleTriggers) && (
+      {(score < 30 || hasMultipleTriggers) && (
         <div className="bg-gradient-to-br from-red-900/40 to-rose-900/40 border border-red-300/50 rounded-2xl p-6">
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-400 mt-1" />
             <div>
-              <p className="font-medium text-white mb-2">Momento de Vulnerabilidade Identificado</p>
-              <p className="text-gray-200 mb-4">O processo terapêutico inclui momentos desafiadores. É recomendável intensificar seu suporte neste momento.</p>
+              <p className="font-medium text-white mb-2">Alerta de Recaída</p>
+              <p className="text-gray-200 mb-4">
+                {score < 30 ? 
+                  "Sua pontuação está abaixo de 30 pontos, indicando um momento de maior vulnerabilidade. Recomendamos buscar apoio adicional e intensificar suas práticas de autocuidado." : 
+                  "Identificamos múltiplos gatilhos em seu perfil. É importante manter-se vigilante e utilizar suas estratégias de enfrentamento."
+                }
+              </p>
               <button 
                 className="w-full px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all transform hover:scale-105"
-              onClick={() => window.location.href = '/support'}
-            >
+                onClick={() => window.location.href = '/support'}
+              >
                 Um dia de cada vez
               </button>
             </div>

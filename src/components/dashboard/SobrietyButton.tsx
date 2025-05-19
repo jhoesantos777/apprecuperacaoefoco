@@ -1,9 +1,10 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { registerActivity } from "@/utils/activityPoints";
+import { registerActivity, ACTIVITY_POINTS } from "@/utils/activityPoints";
 import { motion } from "framer-motion";
 
 type SobrietyButtonProps = {
@@ -31,13 +32,14 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
 
       if (error) throw error;
 
-      // Registrar atividade para o termômetro de recuperação
-      await registerActivity('HojeNãoVouUsar', 5, 'Declaração de sobriedade');
+      // Registrar atividade para o termômetro de recuperação com o novo valor de pontos
+      await registerActivity('HojeNãoVouUsar', ACTIVITY_POINTS.HojeNãoVouUsar, 'Declaração de sobriedade');
     },
     onSuccess: () => {
       onConfirm();
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
+      queryClient.invalidateQueries({ queryKey: ['activity-points'] });
       queryClient.invalidateQueries({ queryKey: ['sobriety-medals'] });
       toast("Parabéns! Sua determinação é inspiradora. Continue firme!");
     },
@@ -68,7 +70,7 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
       <div className="relative z-10 flex items-center justify-center gap-3">
         {hasConfirmedSobriety ? (
           <>
-            <span className="drop-shadow-lg">SOBRIEDADE CONFIRMADA HOJE</span>
+            <span className="drop-shadow-lg">SOBRIEDADE CONFIRMADA (+{ACTIVITY_POINTS.HojeNãoVouUsar} pts)</span>
             <motion.div
               className="text-2xl"
               animate={{ scale: [1, 1.2, 1] }}
@@ -79,7 +81,7 @@ export const SobrietyButton = ({ hasConfirmedSobriety, onConfirm }: SobrietyButt
           </>
         ) : (
           <>
-            <span className="drop-shadow-lg">HOJE EU NÃO VOU USAR!</span>
+            <span className="drop-shadow-lg">HOJE EU NÃO VOU USAR! (+{ACTIVITY_POINTS.HojeNãoVouUsar} pts)</span>
             <motion.div
               className="text-2xl"
               animate={{ rotate: [0, 10, -10, 0] }}

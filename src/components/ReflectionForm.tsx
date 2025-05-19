@@ -1,209 +1,162 @@
+
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Save, HelpCircle, List } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { registerActivity } from "@/utils/activityPoints";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableHead,
-  TableRow
-} from "@/components/ui/table";
-import { getTodaysMotivation } from '@/data/dailyMotivations';
-
-const GUIDING_QUESTIONS = [
-  "O que me fez bem hoje?",
-  "Com o que eu aprendi?",
-  "Que vitórias celebrei?",
-  "Como me senti ao longo do dia?",
-  "O que me ajudou a manter minha sobriedade?",
-  "O que posso fazer melhor amanhã?"
-];
-
-// Define a type for reflection history item
-type ReflectionHistoryItem = {
-  id: string;
-  content: string;
-  created_at: string;
-  user_id: string;
-};
+import { Textarea } from "./ui/textarea";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { CalendarIcon, Check } from "lucide-react";
+import { Calendar } from "./ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { format } from 'date-fns';
+import { cn } from "@/lib/utils";
+import { Label } from '@/components/ui/label';
+import { registerActivity, ACTIVITY_POINTS } from '@/utils/activityPoints';
+import { toast } from '@/components/ui/sonner';
+import { ptBR } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 
 export const ReflectionForm = () => {
-  const [reflection, setReflection] = useState('');
-  const [showHistory, setShowHistory] = useState(false);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const todaysMotivation = getTodaysMotivation();
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState<Date>(new Date());
+  const [content, setContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const { data: reflectionHistory, isLoading: isLoadingHistory } = useQuery({
-    queryKey: ['reflection-history'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('reflections')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching reflections:', error);
-        return [];
-      }
-
-      return data as ReflectionHistoryItem[];
-    },
-    enabled: showHistory
-  });
-
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-
-      const { error } = await supabase
-        .from('reflections')
-        .insert({
-          user_id: user.id,
-          content: reflection
-        });
-
-      if (error) throw error;
-
-      // Register activity for recovery thermometer
-      await registerActivity('Reflexão', 3, 'Reflexão diária concluída');
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reflection-history'] });
-      queryClient.invalidateQueries({ queryKey: ['recovery-score'] });
-      toast("Reflexão salva com sucesso! (+3 pontos)");
-      setReflection('');
-    },
-    onError: (error) => {
-      toast("Não foi possível salvar sua reflexão.");
-      console.error('Error saving reflection:', error);
-    },
-  });
-
-  const handleSave = () => {
-    if (!reflection.trim()) {
-      toast("Por favor, escreva sua reflexão antes de salvar.");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!title.trim() || !content.trim()) {
+      toast.error("Por favor preencha título e conteúdo da reflexão");
       return;
     }
-
-    saveMutation.mutate();
+    
+    try {
+      setIsSubmitting(true);
+      
+      // Save reflection to database
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Você precisa estar logado para salvar reflexões");
+        return;
+      }
+      
+      const { error } = await supabase.from('reflexoes').insert({
+        user_id: user.id,
+        titulo: title,
+        conteudo: content,
+        data: date.toISOString()
+      });
+      
+      if (error) {
+        console.error("Erro ao salvar reflexão:", error);
+        toast.error("Não foi possível salvar sua reflexão");
+        return;
+      }
+      
+      // Register activity points
+      await registerActivity(
+        'Reflexão', 
+        ACTIVITY_POINTS.Reflexão, 
+        `Reflexão: ${title}`
+      );
+      
+      toast.success(`Reflexão registrada com sucesso! +${ACTIVITY_POINTS.Reflexão} pontos`);
+      setHasSubmitted(true);
+      
+      // Reset form after short delay
+      setTimeout(() => {
+        setTitle('');
+        setContent('');
+        setDate(new Date());
+        setHasSubmitted(false);
+      }, 2000);
+      
+    } catch (error) {
+      console.error("Erro ao processar reflexão:", error);
+      toast.error("Ocorreu um erro ao processar sua reflexão");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (showHistory) {
-    return (
-      <Card className="bg-white/95 shadow-lg border-none">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between gap-2 mb-4">
-            <div className="flex items-center gap-2">
-              <List className="w-5 h-5 text-rose-500" />
-              <h3 className="text-lg font-medium">Histórico de Reflexões</h3>
-            </div>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowHistory(false)}
-              className="text-sm"
-            >
-              Voltar
-            </Button>
-          </div>
-          
-          {isLoadingHistory ? (
-            <div className="text-center py-4">Carregando...</div>
-          ) : reflectionHistory && reflectionHistory.length > 0 ? (
-            <div className="overflow-auto max-h-[60vh]">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Reflexão</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {reflectionHistory.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="whitespace-nowrap">
-                        {format(new Date(item.created_at), "dd/MM/yyyy", { locale: ptBR })}
-                      </TableCell>
-                      <TableCell className="max-w-md break-words">{item.content}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <div className="text-center py-4 text-gray-500">
-              Nenhuma reflexão encontrada.
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="bg-white/95 shadow-lg border-none">
-      <CardContent className="p-6">
-        <div className="mb-6">
-          <div className="border-l-4 border-rose-400 pl-4 mb-4">
-            <h3 className="font-serif text-xl text-gray-700 mb-1">{todaysMotivation.phrase}</h3>
-            <p className="text-gray-600 text-sm italic">{todaysMotivation.reflection}</p>
-          </div>
-          
-          <div className="flex items-center gap-2 mb-3">
-            <HelpCircle className="h-5 w-5 text-rose-400" />
-            <h3 className="font-serif text-lg text-gray-700">Perguntas para reflexão:</h3>
-          </div>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {GUIDING_QUESTIONS.map((question, index) => (
-              <li key={index} className="text-sm text-gray-600 flex items-start gap-2">
-                <span className="text-rose-400">•</span>
-                {question}
-              </li>
-            ))}
-          </ul>
-        </div>
-        
-        <Textarea
-          placeholder="Escreva aqui sua reflexão do dia..."
-          className="min-h-[200px] mb-4 text-gray-700 bg-gray-50/50 border-gray-200 focus:border-rose-200 focus:ring-rose-200"
-          value={reflection}
-          onChange={(e) => setReflection(e.target.value)}
-        />
-        
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button 
-            onClick={handleSave}
-            className="w-full bg-gradient-to-r from-rose-400 to-rose-500 hover:from-rose-500 hover:to-rose-600 transition-all duration-300"
-            disabled={saveMutation.isPending}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            Salvar Reflexão
-          </Button>
+          <div className="flex-1">
+            <Label htmlFor="title" className="text-white mb-2">
+              Título da Reflexão
+            </Label>
+            <Input
+              id="title"
+              placeholder="Dê um título para sua reflexão"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="bg-white/5 border-white/20 text-white"
+              disabled={isSubmitting}
+            />
+          </div>
           
-          <Button
-            onClick={() => setShowHistory(true)}
-            variant="outline"
-            className="w-full border-rose-200 text-rose-600 hover:bg-rose-50"
+          <div>
+            <Label htmlFor="date" className="text-white mb-2">
+              Data
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant="outline"
+                  className={cn(
+                    "w-full sm:w-[200px] justify-start text-left font-normal bg-white/5 border-white/20 text-white",
+                    !date && "text-muted-foreground"
+                  )}
+                  disabled={isSubmitting}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : <span>Selecione a data</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(date) => date && setDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+        
+        <div>
+          <Label htmlFor="content" className="text-white mb-2">
+            Reflexão (+{ACTIVITY_POINTS.Reflexão} pts)
+          </Label>
+          <Textarea
+            id="content"
+            placeholder="Compartilhe seus pensamentos, sentimentos e reflexões do dia..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={8}
+            className="bg-white/5 border-white/20 text-white resize-none"
+            disabled={isSubmitting}
+          />
+        </div>
+        
+        <div className="flex justify-end">
+          <Button 
+            type="submit" 
+            disabled={isSubmitting || hasSubmitted}
+            className={cn(
+              "px-8",
+              hasSubmitted && "bg-green-600 hover:bg-green-700"
+            )}
           >
-            <List className="h-4 w-4 mr-2" />
-            Ver Histórico
+            <Check className="mr-2 h-4 w-4" />
+            {isSubmitting ? "Salvando..." : hasSubmitted ? "Reflexão Registrada" : "Concluir Reflexão"}
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </form>
+    </div>
   );
 };
